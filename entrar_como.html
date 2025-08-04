@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style_telas.css">
+</head>
+
+<body id="entrar_adm">
+    <a href="tela_01.html">Voltar |</a>
+    <h1 id="login">LOGIN</h1>
+    <div id="form">
+    
+        <form id="formulario">
+            <label>Usuário: </label>
+            <input type="text" required id="usuario"><br><br><br>
+            <label for="inputSenha">Senha: </label>
+            <input type="password" id="inputSenha"><br>
+            <input type="submit" id="botao" value="ENTRAR">
+        </form>
+    </div>
+    <script>
+        document.getElementById('formulario').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let usuario = document.getElementById('usuario').value.trim(); 
+            let senha = document.getElementById('inputSenha').value.trim(); 
+
+            if (usuario === 'aline' && senha === 'aline') {
+                window.location.href = "tela_aline.html";  
+            } else {
+                alert("Usuário ou senha incorretos.");
+            }
+        });
+    </script>
+</body>
+
+</html>

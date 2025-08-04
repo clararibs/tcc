@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style_telas.css">
+</head>
+<body id="body04">
+    <div class="wrapper">
+        <figure class="item">
+            <img src="imagem_estetica.jpg" alt="Procedimento 1">
+            <figcaption>
+                <button id="oi" onclick="func()">Procedimento 1 ▼</button>
+            </figcaption>
+        </figure>
+    </div>
+
+    <script>
+        function func() {
+            const botao = document.getElementById('oi');
+            
+            if (botao.innerText.includes("Esse é um procedimento de botox, para o rosto")) {
+                botao.innerText = "Procedimento 1 ▼";  // Volta para o texto original
+            } else {
+                botao.innerText = "Esse é um procedimento de botox, para o rosto";  // Mostra o novo texto
+            }
+        }
+    </script>
+</body>
+</html>
