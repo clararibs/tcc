@@ -125,5 +125,13 @@ background-color:white;
     font-family: Georgia, 'Times New Roman', Times, serif;
     border-radius: 12px;
     justify-content: center;
-    border-top: green;
+    background-color:rgb(148, 172, 148);
+    border-style: none;
+    color: beige;
+    
+}
+#oi{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 15px;
+    color:rgb(108, 128, 108);
 }
