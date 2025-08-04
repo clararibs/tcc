@@ -12,21 +12,36 @@
             <img src="imagem_estetica.jpg" alt="Procedimento 1" id="imagee">
             <figcaption>
                 <button id="oi" onclick="func()">Procedimento 1 ▼</button>
-               
+                <div id="textareaContainer"></div>
             </figcaption>
         </figure>
-        
     </div>
 
     <script>
         function func() {
             const botao = document.getElementById('oi');
-            <textarea id="meuTextarea" rows="5" cols="30" placeholder="Digite aqui..."></textarea>
-            const text = document.getElementById('meuTextarea');
-            if (text.innerText.includes("Esse é um procedimento de botox, para o rosto")) {
-                botao.innerText = "Procedimento 1 ▼";  
+            const container = document.getElementById('textareaContainer');
+            
+            // Verifica se o textarea já existe
+            let textarea = document.getElementById('meuTextarea');
+            
+            if (!textarea) {
+                // Cria o textarea se não existir
+                textarea = document.createElement('textarea');
+                textarea.id = 'meuTextarea';
+                textarea.rows = 10;
+                textarea.cols = 30;
+        
+                textarea.readOnly = true; 
+                container.appendChild(textarea);
+                
+                // Preenche com o texto do procedimento
+                textarea.value = "Esse é um procedimento de botox, para o rosto";
+                botao.innerText = "Procedimento 1 ▲";
             } else {
-                text.innerText = "Esse é um procedimento de botox, para o rosto";  // Mostra o novo texto
+                // Remove o textarea se já existir
+                container.removeChild(textarea);
+                botao.innerText = "Procedimento 1 ▼";
             }
         }
     </script>
