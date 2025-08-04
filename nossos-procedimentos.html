@@ -9,21 +9,24 @@
 <body id="body04">
     <div class="wrapper">
         <figure class="item">
-            <img src="imagem_estetica.jpg" alt="Procedimento 1">
+            <img src="imagem_estetica.jpg" alt="Procedimento 1" id="imagee">
             <figcaption>
                 <button id="oi" onclick="func()">Procedimento 1 ▼</button>
+               
             </figcaption>
         </figure>
+        
     </div>
 
     <script>
         function func() {
             const botao = document.getElementById('oi');
-            
-            if (botao.innerText.includes("Esse é um procedimento de botox, para o rosto")) {
-                botao.innerText = "Procedimento 1 ▼";  // Volta para o texto original
+            <textarea id="meuTextarea" rows="5" cols="30" placeholder="Digite aqui..."></textarea>
+            const text = document.getElementById('meuTextarea');
+            if (text.innerText.includes("Esse é um procedimento de botox, para o rosto")) {
+                botao.innerText = "Procedimento 1 ▼";  
             } else {
-                botao.innerText = "Esse é um procedimento de botox, para o rosto";  // Mostra o novo texto
+                text.innerText = "Esse é um procedimento de botox, para o rosto";  // Mostra o novo texto
             }
         }
     </script>
