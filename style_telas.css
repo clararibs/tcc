@@ -1,11 +1,57 @@
-#body1{
-    background-image: url('tela_principal02.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    
+
+html{
+    scroll-behavior: smooth;
+}
+body{
+    margin:0;
+    padding:0;
+    font-family: Arial;
 
 
 }
+nav{
+    width: 100%;
+    background: rgb(127, 153, 131);
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    
+}
+ul{
+    padding: 0;
+    margin:0;
+    list-style: none;
+}
+li{
+    float:left;
+}
+a{
+    padding: 20px;
+    width: 100px;
+    display:block;
+    text-decoration: none;
+    color:greenyellow;
+    text-transform: uppercase;
+    font-weight: bold ;
+}
+#section1{
+    height: 700px;
+    background:rgb(127, 153, 131);
+    display: inline-block;
+    width:100%;
+}
+#section2{
+    height: 700px;
+    background: beige;
+    display: inline-block;
+    width:100%;
+}
+.h1{
+    margin:100px;
+    text-align: center;
+    padding: 0;
+}
+
 #body2{
     background-image: url('sobre_nos_img.jpg');
     background-size:cover;
@@ -17,10 +63,7 @@ a{
     font-size: 20px;
     text-decoration: none;
 }
-#ADM{
-    text-align: end;
-    margin-top: 900px;
-}
+
 .c{
     color:rgb(1, 36, 1);
 }
@@ -134,4 +177,15 @@ background-color:white;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 15px;
     color:rgb(108, 128, 108);
+}
+::-webkit-scrollbar{
+    width: 15px;
+
+}
+::-webkit-scrollbar-track{
+    background: greenyellow;
+}
+::-webkit-scrollbar-thumb{
+    background: linear-gradient(blue,rgb(255, 57, 90));
+
 }
