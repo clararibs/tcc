@@ -1,37 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-    <nav>
+    <div class="wrapper">
+    <div class="sidebar">
         <ul>
-            <li><a href="#section1">Home</a></li>
-            <li><a href="#section2"> News</a></li>
-            <li><a href="#section3"> Blog</a></li>
-            <li><a href="#section4"> About</a></li>
-            <li><a href="#section5"> Contact</a></li>
+            <li>
+                <a href="#" class="active">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span class="item">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon"><i class=""</i></span>
+                    <span class="item">Development</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon"><i class=""></i></span>
+                    <span class="item">Reports</span>
+                </a>
+            </li>
+           
+</ul>
+    </div>
+    <div  class="section">
+        <div  class="top_navbar">
+            <div class="hamburger">
+                <a href="#"><i class="fas fa-bars"></i></a>
+                
+            </div>
+        </div>
+         
+    </div>
 
 
-        </ul>
-    </nav>
-    <div id = "section1">
-        <h1>This is home section</h1>
-    </div>
-    <div id = "section2">
-        <h1>This is News section</h1>
-    </div>
-    <div id = "section3">
-        <h1>This is blog section</h1>
-    </div>
-    <div id = "section4">
-        <h1>This is about section</h1>
-    </div>
-    <div id = "section5">
-        <h1>This is contact section</h1>
-    </div>
+</div>
+<script>
+      var hamburger = document.querySelector(".hamburger");
+	hamburger.addEventListener("click", function(){
+		document.querySelector("body").classList.toggle("active");
+	})
+</script>
+
 </body>
 </html>

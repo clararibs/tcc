@@ -1,71 +1,76 @@
-html{
-    scroll-behavior: smooth;
+*{
+    list-style: none;
+    text-decoration: none;
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 body{
-    margin:0;
-    padding:0;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-
+    background: green;
 
 }
-nav{
-    width: 100%;
+.wrapper .sidebar{
     background: pink;
-    overflow: hidden;
     position: fixed;
-    top: 0;
+    top:0;
+    left: 0;
+    width: 224px;
+    height: 100%;
+    padding: 20px 0;
+    transition: all 0.5s ease;
     
 }
-ul{
-    padding: 0;
-    margin:0;
-    list-style: none;
-}
-li{
-    float:left;
-}
-a{
-    padding: 20px;
-    width: 100px;
+.wrapper .sidebar ul li a{
     display:block;
-    text-decoration: none;
-    color:greenyellow;
-    text-transform: uppercase;
-    font-weight: bold ;
-}
-#section1{
-    height: 700px;
-    background:pink;
-    display: inline-block;
-    width:100%;
-}
-#section2{
-    height: 700px;
-    background:rgb(61, 46, 48);
-    display: inline-block;
-    width:100%;
-}
-#section3{
-    height: 700px;
-    background:white;
-    display: inline-block;
-    width:100%;
-}
-#section4{
-    height: 700px;
-    background:beige;
-    display: inline-block;
-    width:100%;
-}
-#section5{
-    height: 700px;
-    background:rgb(148, 101, 148);
-    display: inline-block;
-    width:100%;
-}
-h1{
-    margin:100px;
-    text-align: center;
-    padding: 0;
+    padding: 13px 30px;
+    border-bottom: 1px solid white;
+    color: rgb(97, 19, 32);
+    font-size: 16px;
+    position: relative;
 
+
+}
+.wrapper .sidebar ul li a .icon{
+	color: #dee4ec;
+	width: 30px;
+	display: inline-block;
+}
+
+.wrapper .sidebar ul li a:hover,
+.wrapper .sidebar ul li a.active{
+	color: #0c7db1;
+	background:white;
+    border-right: 2px solid rgb(5, 68, 104);
+}
+.wrapper .sidebar ul li a:hover:before,
+.wrapper .sidebar ul li a.active:before{
+	display: block;
+}
+.wrapper .section{
+	width: calc(100% – 225px);
+	margin-left: 225px;
+	transition: all 0.5s ease;
+}
+.wrapper .section .top_navbar{
+	background: rgb(7, 105, 185);
+	height: 50px;
+	display: flex;
+	align-items: center;
+	padding: 0 30px;
+ 
+}
+.wrapper .section .top_navbar .hamburger a{
+	font-size: 28px;
+	color: #f4fbff;
+}
+.wrapper .section .top_navbar .hamburger a:hover{
+	color: #a2ecff;
+}
+body.active .wrapper .sidebar{
+	left: -225px;
+}
+body.active .wrapper .section{
+	margin-left: 0;
+	width: 100%;
 }

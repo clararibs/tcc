@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
@@ -10,27 +10,50 @@
 
 <body id="body1">
 
-    <nav>
-    <ul>
-<li><a href="#section1">hedone</a></li>
-   <li><a href="section2"> sobre nos</a></li>
-   <li><a href="nossos-procedimentos.html" >Nossos proced.</a></li>
-   <li><a href="entrar_como.html" id="nossos">Entrar como ADM</a></li>
-   <li><a>Agende aqui </a></li>
+ 
+   <div class="wrapper">
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="#" class="active">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span class="item">Nossos procedimentos</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon"><i class="fas fa-desktop"></i></span>
+                    <span class="item">Agende aqui</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon"><i class="fas fa-user-friends"></i></span>
+                    <span class="item">Entrar como ADM</span>
+                </a>
+            </li>
+            </ul>
+            </div>
+            <div  class="section">
+                <div  class="top_navbar">
+                    <div class="hamburger">
+                        <a href="#"><i class="fas fa-bars"></i></a>
+                        
+                    </div>
+                </div>
+                 
+            </div>
 
 
+            </div>
 
-</nav>
-<div id = "section1">
-    <h1 class="h1">Hedonê </h1>
-    
-</div>
-<div id = "section2">
-    <h1 class="h1" >Sobre nós</h1>
-    
-</div>
 <script>
  
+      var hamburger = document.querySelector(".hamburger");
+	hamburger.addEventListener("click", function(){
+		document.querySelector("body").classList.toggle("active");
+	})
+
 </script>
 </body>
 
