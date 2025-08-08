@@ -10,14 +10,23 @@
 
 <body id="body1">
 
- 
+
+
+
+
+
    <div class="wrapper">
     <div class="sidebar">
         <ul>
             <li>
-                <a href="#" class="active">
+                
+                <a href="#" class="close-btn"><i class="fa-solid fa-xmark"></i></a>
+                <a href="nossos-procedimentos.html" class="active">
                     <span class="icon"><i class="fas fa-home"></i></span>
-                    <span class="item">Nossos procedimentos</span>
+                    <span class="item">Nossos 
+                        <br>Procedimentos 
+                        <hr>
+                    </span>
                 </a>
             </li>
             <li>
@@ -27,7 +36,7 @@
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="entrar_como.html">
                     <span class="icon"><i class="fas fa-user-friends"></i></span>
                     <span class="item">Entrar como ADM</span>
                 </a>
@@ -46,13 +55,29 @@
 
 
             </div>
+            <div id="section1">
+                <h1 id="hed">Hedonê</h1>
+            
+            </div>
+            <div id="section2">
+                <h1 class="h1">Sobre nós</h1>
+               
+            
+            </div>
+     
 
 <script>
  
-      var hamburger = document.querySelector(".hamburger");
-	hamburger.addEventListener("click", function(){
-		document.querySelector("body").classList.toggle("active");
-	})
+ var hamburger = document.querySelector(".hamburger");
+    var closeBtn = document.querySelector(".close-btn");
+    
+    hamburger.addEventListener("click", function(){
+        document.querySelector("body").classList.toggle("active");
+    });
+    
+    closeBtn.addEventListener("click", function(){
+        document.querySelector("body").classList.remove("active");
+    });
 
 </script>
 </body>
