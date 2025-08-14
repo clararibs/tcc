@@ -25,9 +25,13 @@ body{
     padding:0;
     font-family:Georgia, 'Times New Roman', Times, serif;
     font-size: 50px;
-  
+
     margin-top: 200px;
     color:beige;
+    transition: all 0.8s ease;
+}
+.h1:hover{
+   font-size: 80px;
 }
 #hed{
     font-family:Georgia, 'Times New Roman', Times, serif;
@@ -35,9 +39,11 @@ body{
     text-align: center;
     margin-top: 400px;
     color:beige;
+    transition: all 0.5s ease;
 }
 #hed:hover{
     font-size: 80px;
+    
 }
 
 
