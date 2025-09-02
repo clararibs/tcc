@@ -17,6 +17,48 @@ body{
     display: inline-block;
     width: 100%;
 }
+#section3{
+    height: 700px;
+    background: beige;
+    display: inline-block;
+    width: 100%;
+}
+#section4{
+    height: 700px;
+    background: beige;
+    display: inline-block;
+    width: 100%;
+}
+
+#section5{
+    height: 700px;
+    background: beige;
+    display: inline-block;
+    width: 100%;
+}
+
+  .itt {
+    display: flex;
+    align-items: center;
+    margin-right: 600px; /* Empurra o item para a esquerda, deixando 400px de espaço à direita */
+}
+
+.itt img {
+    
+    height: 300px;
+    border-radius: 16px;
+    object-fit: cover;
+    margin-left: 50px;
+    margin-right: auto;
+    margin-bottom: auto;
+    margin-top: 200px;
+}
+figcaption{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 20px;
+    margin-left: 1000px;
+}
+
 
 
 .h1{
@@ -45,7 +87,68 @@ body{
     font-size: 80px;
     
 }
+#botox{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-size: 50px;
+   
+  
+    color:rgb(100, 121, 100);
+    transition: all 0.5s ease;
 
+}
+#botox:hover{
+    font-size:80px;
+}
+.card{
+    width: 190px;
+    height: 254px;
+    border-radius: 20px;
+    background: pink;
+    position:relative;
+    padding: 1.8rem;
+    border: 2px solid palevioletred;
+    transition: 0.5s ease-out;
+    overflow: visible;
+    margin-left: 750px;
+
+}
+.card-details{
+    color:black;
+    height: 100%;
+    gap: .5em;
+    display: grid;
+    place-content: center;
+}
+.card-button{
+    transform: translate(-50%, 125%);
+    width: 60%;
+    border-radius: 1rem;
+    border: none;
+    background-color: blue;
+    color: white;
+    font-size: 1rem;
+    padding: .5rem 1rem;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    opacity:0;
+    transition: 0.3s ease-out;
+}
+.text-body{
+    color:gray;
+}
+.text-title{
+    font-size: 1.5em;
+    font-weight: bold;
+} 
+.car:hover{
+    border-color:aqua;
+    box-shadow: 0 4px 18px 0 black;
+}
+.card:hover .card-button{
+    transform: translate(-50%, 50%);
+    opacity: 1
+}
 
 
 *{
@@ -335,6 +438,7 @@ figcaption{
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 20px;
     margin-left: 20px;
+    margin-right: 400px;
 }
 #oi{
    
