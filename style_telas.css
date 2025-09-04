@@ -48,15 +48,24 @@ body{
     height: 300px;
     border-radius: 16px;
     object-fit: cover;
-    margin-left: 50px;
+    margin-left: 100px;
     margin-right: auto;
     margin-bottom: auto;
     margin-top: 200px;
 }
+#foto{
+    margin-left: 1200px;
+    padding-bottom:700px;
+}
+.teste{
+    border-style: dotted;
+    color:pink;
+    width: 1000px;
+}
 figcaption{
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 20px;
-    margin-left: 1000px;
+    
 }
 
 
@@ -87,7 +96,7 @@ figcaption{
     font-size: 80px;
     
 }
-#botox{
+.botox{
     font-family:Georgia, 'Times New Roman', Times, serif;
     font-size: 50px;
    
@@ -96,7 +105,7 @@ figcaption{
     transition: all 0.5s ease;
 
 }
-#botox:hover{
+.botox:hover{
     font-size:80px;
 }
 .card{
@@ -302,6 +311,7 @@ footer{
         margin: 4px;
     }
 }
+
 
 
 
