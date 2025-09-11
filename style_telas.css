@@ -448,18 +448,18 @@ input {
 .wrapp {
     display: flex;
     justify-content: flex-start;
-    /* Alinha tudo à esquerda */
+
     align-items: center;
     height: 100vh;
     padding-left: 20px;
-    /* Espaço mínimo da borda esquerda */
+  
 }
 
 .it {
     display: flex;
     align-items: center;
     margin-right: 600px;
-    /* Empurra o item para a esquerda, deixando 400px de espaço à direita */
+   
 }
 
 .it img {
@@ -574,9 +574,10 @@ hr {}
 }
 .item {
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 19px;
+    font-size: 14px;
+    text-align: center;
     font-weight: 600;
-    color: #2c3e50; /* azul escuro suave */
+    color: #2c3e50; 
     line-height: 1.5;
     letter-spacing: 0.06em;
     text-transform: capitalize;
@@ -586,8 +587,25 @@ hr {}
 }
 
 .item:hover {
-    color: #1abc9c; /* tom de verde-água */
+    color: #11201d; 
     transform: translateX(5px);
     cursor: pointer;
 }
-/*nossos procedimentos*/
+#section1 {
+    background: linear-gradient(to bottom, #123c12, #2e4d2e); 
+    color: #d6d6a0;
+    padding: 50px;
+  }
+  
+  #section2 {
+    background: linear-gradient(to bottom, #2e4d2e, #87a769); 
+    color: #222;
+    padding: 50px;
+  }
+  
+  footer {
+    background: linear-gradient(to top,  #b0c79a, #87a769);
+    color: white;
+    padding: 40px;
+  }
+  

@@ -7,7 +7,7 @@
 
 body#entrar_adm {
     font-family: 'Poppins', sans-serif; /* Fonte mais moderna e elegante */
-    background-color: #f4f4f9; /* Fundo neutro e claro */
+    background-color: #baca9b; 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,12 +17,15 @@ body#entrar_adm {
     color: #333;
 }
 
+  
+  
+
 /* Link "Voltar" com bordas arredondadas e animação */
 a {
     align-self: flex-start;
     margin: 20px;
     text-decoration: none;
-    color: #00695c; /* Verde mais escuro */
+    color: #065249; /* Verde mais escuro */
     font-size: 16px;
     font-weight: 600;
     padding: 8px 16px;
@@ -145,24 +148,23 @@ form input[type="password"]:focus {
     transform: scale(0.98);
 }
 
-/* Ícone dentro do botão */
+
 .icone {
     font-size: 20px;
 }
 
-/* Efeito de transição suave ao passar o mouse nos inputs */
 form input[type="text"],
 form input[type="password"],
 #botao {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Efeito de pulsação suave no botão "Entrar" */
+
 #botao {
     animation: buttonPulse 1.5s infinite alternate;
 }
 
-/* Animação de pulsação no botão */
+
 @keyframes buttonPulse {
     0% {
         transform: scale(1);
