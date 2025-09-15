@@ -5,134 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Agenda Clínica Estética Avançada</title>
 
-  <!-- Fonte Google -->
+ 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 
-  <!-- FullCalendar CSS -->
+  
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style_agenda_adm.css">
 
-  <!-- Estilo customizado -->
-  <style>
-    :root {
-      --primary: #a67c52; /* dourado suave */
-      --secondary: #6d9773; /* verde calmante */
-      --bg-light: #faf9f7;
-      --bg-sidebar: #fff;
-      --text-dark: #333;
-      --text-light: #777;
-      --radius: 14px;
-    }
-
-    body {
-      margin: 0;
-      display: flex;
-      height: 100vh;
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-dark);
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 320px;
-      background: var(--bg-sidebar);
-      padding: 25px;
-      border-right: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-    }
-
-    .sidebar h2 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--primary);
-      margin-bottom: 15px;
-      text-align: center;
-    }
-
-    .sidebar label {
-      font-size: 13px;
-      color: var(--text-light);
-      margin-top: 10px;
-    }
-
-    .sidebar input {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: var(--radius);
-      margin-top: 5px;
-      font-size: 14px;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .sidebar input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 5px rgba(166,124,82,0.3);
-    }
-
-    .sidebar button {
-      margin-top: 20px;
-      padding: 12px;
-      border: none;
-      border-radius: var(--radius);
-      background: var(--secondary);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .sidebar button:hover {
-      background: #5b8260;
-    }
-
-    #calendar {
-      flex: 1;
-      padding: 25px;
-    }
-
-    /* Personalização do calendário */
-    .fc .fc-toolbar-title {
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .fc .fc-button {
-      background: var(--secondary) !important;
-      border: none !important;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      padding: 6px 12px;
-      transition: all 0.2s;
-    }
-
-    .fc .fc-button:hover {
-      background: #5b8260 !important;
-    }
-
-    .fc .fc-daygrid-event {
-      background: var(--primary);
-      border: none;
-      border-radius: var(--radius);
-      padding: 3px 6px;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .info-tip {
-      margin-top: 15px;
-      font-size: 12px;
-      color: var(--text-light);
-      text-align: center;
-      font-style: italic;
-    }
-  </style>
+  
 </head>
 <body>
 
