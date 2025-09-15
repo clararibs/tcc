@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda Clínica Estética Avançada</title>
+
+  <!-- Fonte Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+
+  <!-- Estilo customizado -->
+  <style>
+    :root {
+      --primary: #a67c52; /* dourado suave */
+      --secondary: #6d9773; /* verde calmante */
+      --bg-light: #faf9f7;
+      --bg-sidebar: #fff;
+      --text-dark: #333;
+      --text-light: #777;
+      --radius: 14px;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      background: var(--bg-sidebar);
+      padding: 25px;
+      border-right: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .sidebar label {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 10px;
+    }
+
+    .sidebar input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      margin-top: 5px;
+      font-size: 14px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .sidebar input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 5px rgba(166,124,82,0.3);
+    }
+
+    .sidebar button {
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--secondary);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar button:hover {
+      background: #5b8260;
+    }
+
+    #calendar {
+      flex: 1;
+      padding: 25px;
+    }
+
+    /* Personalização do calendário */
+    .fc .fc-toolbar-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .fc .fc-button {
+      background: var(--secondary) !important;
+      border: none !important;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 6px 12px;
+      transition: all 0.2s;
+    }
+
+    .fc .fc-button:hover {
+      background: #5b8260 !important;
+    }
+
+    .fc .fc-daygrid-event {
+      background: var(--primary);
+      border: none;
+      border-radius: var(--radius);
+      padding: 3px 6px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .info-tip {
+      margin-top: 15px;
+      font-size: 12px;
+      color: var(--text-light);
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Nova Consulta</h2>
+
+    <label for="name">Nome do Paciente</label>
+    <input type="text" id="name" placeholder="Ex: Aline Silva">
+
+    <label for="phone">Telefone</label>
+    <input type="text" id="phone" placeholder="(xx) xxxxx-xxxx">
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="email@exemplo.com">
+
+    <label for="procedure">Procedimento</label>
+    <input type="text" id="procedure" placeholder="Ex: Botox">
+
+    <label for="date">Data</label>
+    <input type="date" id="date">
+
+    <label for="time">Horário de Início</label>
+    <input type="time" id="time">
+
+    <label for="minutes">Duração (minutos)</label>
+    <input type="number" id="minutes" placeholder="Ex: 45" min="1">
+
+    <button id="addEvent">Adicionar Consulta</button>
+
+    <p class="info-tip">
+      Clique em um evento no calendário para ver detalhes ou excluir.
+    </p>
+  </div>
+
+  <!-- Calendário -->
+  <div id="calendar"></div>
+
+  <!-- FullCalendar JS -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+
+      // Criação do calendário
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        editable: true,
+        locale: 'pt-br',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: [],
+
+        // Clique no evento → mostrar detalhes
+        eventClick: function(info) {
+          const paciente = info.event.extendedProps;
+          const detalhes = `
+✨ Procedimento: ${paciente.procedure || "não informado"}
+👤 Paciente: ${paciente.name || "não informado"}
+📞 Telefone: ${paciente.phone || "não informado"}
+📧 Email: ${paciente.email || "não informado"}
+⏳ Duração: ${paciente.durationText || "não informado"}
+🗓️ Início: ${info.event.start.toLocaleString("pt-BR")}
+⏰ Fim: ${info.event.end ? info.event.end.toLocaleString("pt-BR") : "não definido"}
+          `;
+          if (confirm(detalhes + "\n\nDeseja excluir este evento?")) {
+            info.event.remove();
+          }
+        }
+      });
+
+      calendar.render();
+
+      // Adicionar evento
+      document.getElementById('addEvent').addEventListener('click', () => {
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+        const procedure = document.getElementById('procedure').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const minutes = parseInt(document.getElementById('minutes').value) || 0;
+
+        if (name && procedure && date && time && minutes > 0) {
+          const startDateTime = new Date(date + "T" + time);
+          const endDateTime = new Date(startDateTime.getTime() + minutes * 60000);
+
+          const durationText = `${minutes} min`;
+
+          calendar.addEvent({
+            title: `${procedure} - ${name}`,
+            start: startDateTime,
+            end: endDateTime,
+            allDay: false,
+            extendedProps: {
+              name: name,
+              phone: phone,
+              email: email,
+              procedure: procedure,
+              durationText: durationText
+            }
+          });
+
+          // Limpar campos
+          ['name','phone','email','procedure','date','time','minutes'].forEach(id => {
+            document.getElementById(id).value = '';
+          });
+
+        } else {
+          alert('Preencha nome, procedimento, data, horário e duração em minutos!');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
