@@ -591,6 +591,10 @@ hr {}
     transform: translateX(5px);
     cursor: pointer;
 }
+
+
+
+/*tela 01*/
 #section1 {
     background: linear-gradient(to bottom, #123c12, #2e4d2e); 
     color: #d6d6a0;
@@ -602,6 +606,28 @@ hr {}
     color: #222;
     padding: 50px;
   }
+
+
+  
+
+/*nossos procedimentos*/
+  #section3{
+    background: linear-gradient(to bottom, #3d7c47,#f7f7f7);
+    color: #d6d6a0;
+    padding: 50px;
+  }
+  #section4{
+    background: linear-gradient(to bottom, #2e4d2e, #87a769); 
+    color: #222;
+    padding: 50px;
+  }
+  #section5{
+    background: linear-gradient(to top, #2e4d2e, #87a769); 
+    color: #d6d6a0;
+    padding: 50px;
+  }
+
+
   
   footer {
     background: linear-gradient(to top,  #b0c79a, #87a769);
