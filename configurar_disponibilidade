@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Solicitar Agendamento - Clínica Hedonê</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f4;
+      color: #2d3e2f;
+      display: flex;
+      height: 100vh;
+    }
+    .container {
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    h1 {
+      color: #4CAF50; /* Verde principal */
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      text-align: left;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #2d3e2f;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cfcfcf;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4CAF50; 
+      color: #2d3e2f;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #446348;
+    }
+    .mensagem {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Solicite seu Agendamento</h1>
+    <form id="solicitacaoForm">
+      <label for="name">Nome completo:</label>
+      <input type="text" id="name" required>
+
+      <label for="phone">Telefone:</label>
+      <input type="tel" id="phone" required>
+
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" required>
+
+      <label for="date">Data:</label>
+      <input type="date" id="date" required>
+
+      <label for="time">Hora:</label>
+      <input type="time" id="time" required>
+
+      <button type="submit">Enviar Solicitação</button>
+      <div class="mensagem" id="mensagem"></div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('solicitacaoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const data = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value
+      };
+
+      fetch("salvar.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .then(res => {
+        const msg = document.getElementById("mensagem");
+        if (res.success) {
+          msg.style.color = "#4CAF50";
+          msg.textContent = "✅ Sua solicitação foi registrada! Em breve entraremos em contato para confirmar.";
+          document.getElementById('solicitacaoForm').reset();
+        } else {
+          msg.style.color = "#b71c1c";
+          msg.textContent = "❌ Ocorreu um erro ao enviar. Tente novamente.";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
