@@ -1,49 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style_telas.css">
 </head>
-<body id="body04">
-    <div class="wrapper">
-        <figure class="item">
-            <img src="imagem_estetica.jpg" alt="Procedimento 1" id="imagee">
-            <figcaption>
-                <button id="oi" onclick="func()">Procedimento 1 ▼</button>
-                <div id="textareaContainer"></div>
-            </figcaption>
-        </figure>
-    </div>
 
-    <script>
-        function func() {
-            const botao = document.getElementById('oi');
-            const container = document.getElementById('textareaContainer');
-            
-            // Verifica se o textarea já existe
-            let textarea = document.getElementById('meuTextarea');
-            
-            if (!textarea) {
-                // Cria o textarea se não existir
-                textarea = document.createElement('textarea');
-                textarea.id = 'meuTextarea';
-                textarea.rows = 10;
-                textarea.cols = 30;
-        
-                textarea.readOnly = true; 
-                container.appendChild(textarea);
+<body id="body30">
+
+
+
+
+
+
+   <div class="wrapper">
+    <div class="sidebar">
+        <ul>
+            <li>
                 
-                // Preenche com o texto do procedimento
-                textarea.value = "Esse é um procedimento de botox, para o rosto";
-                botao.innerText = "Procedimento 1 ▲";
-            } else {
-                // Remove o textarea se já existir
-                container.removeChild(textarea);
-                botao.innerText = "Procedimento 1 ▼";
-            }
-        }
-    </script>
+               
+                <a href="nossos-procedimentos.html" class="active">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span class="item">Nossos 
+                        <br >Procedimentos 
+                       
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon"><i class="fas fa-desktop"></i></span>
+                    <span class="item" >Agende aqui</span>
+                </a>
+            </li>
+            <li>
+                <a href="entrar_como.html">
+                    <span class="icon"><i class="fas fa-user-friends"></i></span>
+                    <span class="item">Entrar como ADM</span>
+                </a>
+            </li>
+            </ul>
+            </div>
+            <div  class="section">
+                <div  class="top_navbar">
+                    <div class="hamburger">
+                        <a href="#"><i class="fas fa-bars"></i></a>
+                        
+                    </div>
+                </div>
+                 
+            </div>
+
+
+            </div>
+<div id="section3">
+    <figure class="itt">
+       
+         
+          <img src="botox-removebg-preview.png" alt="Botox">
+          <h1 class="botox">Botox</h1>
+     
+      </figure>
+</div>
+
+            <div id="section4">
+                <figure class="itt" id="foto">
+                    <img alt="botox1" src="" >
+                    
+                    <figcaption class="figure">
+                      
+                    </figcaption>
+                 </figure>
+    
+               
+            
+            </div>
+            <div id="section5">
+                <h1 class="h1"> Preenchimento</h1>
+               
+            
+            </div>
+
+            <footer>
+                <div class="footerContainer">
+                    <div class="socialIcons">
+                        <a href=""><i class="fa-brands fa-facebook"></i></a>
+                        <a href=""><i class="fa-brands fa-instagram"></i></a>
+                       
+                        <a href=""><i class="fa-brands fa-google-plus"></i></a>
+                     
+                    </div>
+                    <div class="footerNav">
+                        <ul><li><a href="">Home</a></li>
+                    
+                          
+                            <li><a href="">Contact Us</a></li>
+                            <li><a href="">our Team</a></li>
+                        </ul>
+                    </div>
+                    
+                </div>
+               
+            </footer>
+     
+
+<script>
+ 
+ var hamburger = document.querySelector(".hamburger");
+    var closeBtn = document.querySelector(".close-btn");
+    
+    hamburger.addEventListener("click", function(){
+        document.querySelector("body").classList.toggle("active");
+    });
+    
+    closeBtn.addEventListener("click", function(){
+        document.querySelector("body").classList.remove("active");
+    });
+
+
+
+
+
+
+
+
+
+
+   
+
+</script>
 </body>
+
+
 </html>

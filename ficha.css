@@ -1,0 +1,117 @@
+:root {
+    --cor-primaria: #FFFFFF;
+    --cor-secundaria: #3D8C40; 
+    --cor-destaque: #6FCF97; 
+    --cor-fundo: #E6F3E6; 
+    --cor-texto: #444444;
+    --cor-sombra: rgba(0, 0, 0, 0.1);
+}
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+
+.cabecalho-ficha {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+}
+
+.btn-voltar {
+    text-decoration: none;
+    color: var(--cor-secundaria);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-voltar:hover {
+    background-color: var(--cor-secundaria);
+    color: var(--cor-primaria);
+}
+
+
+.container-ficha {
+    width: 90%;
+    max-width: 800px;
+    background-color: var(--cor-primaria);
+    padding: 4rem 3rem;
+    box-shadow: 0 10px 20px var(--cor-sombra);
+    border-radius: 15px;
+}
+
+.ficha-conteudo h1 {
+    font-size: 2rem;
+    color: var(--cor-secundaria);
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--cor-destaque);
+    padding-bottom: 1rem;
+}
+
+
+.campo {
+    margin-bottom: 1.5rem;
+}
+
+.campo label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--cor-secundaria);
+}
+
+.campo input, .campo textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; 
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.campo input:focus, .campo textarea:focus {
+    outline: none;
+    border-color: var(--cor-destaque);
+    box-shadow: 0 0 5px rgba(111, 207, 151, 0.5);
+}
+
+.campo-descricao {
+    margin-top: 2rem;
+}
+
+.botao-container {
+    text-align: right;
+    margin-top: 3rem;
+}
+
+.btn-confirmar {
+    background: linear-gradient(135deg, var(--cor-secundaria), #2D6B2F);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--cor-sombra);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.btn-confirmar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, var(--cor-destaque), var(--cor-secundaria));
+}
