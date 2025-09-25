@@ -1,0 +1,372 @@
+/* Reset e configurações gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Menu Superior */
+  .menu-superior {
+    background-color: #1c521e;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  
+  .menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+  }
+  
+  .logo {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo i {
+    margin-right: 10px;
+    color: #215222;
+  }
+  
+  .menu-lista {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+  }
+  
+  .botao-menu {
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+  
+  .botao-menu:hover {
+    background-color: #2d5a45;
+    transform: translateY(-2px);
+  }
+  
+  .botao-menu i {
+    font-size: 1.1rem;
+  }
+  
+  /* Slider de Imagens */
+  .slider-container {
+    margin-top: 70px;
+    position: relative;
+    height: 500px;
+    overflow: hidden;
+  }
+  
+  .slider {
+    display: flex;
+    width: 300%;
+    height: 100%;
+    transition: transform 0.8s ease-in-out;
+  }
+  
+  .slide {
+    width: 33.333%;
+    height: 100%;
+    position: relative;
+  }
+  
+  .slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(26, 62, 47, 0.7), rgba(26, 62, 47, 0.4));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 60px;
+    color: white;
+  }
+  
+  .slide-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+    max-width: 600px;
+  }
+  
+  .slide-text {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    max-width: 500px;
+  }
+  
+  .slide-btn {
+    display: inline-block;
+    background-color: #1c521e;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: fit-content;
+  }
+  
+  .slide-btn:hover {
+    background-color: #3d8b40;
+    transform: translateY(-2px);
+  }
+  
+  .slider-nav {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 60px;
+  }
+  
+  .slider-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .slider-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .slider-dots {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .dot.active {
+    background-color: white;
+    transform: scale(1.2);
+  }
+  
+  /* Conteúdo Principal */
+  .conteudo-principal {
+    padding: 80px 0;
+  }
+  
+  .section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    color: #1c521e;
+    position: relative;
+  }
+  
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background-color:#1c521e;
+    margin: 15px auto 0;
+    border-radius: 2px;
+  }
+  
+  /* Destaques */
+  .destaques {
+    padding: 60px 0;
+    background-color: white;
+  }
+  
+  .destaques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+  
+  .destaque-card {
+    background-color: #f8f9fa;
+    padding: 40px 30px;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .destaque-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .destaque-card i {
+    font-size: 3rem;
+    color: #1c521e;
+    margin-bottom: 20px;
+  }
+  
+  .destaque-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #1c521e;
+  }
+  
+  /* Procedimentos */
+  .procedimentos {
+    padding: 60px 0;
+  }
+  
+  .procedimentos-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+  
+  .procedimento-item {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #1c521e;
+  }
+  
+  .procedimento-item h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #1c521e;
+  }
+  
+  /* Rodapé */
+  .rodape {
+    background-color: #1c521e;
+    color: white;
+    padding: 50px 0 20px;
+  }
+  
+  .rodape-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 30px;
+  }
+  
+  .rodape-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .rodape-contato h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .rodape-contato p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .rodape-copy {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .menu-container {
+        flex-direction: column;
+        padding: 10px 20px;
+    }
+    
+    .logo {
+        margin-bottom: 15px;
+    }
+    
+    .menu-lista {
+        flex-direction: column;
+        width: 100%;
+        gap: 5px;
+    }
+    
+    .botao-menu {
+        justify-content: center;
+        padding: 10px;
+    }
+    
+    .slider-container {
+        height: 400px;
+        margin-top: 120px;
+    }
+    
+    .slide-overlay {
+        padding: 0 30px;
+    }
+    
+    .slide-title {
+        font-size: 2rem;
+    }
+    
+    .slider-nav {
+        padding: 0 30px;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .destaques-grid, .procedimentos-lista {
+        grid-template-columns: 1fr;
+    }
+  }

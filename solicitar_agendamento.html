@@ -1,200 +1,123 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuração de Agenda - Clínica Estética</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <title>Solicitar Agendamento - Clínica Hedonê</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fdfdf9;
-      color: #2d3e2f;
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f4;
+      color: #2d3e2f;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      height: 100vh;
     }
-    h1 { margin: 20px; color: #2d3e2f; font-size: 28px; }
-    .container { display: flex; gap: 30px; width: 90%; max-width: 1400px; }
-    .controls {
-      width: 320px; background: #fff; padding: 20px; border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08); border: 1px solid #e5e5dc;
+    .container {
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
     }
-    .controls h2 { font-size: 20px; margin-bottom: 15px; color: #2d3e2f; border-left: 4px solid #d4af37; padding-left: 8px; }
-    .controls label { display: block; margin: 10px 0 5px; font-size: 14px; font-weight: 600; }
-    .controls input, .controls select, .controls button {
-      width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #cfcfcf; font-size: 14px;
+    h1 {
+      color: #4CAF50; /* Verde principal */
+      margin-bottom: 20px;
     }
-    .controls button { background: #2d3e2f; color: #fff; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    .controls button:hover { background: #3f5442; }
-    #calendar {
-      flex-grow: 1; max-width: 950px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    label {
+      display: block;
+      text-align: left;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #2d3e2f;
     }
-    .fc .fc-toolbar-title { font-size: 20px; color: #2d3e2f; }
-    .fc-event { border: none; border-radius: 6px; padding: 2px 4px; font-size: 13px; }
-    .disponibilidade { background-color: #4CAF50 !important; color: white !important; }
-    .intervalo { background-color: #FFD700 !important; color: #2d3e2f !important; }
-    .excecao { background-color: #b71c1c !important; color: white !important; text-decoration: line-through; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cfcfcf;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4CAF50; 
+      color: #2d3e2f;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #446348;
+    }
+    .mensagem {
+      margin-top: 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>Configuração de Agenda - Clínica Estética</h1>
   <div class="container">
-    <div class="controls">
-      <h2>Disponibilidade</h2>
-      <label>Dia da semana:</label>
-      <select id="diaSemanaDisponibilidade">
-        <option value="1">Segunda-feira</option>
-        <option value="2">Terça-feira</option>
-        <option value="3">Quarta-feira</option>
-        <option value="4">Quinta-feira</option>
-        <option value="5">Sexta-feira</option>
-        <option value="6">Sábado</option>
-      </select>
-      <label>Hora Início:</label>
-      <input type="time" id="horaInicioDisponibilidade">
-      <label>Hora Fim:</label>
-      <input type="time" id="horaFimDisponibilidade">
-      <button onclick="addDisponibilidade()">Adicionar/Alterar</button>
+    <h1>Solicite seu Agendamento</h1>
+    <form id="solicitacaoForm">
+      <label for="name">Nome completo:</label>
+      <input type="text" id="name" required>
 
-      <h2>Intervalo Fixo</h2>
-      <label>Dia da semana:</label>
-      <select id="diaSemanaIntervalo">
-        <option value="1">Segunda-feira</option>
-        <option value="2">Terça-feira</option>
-        <option value="3">Quarta-feira</option>
-        <option value="4">Quinta-feira</option>
-        <option value="5">Sexta-feira</option>
-        <option value="6">Sábado</option>
-      </select>
-      <label>Hora Início:</label>
-      <input type="time" id="horaInicioIntervalo">
-      <label>Hora Fim:</label>
-      <input type="time" id="horaFimIntervalo">
-      <button onclick="addIntervalo()">Adicionar/Alterar</button>
+      <label for="phone">Telefone:</label>
+      <input type="tel" id="phone" required>
 
-      <h2>Exceções</h2>
-      <label>Data:</label>
-      <input type="date" id="dataExcecao">
-      <label>Hora Início (opcional):</label>
-      <input type="time" id="horaInicioExcecao">
-      <label>Hora Fim (opcional):</label>
-      <input type="time" id="horaFimExcecao">
-      <button onclick="addExcecao()">Adicionar Exceção</button>
-    </div>
-    <div id="calendar"></div>
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" required>
+
+      <label for="date">Data:</label>
+      <input type="date" id="date" required>
+
+      <label for="time">Hora:</label>
+      <input type="time" id="time" required>
+
+      <button type="submit">Enviar Solicitação</button>
+      <div class="mensagem" id="mensagem"></div>
+    </form>
   </div>
 
   <script>
-    let disponibilidades = [];
-    let intervalos = [];
-    let excecoes = [];
+    document.getElementById('solicitacaoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
 
-    document.addEventListener('DOMContentLoaded', function() {
-      window.calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-        initialView: 'timeGridWeek',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        locale: 'pt-br',
-        editable: true,
-        selectable: true,
-        eventClick: function(info) {
-          if(info.event.extendedProps.tipo === 'excecao'){
-            if(confirm('Deseja excluir esta exceção?')){
-              excecoes = excecoes.filter(e => e.id !== info.event.id);
-              info.event.remove();
-              atualizarEventos();
-            }
-          }
-        },
-        events: []
-      });
-      window.calendar.render();
-    });
+      const data = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value
+      };
 
-    function atualizarEventos(){
-      window.calendar.removeAllEvents();
-
-      // Disponibilidades
-      disponibilidades.forEach(d => {
-        let dia = parseInt(d.diaSemana);
-        // Se houver exceção nesse dia, não exibe a disponibilidade completa
-        let excecaoNoDia = excecoes.some(e => new Date(e.data).getDay() === dia);
-        if(!excecaoNoDia){
-          window.calendar.addEvent({
-            daysOfWeek:[dia],
-            startTime:d.inicio,
-            endTime:d.fim,
-            title:'Disponível',
-            className:'disponibilidade',
-            tipo:'disponibilidade'
-          });
+      fetch("salvar.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .then(res => {
+        const msg = document.getElementById("mensagem");
+        if (res.success) {
+          msg.style.color = "#4CAF50";
+          msg.textContent = "✅ Sua solicitação foi registrada! Em breve entraremos em contato para confirmar.";
+          document.getElementById('solicitacaoForm').reset();
+        } else {
+          msg.style.color = "#b71c1c";
+          msg.textContent = "❌ Ocorreu um erro ao enviar. Tente novamente.";
         }
       });
-
-      // Intervalos
-      intervalos.forEach(i => {
-        let dia = parseInt(i.diaSemana);
-        window.calendar.addEvent({
-          daysOfWeek:[dia],
-          startTime:i.inicio,
-          endTime:i.fim,
-          title:'Intervalo',
-          className:'intervalo',
-          tipo:'intervalo'
-        });
-      });
-
-      // Exceções
-      excecoes.forEach(e => {
-        window.calendar.addEvent({
-          id:e.id,
-          start:e.inicio ? `${e.data}T${e.inicio}` : `${e.data}T00:00`,
-          end:e.fim ? `${e.data}T${e.fim}` : `${e.data}T23:59`,
-          title:'Exceção',
-          className:'excecao',
-          tipo:'excecao'
-        });
-      });
-    }
-
-    function addDisponibilidade(){
-      const dia = document.getElementById('diaSemanaDisponibilidade').value;
-      const inicio = document.getElementById('horaInicioDisponibilidade').value;
-      const fim = document.getElementById('horaFimDisponibilidade').value;
-      if(!inicio || !fim) return alert('Preencha horários.');
-      // Remove anterior do mesmo dia
-      disponibilidades = disponibilidades.filter(d => d.diaSemana !== dia);
-      disponibilidades.push({diaSemana:dia,inicio:inicio,fim:fim});
-      atualizarEventos();
-    }
-
-    function addIntervalo(){
-      const dia = document.getElementById('diaSemanaIntervalo').value;
-      const inicio = document.getElementById('horaInicioIntervalo').value;
-      const fim = document.getElementById('horaFimIntervalo').value;
-      if(!inicio || !fim) return alert('Preencha horários.');
-      // Remove anterior do mesmo dia
-      intervalos = intervalos.filter(i => i.diaSemana !== dia);
-      intervalos.push({diaSemana:dia,inicio:inicio,fim:fim});
-      atualizarEventos();
-    }
-
-    function addExcecao(){
-      const data = document.getElementById('dataExcecao').value;
-      const inicio = document.getElementById('horaInicioExcecao').value;
-      const fim = document.getElementById('horaFimExcecao').value;
-      if(!data) return alert('Selecione uma data.');
-      const id = Date.now().toString();
-      excecoes.push({id:id,data:data,inicio:inicio,fim:fim});
-      atualizarEventos();
-    }
+    });
   </script>
 </body>
 </html>

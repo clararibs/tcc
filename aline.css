@@ -1,0 +1,122 @@
+:root {
+    --cor-primaria: #FFFFFF;
+    --cor-secundaria: #3D8C40; 
+    --cor-destaque: #1c521e; 
+    --cor-fundo: #F8F9FA; 
+    --cor-texto: #1c521e;
+    --cor-sombra: rgba(0, 0, 0, 0.08);
+}
+
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-image: url("mulher-rindo-aline-2.jpg");
+    color: var(--cor-texto);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.dashboard-main {
+    max-width: 900px;
+    width: 90%;
+    padding: 2rem;
+    text-align: center;
+}
+
+
+.main-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid #E0E0E0;
+}
+
+.main-header h1 {
+    font-size: 2.5rem;
+    color: var(--cor-destaque);
+    margin: 0.5rem 0;
+}
+
+.main-header p {
+    font-size: 1.1rem;
+    color: #888;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.logo img {
+    border-radius: 50%;
+    border: 2px solid var(--cor-secundaria);
+}
+
+.logo h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cor-secundaria);
+    margin: 0;
+}
+
+.acoes-principais {
+    margin-top: 3rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    justify-items: center;
+}
+
+.card-acao {
+    background-color: var(--cor-primaria);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--cor-sombra);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+}
+
+.card-acao:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-acao a {
+    text-decoration: none;
+    color: var(--cor-secundaria);
+}
+
+.card-acao i {
+    color: var(--cor-destaque);
+    margin-bottom: 1rem;
+}
+
+.card-acao h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+#h2{
+    color:var(--cor-primaria);
+    font-size: 20px;
+}
+#h1{
+    transition: color 0.5s ease-in-out, transform 0.5s ease-in-out;
+
+}
+#h1:hover{
+color: var(--cor-secundaria);
+  transform: scale(1.1);
+}
