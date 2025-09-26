@@ -1,58 +1,45 @@
-/* Reset de margens e padding */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body#entrar_adm {
-    font-family: 'Poppins', sans-serif; /* Fonte mais moderna e elegante */
-    background-color: #baca9b; 
+html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.left {
+    width: 50%;
+    background-image:url("mulher_rindo_tela_aline.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
     justify-content: center;
-    min-height: 100vh;
+    align-items: center;
     padding: 20px;
-    color: #333;
+    text-align: center;
 }
 
-  
-  
-
-/* Link "Voltar" com bordas arredondadas e animação */
-a {
-    align-self: flex-start;
-    margin: 20px;
-    text-decoration: none;
-    color: #065249; /* Verde mais escuro */
-    font-size: 16px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 30px;
-    transition: background-color 0.3s, color 0.3s;
-    border: 2px solid transparent;
+.right {
+    width: 50%;
+    background-color: #1c521e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
 }
-
-a:hover {
-    background-color: #00695c;
-    color: white;
-    border-color: #00695c;
-}
-
-/* LOGO com transição suave */
-#logo {
-    width: 120px;
-    margin-bottom: 20px;
-    transition: transform 0.5s ease-in-out;
-}
-
-#logo:hover {
-    transform: rotate(10deg);
-}
-
-/* Título */
-#login {
+.login {
     font-size: 34px;
     font-weight: 700;
     margin-bottom: 30px;
@@ -60,9 +47,8 @@ a:hover {
     letter-spacing: 1px;
     text-transform: uppercase;
     animation: fadeIn 1.2s ease-in-out;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-/* Animação de Fade In para o título */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -73,10 +59,8 @@ a:hover {
         transform: translateY(0);
     }
 }
-
-/* Formulário */
 #form {
-    background-color: #ffffff;
+    background-color: transparent;
     padding: 50px 40px;
     border-radius: 20px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
@@ -88,8 +72,6 @@ a:hover {
 #form:hover {
     transform: translateY(-10px); /* Leve animação para o formulário */
 }
-
-/* Estilo das Labels */
 form label {
     display: block;
     margin-bottom: 10px;
@@ -97,8 +79,6 @@ form label {
     font-size: 16px;
     color: #00695c;
 }
-
-/* Estilo dos Inputs */
 form input[type="text"],
 form input[type="password"] {
     width: 100%;
@@ -110,16 +90,12 @@ form input[type="password"] {
     color: #333;
     transition: all 0.3s ease;
 }
-
-/* Foco nos Inputs */
 form input[type="text"]:focus,
 form input[type="password"]:focus {
     border-color: #00796b;
     box-shadow: 0 0 10px rgba(0, 121, 107, 0.2);
     outline: none;
 }
-
-/* Botão de Login com efeito de sombra, hover e animação */
 #botao {
     width: 100%;
     padding: 15px;
@@ -136,34 +112,22 @@ form input[type="password"]:focus {
     justify-content: center;
     gap: 10px;
 }
-
-/* Hover e efeitos no botão */
 #botao:hover {
     background-color: #004d40;
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
-
 #botao:active {
     transform: scale(0.98);
 }
-
-
-.icone {
-    font-size: 20px;
-}
-
 form input[type="text"],
 form input[type="password"],
 #botao {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-
 #botao {
     animation: buttonPulse 1.5s infinite alternate;
 }
-
 
 @keyframes buttonPulse {
     0% {
@@ -172,4 +136,13 @@ form input[type="password"],
     100% {
         transform: scale(1.05);
     }
+}
+#hedone{
+    color:white;
+    font-size: 60px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+#hedone:hover{
+    transform: translateY(-10px);
+    transition: transform 0.7s ease-in-out;
 }
