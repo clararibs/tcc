@@ -1,148 +1,112 @@
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html, body {
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #bdcab7fb; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    font-family: sans-serif;
+    margin: 0;
 }
 
-.container {
+.login-container {
     display: flex;
+    justify-content: center;
+    align-items: center;
     height: 100%;
     width: 100%;
 }
 
-.left {
-    width: 50%;
-    background-image:url("mulher_rindo_tela_aline.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    text-align: center;
-}
-
-.right {
-    width: 50%;
-    background-color: #1c521e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    text-align: center;
-}
-.login {
-    font-size: 34px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    color: #1a3b33;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    animation: fadeIn 1.2s ease-in-out;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-#form {
-    background-color: transparent;
-    padding: 50px 40px;
-    border-radius: 20px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    transition: transform 0.5s ease-in-out;
-}
-
-#form:hover {
-    transform: translateY(-10px); /* Leve animação para o formulário */
-}
-form label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    font-size: 16px;
-    color: #00695c;
-}
-form input[type="text"],
-form input[type="password"] {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 25px;
-    border: 2px solid #ccc;
+.login-box {
+    background: #ffffff; 
+    padding: 40px 30px;
     border-radius: 12px;
-    font-size: 16px;
-    color: #333;
-    transition: all 0.3s ease;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
 }
-form input[type="text"]:focus,
-form input[type="password"]:focus {
-    border-color: #00796b;
-    box-shadow: 0 0 10px rgba(0, 121, 107, 0.2);
+
+.login-box h1 {
+    font-size: 2rem;
+    color: #184123;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.input-field {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.input-field label {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 500;
+}
+
+.input-field input {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     outline: none;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: border 0.3s ease-in-out, box-shadow 0.3s ease;
 }
+
+.input-field input:focus {
+    border-color: #1e4127;
+    box-shadow: 0 0 5px rgba(47, 71, 54, 0.5);
+}
+
 #botao {
     width: 100%;
     padding: 15px;
-    background-color: #00796b;
-    color: white;
+    background-color: #2b5033;
+    color: #ffffff;
     border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: bold;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-#botao:hover {
-    background-color: #004d40;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-#botao:active {
-    transform: scale(0.98);
-}
-form input[type="text"],
-form input[type="password"],
-#botao {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-#botao {
-    animation: buttonPulse 1.5s infinite alternate;
 }
 
-@keyframes buttonPulse {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(1.05);
-    }
+#botao:hover {
+    background-color: #1b4922;
+    transform: translateY(-3px);
 }
-#hedone{
-    color:white;
-    font-size: 60px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+input:focus, button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
-#hedone:hover{
-    transform: translateY(-10px);
-    transition: transform 0.7s ease-in-out;
+
+@media (max-width: 480px) {
+    .login-box {
+        padding: 25px 20px;
+    }
+
+    .login-box h1 {
+        font-size: 1.6rem;
+    }
+
+    .input-field input {
+        padding: 12px;
+    }
+
+    #botao {
+        padding: 12px;
+    }
 }

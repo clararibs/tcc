@@ -4,45 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Clínica Hedonê</title>
     <link rel="stylesheet" href="entrar.css">
 </head>
 
-<body id="entrar_adm">
-    
-
-    <body id="entrar_adm">
-      
-    
-        <div class="container">
-          
-            <div class="left">
-               
-                <div id="form">
-                    <h1 class="login">Login</h1>
-                    <form id="formulario">
-                        <label>Usuário: </label>
-                        <input type="text" required id="usuario"><br><br><br>
-                        <label for="inputSenha">Senha: </label>
-                        <input type="password" id="inputSenha"><br>
-                        <input type="submit" id="botao" value="ENTRAR">
-                    </form>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Área Administrativa</h1>
+            <form id="formulario">
+                <div class="input-field">
+                    <label for="usuario">Usuário</label>
+                    <input type="text" id="usuario" required>
                 </div>
-               
-
-            </div>
-    
-            <div class="right element">
-                <!-- Parte branca: seu formulário ou o que quiser -->
-                <h1 class="login" id="hedone">Hedonê</h1>
-            </div>
+                <div class="input-field">
+                    <label for="inputSenha">Senha</label>
+                    <input type="password" id="inputSenha" required>
+                </div>
+                <button type="submit" id="botao">Entrar</button>
+            </form>
         </div>
-    
-        <!-- Seu script pode continuar aqui -->
-    </body>
-  
+    </div>
+
     <script>
-        document.getElementById('formulario').addEventListener('submit', function(event) {
+        document.getElementById('formulario').addEventListener('submit', function (event) {
             event.preventDefault();
             let usuario = document.getElementById('usuario').value.trim(); 
             let senha = document.getElementById('inputSenha').value.trim(); 
