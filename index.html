@@ -1,26 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style_telas.css">
+    <title>Clínica Verde - Página Inicial</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="tela_inicial.css">
+    <link rel="stylesheet" href="tela_inicial.js">
 </head>
-
-<body id="body1">
+<body>
+    <!-- Menu Superior -->
+    <header class="menu-superior">
+        <div class="menu-container">
+            <div class="logo">
+            
+                <span>Hedonê</span>
+            </div>
+            <nav>
+                <ul class="menu-lista">
+                    <li><a href="entrar_como.html" class="botao-menu"><i class="fas fa-user-shield"></i> Entrar como ADM</a></li>
+                    <li><a href="solicitar_agendamento.html" class="botao-menu"><i class="fas fa-calendar-check"></i> Agende Aqui</a></li>
+                    <li><a href="#" class="botao-menu"><i class="fa-solid fa-syringe"></i> Nossos Procedimentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
     
-    <a href="sobre_nos.html">Sobre nós |</a>
-    <a>Agende aqui |</a>
-
-    <a href="nossos-procedimentos.html">Nossos procedimentos</a>
-    <div id="ADM">
-        <a href="entrar_como.html">Entrar como ADM</a>
-    </div>
-<script>
- 
-</script>
+    <!-- Slider de Imagens -->
+    <section class="slider-container">
+        <div class="slider">
+            <div class="slide">
+                <img src="mulher_rindo.jpg" alt="Clínica moderna" class="slide-img">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Cuidar de você é um ato de amor próprio</h2>
+                    <p class="slide-text">Reserve um tempo para si. Seu corpo e mente merecem atenção e carinho.</p>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="homem_rindo.jpg" alt="Equipe médica" class="slide-img">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Sua melhor versão começa com uma escolha</h2>
+                    <p class="slide-text">E ela pode começar hoje. Agende seu momento de cuidado.</p>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="mulher_e_homem_rindo.jpg" alt="Tecnologia médica" class="slide-img">
+                <div class="slide-overlay">
+                    <h2 class="slide-title">Beleza é equilíbrio entre o que se vê e o que se sente</h2>
+                    <p class="slide-text">Tratamentos personalizados para realçar sua autoestima e confiança.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slider-nav">
+            <button class="slider-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <div class="slider-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <button class="slider-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+    
+    <!-- Conteúdo Principal -->
+    <main class="conteudo-principal">
+        <section class="destaques">
+            <div class="container">
+                <h2 class="section-title">Nossos Diferenciais</h2>
+                <div class="destaques-grid">
+                    <div class="destaque-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>Agendamento Online</h3>
+                        <p>Agende sua consulta de forma rápida e prática através do nosso sistema online.</p>
+                    </div>
+                    <div class="destaque-card">
+                        <i class="fa-solid fa-hand-sparkles"></i>
+                        <h3>Conforto e conveniência</h3>
+                        <p>Proporcionamos facilidade e comodidade ao paciente.</p>
+                    </div>
+                    <div class="destaque-card">
+                        <i class="fa-solid fa-face-smile"></i>
+                        <h3>Exclusividade</h3>
+                        <p>Fornecemos produtos e experiências exclusivas para que o paciente sinta-se único.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="procedimentos">
+            <div class="container">
+                <h2 class="section-title">Sobre Nós</h2>
+                <div class="procedimentos-lista">
+                    <div class="procedimento-item">
+                        <h3>Sobre a profissional</h3>
+                        <p>...</p>
+                    </div>
+                    <div class="procedimento-item">
+                        <h3>Sobre a Clínica</h3>
+                        <p>Rua Getúlio Vargas, 395, Pioneiros - Ouro Branco</p>
+                    </div>
+                   
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Rodapé -->
+    <footer class="rodape">
+        <div class="container">
+            <div class="rodape-content">
+                <div class="rodape-info">
+                    <h3>Hedonê - Estética avançada</h3>
+                    <p>Cuidando da sua saúde com excelência e compromisso.</p>
+                </div>
+                <div class="rodape-contato">
+                    <h3>Contato</h3>
+                    <p><i class="fas fa-phone"></i> (31) 99430-4522</p>
+                    <p><i class="fas fa-envelope"></i> clinicahedone@gmail.com</p>
+                </div>
+            </div>
+            <div class="rodape-copy">
+                <p>&copy; 2023 Hedonê. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="tela_inicial.js"></script>
 </body>
-
-
 </html>
