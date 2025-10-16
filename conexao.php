@@ -1,20 +1,25 @@
 <?php
-// ===== Dados do banco =====
-$host = "3.150.114.68";        // Geralmente localhost
-$usuario = "tcc_hedone";   // Seu usuário do banco
-$senha = "1hN^83}";       // Sua senha do banco
-$banco = "hedone_db";       // Nome do banco de dados
 
-// ===== Criando a conexão =====
-$conn = new mysqli($host, $usuario, $senha, $banco);
+class Database {
+    private $host = "3.150.114.68";
+    private $db_name = "hedone_bda"; // Nome do seu banco
+    private $username = "tcc_hedone"; // Seu usuário MySQL
+    private $password = "1hN^83}"; // Sua senha MySQL
+    public $conn;
 
-// ===== Checando a conexão =====
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
-} else {
-    echo "Conexão realizada com sucesso!";
+    public function getConnection() {
+        $this->conn = null;
+        try {
+            $this->conn = new PDO(
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8",
+                $this->username,
+                $this->password
+            );
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch(PDOException $exception) {
+            echo "Erro de conexão: " . $exception->getMessage();
+        }
+        return $this->conn;
+    }
 }
-
-// ===== Fechando a conexão =====
-$conn->close();
 ?>
