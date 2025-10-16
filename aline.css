@@ -1,122 +1,372 @@
 :root {
-    --cor-primaria: #FFFFFF;
-    --cor-secundaria: #3D8C40; 
-    --cor-destaque: #1c521e; 
-    --cor-fundo: #F8F9FA; 
-    --cor-texto: #6d9773;
-    --cor-sombra: rgba(0, 0, 0, 0.08);
+    --verde-escuro: #1a3c27;
+    --verde-medio: #2d5a3d;
+    --verde-claro: #4a7c59;
+    --dourado: #c8a97e;
+    --bege: #f5f1eb;
+    --branco: #ffffff;
+    --cinza-claro: #f8f8f8;
+    --cinza-texto: #555555;
 }
 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    background-image: url("mulher-rindo-aline-2.jpg");
-    color: var(--cor-texto);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #0f1f15 0%, #1a2f1f 100%);
+    color: var(--cinza-texto);
     min-height: 100vh;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
+    position: relative;
+    overflow-x: hidden;
 }
 
-.dashboard-main {
-    max-width: 900px;
-    width: 90%;
-    padding: 2rem;
+.background-design {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.geometric-shapes .shape {
+    position: absolute;
+    opacity: 0.03;
+    background: var(--dourado);
+    animation: float 25s infinite ease-in-out;
+}
+
+.shape:nth-child(1) {
+    width: 400px;
+    height: 400px;
+    top: -150px;
+    left: -150px;
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    animation-delay: 0s;
+}
+
+.shape:nth-child(2) {
+    width: 300px;
+    height: 300px;
+    top: 20%;
+    right: -100px;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation-delay: 8s;
+}
+
+.shape:nth-child(3) {
+    width: 250px;
+    height: 250px;
+    bottom: -80px;
+    left: 30%;
+    border-radius: 50% 50% 50% 70% / 50% 50% 70% 60%;
+    animation-delay: 16s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    33% {
+        transform: translateY(-30px) rotate(5deg);
+    }
+    66% {
+        transform: translateY(15px) rotate(-5deg);
+    }
+}
+
+.dashboard-container {
+    width: 100%;
+    min-height: 100vh;
+    background: var(--branco);
+    position: relative;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde-medio) 100%);
+    color: white;
+    padding: 60px 40px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-
-.main-header {
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 2px solid #E0E0E0;
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(200, 169, 126, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(200, 169, 126, 0.1) 0%, transparent 50%);
 }
 
-.main-header h1 {
-    font-size: 2.5rem;
-    color: var(--cor-destaque);
-    margin: 0.5rem 0;
+.clinic-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
 }
 
-.main-header p {
-    font-size: 1.1rem;
-    color: #888;
+.clinic-name::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: var(--dourado);
 }
 
-.logo {
+.welcome-message {
+    font-size: 2rem;
+    font-weight: 400;
+    margin: 25px 0 15px;
+    color: var(--bege);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: 300;
+}
+
+.dashboard-content {
+    padding: 60px 40px;
+    background: var(--bege);
+    min-height: calc(100vh - 300px);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
 }
 
-.logo img {
-    border-radius: 50%;
-    border: 2px solid var(--cor-secundaria);
-}
-
-.logo h2 {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--cor-secundaria);
-    margin: 0;
-}
-
-.acoes-principais {
-    margin-top: 3rem;
-}
-
-.card-grid {
+.actions-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    justify-items: center;
-}
-
-.card-acao {
-    background-color: var(--cor-primaria);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px var(--cor-sombra);
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
     width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.card-acao:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+.action-card {
+    background: var(--branco);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    padding: 40px 25px;
+    text-align: center;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(200, 169, 126, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 350px;
 }
 
-.card-acao a {
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--verde-claro) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.action-card:hover::before {
+    opacity: 0.05;
+}
+
+.action-card a {
     text-decoration: none;
-    color: var(--cor-secundaria);
+    color: var(--verde-escuro);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+    justify-content: center;
 }
 
-.card-acao i {
-    color: var(--cor-destaque);
-    margin-bottom: 1rem;
+.action-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--bege);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(200, 169, 126, 0.3);
 }
 
-.card-acao h3 {
-    margin: 0;
-    font-size: 1.2rem;
+.action-card:hover .action-icon {
+    background: var(--verde-escuro);
+    transform: scale(1.15);
+}
+
+.action-icon i {
+    font-size: 2.2rem;
+    color: var(--verde-medio);
+    transition: all 0.4s ease;
+}
+
+.action-card:hover .action-icon i {
+    color: var(--dourado);
+}
+
+.action-title {
+    font-size: 1.4rem;
     font-weight: 600;
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
+    color: var(--verde-escuro);
 }
-#h2{
-    color:var(--cor-primaria);
-    font-size: 20px;
-}
-#h1{
-    transition: color 0.5s ease-in-out, transform 0.5s ease-in-out;
 
+.action-card:hover .action-title {
+    color: var(--verde-claro);
 }
-#h1:hover{
-color: var(--cor-secundaria);
-  transform: scale(1.1);
+
+.action-description {
+    font-size: 0.95rem;
+    color: var(--cinza-texto);
+    margin-top: 12px;
+    line-height: 1.6;
+}
+
+.action-divider {
+    width: 50px;
+    height: 2px;
+    background: var(--dourado);
+    margin: 18px auto;
+    transition: width 0.3s ease;
+}
+
+.action-card:hover .action-divider {
+    width: 70px;
+}
+
+@media (max-width: 1200px) {
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        max-width: 800px;
+    }
+    
+    .action-card {
+        min-height: 320px;
+        padding: 35px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .actions-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 400px;
+    }
+    
+    .clinic-name {
+        font-size: 2.8rem;
+    }
+    
+    .welcome-message {
+        font-size: 1.7rem;
+    }
+    
+    .dashboard-header {
+        padding: 40px 25px;
+    }
+    
+    .dashboard-content {
+        padding: 40px 25px;
+    }
+    
+    .action-card {
+        min-height: 280px;
+        padding: 30px 20px;
+    }
+    
+    .action-icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 20px;
+    }
+    
+    .action-icon i {
+        font-size: 2rem;
+    }
+    
+    .action-title {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .clinic-name {
+        font-size: 2.2rem;
+    }
+    
+    .welcome-message {
+        font-size: 1.4rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .dashboard-header {
+        padding: 30px 20px;
+    }
+    
+    .dashboard-content {
+        padding: 30px 20px;
+    }
+    
+    .action-card {
+        min-height: 250px;
+        padding: 25px 15px;
+    }
+    
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 15px;
+    }
+    
+    .action-icon i {
+        font-size: 1.8rem;
+    }
+    
+    .action-title {
+        font-size: 1.2rem;
+    }
+    
+    .action-description {
+        font-size: 0.9rem;
+    }
 }

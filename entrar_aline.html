@@ -4,58 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Hedone Clínica Estética</title>
-    <link rel="stylesheet" href="aline.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="aline.css">
 </head>
 <body>
+    <div class="background-design">
+        <div class="geometric-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
 
-    <main class="dashboard-main">
-
-        <header class="main-header">
-            
-            
-                <h2 id="h2">Hedonê</h2>
-           
-            <h1 id="h1">Bem-vinda, Dra. Aline!</h1>
-            <p>Gerencie sua clínica com um clique.</p>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="clinic-name">Hedonê</h1>
+            <h2 class="welcome-message">Bem-vinda, Dra. Aline</h2>
+            <p class="subtitle">Gerencie sua clínica com elegância e precisão</p>
         </header>
 
-        <section class="acoes-principais">
-            <div class="card-grid">
-
-                <div class="card-acao">
+        <section class="dashboard-content">
+            <div class="actions-grid">
+                <div class="action-card">
                     <a href="agenda_adm.html">
-                        <i class="fas fa-calendar-alt fa-3x"></i>
-                        <h3>Agendar Pacientes</h3>
+                        <div class="action-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="action-title">Agendar Pacientes</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Agende e visualize consultas de forma organizada</p>
                     </a>
                 </div>
 
-                <div class="card-acao">
+                <div class="action-card">
                     <a href="ficha-paciente.html">
-                        <i class="fas fa-file-medical fa-3x"></i>
-                        <h3>Adicionar Ficha</h3>
+                        <div class="action-icon">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                        <h3 class="action-title">Adicionar Ficha</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Registre informações dos pacientes</p>
                     </a>
                 </div>
 
-                <div class="card-acao">
+                <div class="action-card">
                     <a href="consultar_fichas.html">
-                        <i class="fas fa-search fa-3x"></i>
-                        <h3>Consultar Fichas</h3>
+                        <div class="action-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="action-title">Consultar Fichas</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Acesse históricos e dados dos pacientes</p>
                     </a>
                 </div>
 
-                <div class="card-acao">
+                <div class="action-card">
                     <a href="configurar_disponibilidade.html">
-                        <i class="fas fa-cog fa-3x"></i>
-                        <h3>Configurações</h3>
+                        <div class="action-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="action-title">Configurações</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Personalize o sistema conforme suas necessidades</p>
                     </a>
                 </div>
-                
             </div>
         </section>
-
-    </main>
-
+    </div>
 </body>
-</html>  
+</html>
