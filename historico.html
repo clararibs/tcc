@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Fichas | Hedone Clínica Estética</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="historico.css">
 </head>
+
 <body>
     <div class="background-design">
         <div class="geometric-shapes">
@@ -20,13 +24,20 @@
     <div class="consultas-container">
         <header class="consultas-header">
             <div class="header-content">
-                <a href="dashboard.html" class="back-button">
+                <button onclick="voltar()" class="back-button">
                     <i class="fas fa-arrow-left"></i>
                     Voltar
-                </a>
+                </button>
                 <h1 class="page-title">MEUS CLIENTES</h1>
             </div>
         </header>
+        
+        <script>
+        function voltar() {
+            window.location.href = 'entrar_aline.html';
+            // ou window.history.back(); para voltar à página anterior
+        }
+        </script>
 
         <section class="consultas-content">
             <div class="search-section">
@@ -45,7 +56,6 @@
                 </div>
 
                 <div class="patients-list">
-                    <!-- Paciente 1 -->
                     <div class="patient-row" data-name="Clara Ribeiro Dutra">
                         <div class="patient-info">
                             <div class="info-item name">Clara Ribeiro Dutra</div>
@@ -60,7 +70,6 @@
                         </div>
                     </div>
 
-                    <!-- Paciente 2 -->
                     <div class="patient-row" data-name="Fulana Silva">
                         <div class="patient-info">
                             <div class="info-item name">Fulana Silva</div>
@@ -75,7 +84,6 @@
                         </div>
                     </div>
 
-                    <!-- Paciente 3 -->
                     <div class="patient-row" data-name="Beltrana Vieira">
                         <div class="patient-info">
                             <div class="info-item name">Beltrana Vieira</div>
@@ -90,11 +98,9 @@
                         </div>
                     </div>
 
-                    <!-- Mais pacientes podem ser adicionados aqui -->
                 </div>
             </div>
 
-            <!-- Modal de detalhes do paciente -->
             <div id="patientModal" class="modal">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -136,7 +142,8 @@
                             <div class="detail-group">
                                 <h3>Descrição/Anotações</h3>
                                 <div class="description-box">
-                                    <p id="detailDescription">Paciente realiza acompanhamento mensal para procedimentos estéticos. Apresenta boa resposta aos tratamentos realizados.</p>
+                                    <p id="detailDescription">Paciente realiza acompanhamento mensal para procedimentos
+                                        estéticos. Apresenta boa resposta aos tratamentos realizados.</p>
                                 </div>
                             </div>
                         </div>
@@ -151,4 +158,5 @@
 
     <script src="script-consultas.js"></script>
 </body>
+
 </html>

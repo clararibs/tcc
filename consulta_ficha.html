@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Fichas de Pacientes</title>
+    <link rel="stylesheet" href="consulta_ficha.css">
+    <script src="consulta_ficha.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Consulta de Fichas de Pacientes</h1>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Digite o nome do paciente...">
+                    <button id="searchButton">Pesquisar</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="screen" id="listScreen">
+            <div class="patients-list" id="patientsList">
+                <div class="patient-item">
+                    <div class="patient-info">
+                        <h3>Ana Silva</h3>
+                        <p>Idade: 34 anos | Telefone: (11) 99999-1234</p>
+                        <p>Última consulta: 15/03/2024</p>
+                    </div>
+                    <div class="patient-actions">
+                        <button onclick="visualizarFicha(1)">Visualizar Ficha</button>
+                    </div>
+                </div>
+                
+                <div class="patient-item">
+                    <div class="patient-info">
+                        <h3>Bruno Oliveira</h3>
+                        <p>Idade: 45 anos | Telefone: (11) 98888-5678</p>
+                        <p>Última consulta: 22/03/2024</p>
+                    </div>
+                    <div class="patient-actions">
+                        <button onclick="visualizarFicha(2)">Visualizar Ficha</button>
+                    </div>
+                </div>
+                
+                <div class="patient-item">
+                    <div class="patient-info">
+                        <h3>Carla Santos</h3>
+                        <p>Idade: 28 anos | Telefone: (11) 97777-9012</p>
+                        <p>Última consulta: 10/03/2024</p>
+                    </div>
+                    <div class="patient-actions">
+                        <button onclick="visualizarFicha(3)">Visualizar Ficha</button>
+                    </div>
+                </div>
+                
+                <div class="patient-item">
+                    <div class="patient-info">
+                        <h3>Daniel Costa</h3>
+                        <p>Idade: 52 anos | Telefone: (11) 96666-3456</p>
+                        <p>Última consulta: 18/03/2024</p>
+                    </div>
+                    <div class="patient-actions">
+                        <button onclick="visualizarFicha(4)">Visualizar Ficha</button>
+                    </div>
+                </div>
+                
+                <div class="patient-item">
+                    <div class="patient-info">
+                        <h3>Eduarda Lima</h3>
+                        <p>Idade: 39 anos | Telefone: (11) 95555-7890</p>
+                        <p>Última consulta: 25/03/2024</p>
+                    </div>
+                    <div class="patient-actions">
+                        <button onclick="visualizarFicha(5)">Visualizar Ficha</button>
+                    </div>
+                </div>
+                
+                <div class="patient-item">
+                    <div class="patient-info">
+                        <h3>Fernando Alves</h3>
+                        <p>Idade: 61 anos | Telefone: (11) 94444-2345</p>
+                        <p>Última consulta: 12/03/2024</p>
+                    </div>
+                    <div class="patient-actions">
+                        <button onclick="visualizarFicha(6)">Visualizar Ficha</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="screen" id="detailScreen" style="display: none;">
+            <div class="patient-detail">
+                <div class="detail-header">
+                    <button id="backButton" class="back-button">← Voltar</button>
+                    <h2 id="patientName">Nome do Paciente</h2>
+                </div>
+                
+                <div class="detail-content">
+                    <div class="detail-section">
+                        <h3>Informações Pessoais</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Nome Completo:</label>
+                                <span id="detailNome">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Idade:</label>
+                                <span id="detailIdade">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Telefone:</label>
+                                <span id="detailTelefone">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Data de Nascimento:</label>
+                                <span id="detailNascimento">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>CPF:</label>
+                                <span id="detailCPF">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Endereço:</label>
+                                <span id="detailEndereco">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>Histórico Médico</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Última Consulta:</label>
+                                <span id="detailUltimaConsulta">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Próxima Consulta:</label>
+                                <span id="detailProximaConsulta">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Alergias:</label>
+                                <span id="detailAlergias">Nenhuma registrada</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Medicações:</label>
+                                <span id="detailMedicacoes">Nenhuma registrada</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Tipo Sanguíneo:</label>
+                                <span id="detailTipoSanguineo">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Plano de Saúde:</label>
+                                <span id="detailPlanoSaude">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>Observações e Anotações</h3>
+                        <div class="observations" id="detailObservacoes">
+                            Nenhuma observação registrada.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
