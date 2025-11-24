@@ -120,14 +120,19 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    background: transparent;
     color: var(--bege);
-    text-decoration: none;
+    border: 1px solid var(--bege);
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
     font-weight: 500;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .back-button:hover {
-    color: var(--dourado);
+    background: var(--bege);
+    color: var(--verde-escuro);
 }
 
 .page-title {
@@ -135,6 +140,12 @@ body {
     font-size: 2.5rem;
     font-weight: 600;
     color: var(--branco);
+}
+
+.header-stats {
+    color: var(--bege);
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
 .consultas-content {
@@ -152,6 +163,8 @@ body {
     position: relative;
     max-width: 500px;
     margin: 0 auto;
+    display: flex;
+    align-items: center;
 }
 
 .search-box i {
@@ -179,6 +192,22 @@ body {
     box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
 }
 
+.btn-refresh {
+    background: transparent;
+    border: none;
+    color: var(--verde-medio);
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-left: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-refresh:hover {
+    background: var(--verde-claro);
+    color: white;
+}
+
 .patients-table-section {
     max-width: 1200px;
     margin: 0 auto;
@@ -190,7 +219,7 @@ body {
 
 .table-header {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 2fr 1fr;
+    grid-template-columns: 2fr 1.5fr 2fr 0.8fr 1fr;
     gap: 20px;
     padding: 20px 30px;
     background: var(--verde-escuro);
@@ -208,7 +237,7 @@ body {
 
 .patient-row {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 2fr 1fr;
+    grid-template-columns: 2fr 1.5fr 2fr 0.8fr 1fr;
     gap: 20px;
     padding: 20px 30px;
     border-bottom: 1px solid var(--cinza-borda);
@@ -233,7 +262,7 @@ body {
     color: var(--verde-escuro);
 }
 
-.info-item.phone, .info-item.email {
+.info-item.phone, .info-item.email, .info-item.age {
     color: var(--cinza-texto);
 }
 
@@ -262,7 +291,47 @@ body {
     transform: translateY(-2px);
 }
 
-/* Modal Styles */
+.loading-message, .no-results, .error-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--cinza-texto);
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+}
+
+.loading-message i, .no-results i, .error-message i {
+    margin-right: 10px;
+}
+
+.error-message {
+    color: #dc3545;
+}
+
+.no-procedures {
+    text-align: center;
+    padding: 20px;
+    color: var(--cinza-texto);
+    font-style: italic;
+}
+
+.procedure-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--cinza-borda);
+}
+
+.procedure-item:last-child {
+    border-bottom: none;
+}
+
+.procedure-item small {
+    color: var(--cinza-texto);
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -359,23 +428,6 @@ body {
     color: var(--cinza-texto);
 }
 
-.procedures-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.procedure-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-}
-
-.procedure-item i {
-    color: var(--verde-claro);
-}
-
 .description-box {
     background: var(--cinza-claro);
     padding: 20px;
@@ -410,7 +462,22 @@ body {
     background: var(--verde-escuro);
 }
 
-/* Responsividade */
+.btn-edit {
+    background: var(--dourado);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    background: #b8945e;
+}
+
 @media (max-width: 768px) {
     .consultas-header {
         padding: 20px 25px;
@@ -430,17 +497,14 @@ body {
         font-size: 2rem;
     }
     
-    .table-header, .patient-row {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        text-align: center;
-    }
-    
     .table-header {
         display: none;
     }
     
     .patient-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
         padding: 15px 20px;
         border: 1px solid var(--cinza-borda);
         border-radius: 8px;
@@ -480,4 +544,60 @@ body {
         align-items: flex-start;
         gap: 5px;
     }
+}
+/* Garantir que o botão volte funcione */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--bege);
+    border: 1px solid var(--bege);
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+}
+
+.back-button:hover {
+    background: var(--bege);
+    color: var(--verde-escuro);
+    transform: translateX(-5px);
+}
+
+.header-stats {
+    color: var(--bege);
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.loading-message, .no-results, .error-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--cinza-texto);
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+    background: var(--branco);
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.loading-message i {
+    color: var(--verde-claro);
+}
+
+.error-message i {
+    color: #dc3545;
+}
+
+.no-results i {
+    color: var(--dourado);
 }

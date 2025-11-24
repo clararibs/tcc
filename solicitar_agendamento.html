@@ -406,4 +406,92 @@
         });
     </script>
 </body>
+
+<script src="js/agenda-logic.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... código anterior ...
+        
+        // Função para salvar no banco de dados
+        async function salvarNoBanco(consulta, dadosForm) {
+            try {
+                // Adiciona os dados do formulário à consulta
+                const dadosCompletos = {
+                    ...consulta,
+                    telefone: dadosForm.telefone,
+                    email: dadosForm.email,
+                    observacoes: dadosForm.observacoes
+                };
+
+                const response = await fetch('php/salvar_agendamento.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dadosCompletos)
+                });
+                
+                const resultado = await response.json();
+                
+                if (resultado.success) {
+                    console.log('Agendamento salvo no banco com sucesso');
+                    return true;
+                } else {
+                    console.error('Erro ao salvar no banco:', resultado.message);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                return false;
+            }
+        }
+        
+        // Na função de submit, atualize para:
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const horarioSelecionado = document.querySelector('.horario-btn.selecionado');
+            if (!horarioSelecionado) {
+                mostrarMensagem('Por favor, selecione um horário disponível', 'erro');
+                return;
+            }
+            
+            const dados = {
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                email: document.getElementById('email').value,
+                procedimento: document.getElementById('procedimento').value,
+                data: document.getElementById('data').value,
+                horario: horarioSelecionado.dataset.horario,
+                observacoes: document.getElementById('observacoes').value
+            };
+            
+            try {
+                const consulta = agendaManager.agendarConsulta(
+                    dados.nome,
+                    dados.procedimento,
+                    dados.data,
+                    dados.horario,
+                    60
+                );
+                
+                // Salvar no banco de dados
+                const salvoNoBanco = await salvarNoBanco(consulta, dados);
+                
+                if (salvoNoBanco) {
+                    mostrarMensagem(`Agendamento confirmado para ${dados.data} às ${dados.horario}`, 'sucesso');
+                    form.reset();
+                    horariosContainer.innerHTML = '<div class="mensagem" id="mensagem-horarios">Selecione uma data para ver os horários disponíveis</div>';
+                } else {
+                    // Se não salvou no banco, remove do localStorage
+                    agendaManager.cancelarConsulta(consulta.id);
+                    mostrarMensagem('Erro ao salvar agendamento. Tente novamente.', 'erro');
+                }
+                
+            } catch (error) {
+                mostrarMensagem(error.message, 'erro');
+            }
+        });
+    });
+</script>
 </html>

@@ -6,39 +6,7 @@
   <title>Configuração de Agenda - Clínica Estética</title>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fdfdf9;
-      color: #6d9773;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 { margin: 20px; color: #2d3e2f; font-size: 28px; }
-    .container { display: flex; gap: 30px; width: 90%; max-width: 1400px; }
-    .controls {
-      width: 320px; background: #fff; padding: 20px; border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(28, 165, 108, 0.08); border: 1px solid #e5e5dc;
-    }
-    .controls h2 { font-size: 20px; margin-bottom: 15px; color: #2d3e2f; border-left: 4px solid #6d9773; padding-left: 8px; }
-    .controls label { display: block; margin: 10px 0 5px; font-size: 14px; font-weight: 600; }
-    .controls input, .controls select, .controls button {
-      width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #cfcfcf; font-size: 14px;
-    }
-    .controls button { background: #1c521e; color: #fff; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    .controls button:hover { background: #3f5442; }
-    #calendar {
-      flex-grow: 1; max-width: 950px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    }
-    .fc .fc-toolbar-title { font-size: 20px; color: #2d3e2f; }
-    .fc-event { border: none; border-radius: 6px; padding: 2px 4px; font-size: 13px; }
-    .disponibilidade { background-color: #4CAF50 !important; color: white !important; }
-    .intervalo { background-color: #FFD700 !important; color: #2d3e2f !important; }
-    .excecao { background-color: #b71c1c !important; color: white !important; text-decoration: line-through; }
-  </style>
+  <link rel="stylesheet" href="consultar_disp.css">
 </head>
 <body>
   <h1>Configuração de Agenda - Clínica Estética</h1>
@@ -121,10 +89,10 @@
     function atualizarEventos(){
       window.calendar.removeAllEvents();
 
-      // Disponibilidades
+      
       disponibilidades.forEach(d => {
         let dia = parseInt(d.diaSemana);
-        // Se houver exceção nesse dia, não exibe a disponibilidade completa
+       
         let excecaoNoDia = excecoes.some(e => new Date(e.data).getDay() === dia);
         if(!excecaoNoDia){
           window.calendar.addEvent({
@@ -138,7 +106,7 @@
         }
       });
 
-      // Intervalos
+    
       intervalos.forEach(i => {
         let dia = parseInt(i.diaSemana);
         window.calendar.addEvent({
@@ -151,7 +119,7 @@
         });
       });
 
-      // Exceções
+   
       excecoes.forEach(e => {
         window.calendar.addEvent({
           id:e.id,
@@ -169,7 +137,7 @@
       const inicio = document.getElementById('horaInicioDisponibilidade').value;
       const fim = document.getElementById('horaFimDisponibilidade').value;
       if(!inicio || !fim) return alert('Preencha horários.');
-      // Remove anterior do mesmo dia
+     
       disponibilidades = disponibilidades.filter(d => d.diaSemana !== dia);
       disponibilidades.push({diaSemana:dia,inicio:inicio,fim:fim});
       atualizarEventos();
@@ -180,7 +148,7 @@
       const inicio = document.getElementById('horaInicioIntervalo').value;
       const fim = document.getElementById('horaFimIntervalo').value;
       if(!inicio || !fim) return alert('Preencha horários.');
-      // Remove anterior do mesmo dia
+    
       intervalos = intervalos.filter(i => i.diaSemana !== dia);
       intervalos.push({diaSemana:dia,inicio:inicio,fim:fim});
       atualizarEventos();

@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Fichas | Hedone Clínica Estética</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="historico.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="historico.css">
+    
 </head>
 
 <body>
@@ -29,21 +30,20 @@
                     Voltar
                 </button>
                 <h1 class="page-title">MEUS CLIENTES</h1>
+                <div class="header-stats">
+                    <span id="totalPacientes">Carregando...</span>
+                </div>
             </div>
         </header>
-        
-        <script>
-        function voltar() {
-            window.location.href = 'entrar_aline.html';
-            // ou window.history.back(); para voltar à página anterior
-        }
-        </script>
 
         <section class="consultas-content">
             <div class="search-section">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar pelo nome do paciente...">
+                    <input type="text" id="searchInput" placeholder="Pesquisar pelo nome do paciente..." onkeyup="filtrarPacientes()">
+                    <button onclick="carregarPacientes()" class="btn-refresh" title="Recarregar">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
             </div>
 
@@ -52,59 +52,21 @@
                     <div class="header-item">NOME</div>
                     <div class="header-item">TELEFONE</div>
                     <div class="header-item">E-MAIL</div>
+                    <div class="header-item">IDADE</div>
                     <div class="header-item">AÇÕES</div>
                 </div>
 
-                <div class="patients-list">
-                    <div class="patient-row" data-name="Clara Ribeiro Dutra">
-                        <div class="patient-info">
-                            <div class="info-item name">Clara Ribeiro Dutra</div>
-                            <div class="info-item phone">(31) 99397-3070</div>
-                            <div class="info-item email">claararibsdutra@gmail.com</div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn-view" onclick="viewPatientDetails('Clara Ribeiro Dutra')">
-                                <i class="fas fa-eye"></i>
-                                Ver Ficha
-                            </button>
-                        </div>
+                <div class="patients-list" id="patientsList">     <div class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Carregando pacientes...
                     </div>
-
-                    <div class="patient-row" data-name="Fulana Silva">
-                        <div class="patient-info">
-                            <div class="info-item name">Fulana Silva</div>
-                            <div class="info-item phone">(31) 8976-0987</div>
-                            <div class="info-item email">fulana.silva@gmail.com</div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn-view" onclick="viewPatientDetails('Fulana Silva')">
-                                <i class="fas fa-eye"></i>
-                                Ver Ficha
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="patient-row" data-name="Beltrana Vieira">
-                        <div class="patient-info">
-                            <div class="info-item name">Beltrana Vieira</div>
-                            <div class="info-item phone">(31) 8907-4532</div>
-                            <div class="info-item email">beltrana.vieira@gmail.com</div>
-                        </div>
-                        <div class="patient-actions">
-                            <button class="btn-view" onclick="viewPatientDetails('Beltrana Vieira')">
-                                <i class="fas fa-eye"></i>
-                                Ver Ficha
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
             <div id="patientModal" class="modal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h2 id="modalPatientName">Clara Ribeiro Dutra</h2>
+                        <h2 id="modalPatientName">Carregando...</h2>
                         <span class="close-modal" onclick="closeModal()">&times;</span>
                     </div>
                     <div class="modal-body">
@@ -113,28 +75,31 @@
                                 <h3>Informações Pessoais</h3>
                                 <div class="detail-item">
                                     <span class="label">Nome:</span>
-                                    <span id="detailName" class="value">Clara Ribeiro Dutra</span>
+                                    <span id="detailName" class="value">-</span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="label">Telefone:</span>
-                                    <span id="detailPhone" class="value">(31) 99397-3070</span>
+                                    <span id="detailPhone" class="value">-</span>
                                 </div>
                                 <div class="detail-item">
                                     <span class="label">E-mail:</span>
-                                    <span id="detailEmail" class="value">claararibsdutra@gmail.com</span>
+                                    <span id="detailEmail" class="value">-</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Idade:</span>
+                                    <span id="detailAge" class="value">-</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Data de Cadastro:</span>
+                                    <span id="detailDataCadastro" class="value">-</span>
                                 </div>
                             </div>
 
                             <div class="detail-group">
                                 <h3>Histórico de Procedimentos</h3>
-                                <div class="procedures-list">
-                                    <div class="procedure-item">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Hidratação Labial</span>
-                                    </div>
-                                    <div class="procedure-item">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Botox</span>
+                                <div class="procedures-list" id="proceduresList">
+                                    <div class="no-procedures">
+                                        Nenhum procedimento registrado
                                     </div>
                                 </div>
                             </div>
@@ -142,21 +107,21 @@
                             <div class="detail-group">
                                 <h3>Descrição/Anotações</h3>
                                 <div class="description-box">
-                                    <p id="detailDescription">Paciente realiza acompanhamento mensal para procedimentos
-                                        estéticos. Apresenta boa resposta aos tratamentos realizados.</p>
+                                    <p id="detailDescription">-</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn-close" onclick="closeModal()">Fechar</button>
+                        <button class="btn-edit" onclick="editarPaciente()">Editar</button>
                     </div>
                 </div>
             </div>
         </section>
     </div>
 
-    <script src="script-consultas.js"></script>
+    <script src="js/historico.js"></script>
 </body>
 
 </html>
