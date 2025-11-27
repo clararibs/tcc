@@ -1,127 +1,133 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultar Fichas | Hedone Clínica Estética</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="historico.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
-        rel="stylesheet">
-    
+    <title>Consulta de Clientes - Clínica</title>
 </head>
 
 <body>
-    <div class="background-design">
-        <div class="geometric-shapes">
-            <div class="shape"></div>
-            <div class="shape"></div>
-            <div class="shape"></div>
+    <div class="container">
+        <header>
+            <button class="back-button" onclick="voltar()">
+                <a href="entrar_aline.html"><i>←</i> Voltar</a>
+            </button>
+            <h1>Consulta de Clientes</h1>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Digite o nome do cliente..."
+                onkeyup="filtrarClientes()">
+            <button class="search-button" onclick="filtrarClientes()">Pesquisar</button>
+        </div>
+
+        <div class="client-list" id="clientList">
+
+        </div>
+        <div class="client-header">
+            <button onclick="Alerta()" class="botao">oi</button>
         </div>
     </div>
 
-    <div class="consultas-container">
-        <header class="consultas-header">
-            <div class="header-content">
-                <button onclick="voltar()" class="back-button">
-                    <i class="fas fa-arrow-left"></i>
-                    Voltar
-                </button>
-                <h1 class="page-title">MEUS CLIENTES</h1>
-                <div class="header-stats">
-                    <span id="totalPacientes">Carregando...</span>
-                </div>
-            </div>
-        </header>
 
-        <section class="consultas-content">
-            <div class="search-section">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar pelo nome do paciente..." onkeyup="filtrarPacientes()">
-                    <button onclick="carregarPacientes()" class="btn-refresh" title="Recarregar">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                </div>
-            </div>
+    <script>
 
-            <div class="patients-table-section">
-                <div class="table-header">
-                    <div class="header-item">NOME</div>
-                    <div class="header-item">TELEFONE</div>
-                    <div class="header-item">E-MAIL</div>
-                    <div class="header-item">IDADE</div>
-                    <div class="header-item">AÇÕES</div>
-                </div>
+        const clientes = [
+            { id: 1, nome: "Ana Silva", telefone: "(11) 99999-1234", email: "ana.silva@email.com", ultimaConsulta: "15/03/2023" },
+            { id: 2, nome: "Carlos Oliveira", telefone: "(11) 98888-5678", email: "carlos.oliveira@email.com", ultimaConsulta: "10/03/2023" },
+            { id: 3, nome: "Mariana Santos", telefone: "(11) 97777-9012", email: "mariana.santos@email.com", ultimaConsulta: "05/03/2023" },
+            { id: 4, nome: "João Pereira", telefone: "(11) 96666-3456", email: "joao.pereira@email.com", ultimaConsulta: "28/02/2023" },
+            { id: 5, nome: "Fernanda Lima", telefone: "(11) 95555-7890", email: "fernanda.lima@email.com", ultimaConsulta: "25/02/2023" },
+            { id: 6, nome: "Roberto Alves", telefone: "(11) 94444-1234", email: "roberto.alves@email.com", ultimaConsulta: "20/02/2023" },
+            { id: 7, nome: "Patrícia Costa", telefone: "(11) 93333-5678", email: "patricia.costa@email.com", ultimaConsulta: "18/02/2023" },
+            { id: 8, nome: "Ricardo Souza", telefone: "(11) 92222-9012", email: "ricardo.souza@email.com", ultimaConsulta: "15/02/2023" }
+        ];
 
-                <div class="patients-list" id="patientsList">     <div class="loading-message">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        Carregando pacientes...
+
+        function carregarClientes() {
+            const clientList = document.getElementById('clientList');
+
+            let html = `
+
+                <div class="client-header">
+                    <div>Nome</div>
+                    <div>Telefone</div>
+                    <div>E-mail</div>
+                    <div>Última <br> Consulta</div>
+                    <div>Ação</div>
+                </div>
+            `;
+
+
+            clientes.forEach(cliente => {
+                html += `
+                    <div class="client-row">
+                        <div>${cliente.nome}</div>
+                        <div>${cliente.telefone}</div>
+                        <div>${cliente.email}</div>
+                        <div>${cliente.ultimaConsulta}</div>
+                        <div> <button onclick="Alerta()" class="botao">oi</button></div>
                     </div>
+                `;
+            });
+
+            clientList.innerHTML = html;
+        }
+
+
+        function filtrarClientes() {
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput.value.toLowerCase();
+            const clientList = document.getElementById('clientList');
+
+
+            const clientesFiltrados = clientes.filter(cliente =>
+                cliente.nome.toLowerCase().includes(searchTerm)
+            );
+
+            let html = `
+                <div class="client-header">
+                    <div>Nome</div>
+                    <div>Telefone</div>
+                    <div>E-mail</div>
+                    <div>Última Consulta</div>
+                    <div>Ação</div>
                 </div>
-            </div>
+            `;
 
-            <div id="patientModal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 id="modalPatientName">Carregando...</h2>
-                        <span class="close-modal" onclick="closeModal()">&times;</span>
+            if (clientesFiltrados.length > 0) {
+                clientes.forEach(cliente => {
+                    html += `
+                    <div class="client-row">
+                        <div>${cliente.nome}</div>
+                        <div>${cliente.telefone}</div>
+                        <div>${cliente.email}</div>
+                        <div>${cliente.ultimaConsulta}</div>
+                        <div> <button onclick="Alerta()" class="botao">oi</button></div>
+                        
+
                     </div>
-                    <div class="modal-body">
-                        <div class="patient-details">
-                            <div class="detail-group">
-                                <h3>Informações Pessoais</h3>
-                                <div class="detail-item">
-                                    <span class="label">Nome:</span>
-                                    <span id="detailName" class="value">-</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="label">Telefone:</span>
-                                    <span id="detailPhone" class="value">-</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="label">E-mail:</span>
-                                    <span id="detailEmail" class="value">-</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="label">Idade:</span>
-                                    <span id="detailAge" class="value">-</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="label">Data de Cadastro:</span>
-                                    <span id="detailDataCadastro" class="value">-</span>
-                                </div>
-                            </div>
+                `;
+                });
+            } else {
+                html += `<div class="no-results">Nenhum cliente encontrado com o nome "${searchTerm}"</div>`;
+            }
 
-                            <div class="detail-group">
-                                <h3>Histórico de Procedimentos</h3>
-                                <div class="procedures-list" id="proceduresList">
-                                    <div class="no-procedures">
-                                        Nenhum procedimento registrado
-                                    </div>
-                                </div>
-                            </div>
+            clientList.innerHTML = html;
+        }
+        function Alerta() {
+            alert("Nome:");
 
-                            <div class="detail-group">
-                                <h3>Descrição/Anotações</h3>
-                                <div class="description-box">
-                                    <p id="detailDescription">-</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-close" onclick="closeModal()">Fechar</button>
-                        <button class="btn-edit" onclick="editarPaciente()">Editar</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+        }
 
-    <script src="js/historico.js"></script>
+
+
+
+
+        window.onload = carregarClientes;
+    </script>
 </body>
 
 </html>
