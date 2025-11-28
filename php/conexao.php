@@ -2,7 +2,7 @@
 
 class Database {
     private $host = "3.150.114.68";
-    private $db_name = "hedone_bda"; // Nome do seu banco
+    private $db_name = "hedone_bd"; // Nome do seu banco
     private $username = "tcc_hedone"; // Seu usuário MySQL
     private $password = "1hN^83}"; // Sua senha MySQL
     public $conn;
