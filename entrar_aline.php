@@ -1,3 +1,4 @@
+<?php include "conexao.php"; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="aline.css">
 </head>
 <body>
+
     <div class="background-design">
         <div class="geometric-shapes">
             <div class="shape"></div>
@@ -27,7 +29,7 @@
         <section class="dashboard-content">
             <div class="actions-grid">
                 <div class="action-card">
-                    <a href="agenda_adm.html">
+                    <a href="agenda_adm.php">
                         <div class="action-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
@@ -38,7 +40,7 @@
                 </div>
 
                 <div class="action-card">
-                    <a href="ficha-paciente.html">
+                    <a href="ficha-paciente.php">
                         <div class="action-icon">
                             <i class="fas fa-file-medical"></i>
                         </div>
@@ -49,7 +51,7 @@
                 </div>
 
                 <div class="action-card">
-                    <a href="historico.html">
+                    <a href="historico.php">
                         <div class="action-icon">
                             <i class="fas fa-search"></i>
                         </div>
@@ -60,7 +62,7 @@
                 </div>
 
                 <div class="action-card">
-                    <a href="configurar_disponibilidade.html">
+                    <a href="configurar_disponibilidade.php">
                         <div class="action-icon">
                             <i class="fas fa-cog"></i>
                         </div>
@@ -71,6 +73,67 @@
                 </div>
             </div>
         </section>
+
     </div>
+
+
+
+    <!-- Ícone de Notificação -->
+<div class="notification-bell" id="openNotifications">
+    <i class="fas fa-bell"></i>
+    <span class="notification-badge">3</span>
+</div>
+
+<!-- Sidebar de Notificações -->
+<div class="notification-sidebar" id="notificationSidebar">
+    <div class="sidebar-header">
+        <h3>Solicitações de Agendamento</h3>
+        <span class="close-sidebar" id="closeSidebar">&times;</span>
+    </div>
+
+    <div class="notifications-list">
+        <!-- Exemplo de solicitação (depois você preenche com PHP) -->
+
+        <div class="notification-item">
+            <p><strong>Nome:</strong> Maria Silva</p>
+            <p><strong>Email:</strong> maria@email.com</p>
+            <p><strong>Data:</strong> 25/11/2025</p>
+            <p><strong>Hora:</strong> 14:00</p>
+
+            <div class="notification-actions">
+                <button class="accept-btn">Aceitar</button>
+                <button class="reject-btn">Recusar</button>
+            </div>
+        </div>
+
+        <div class="notification-item">
+            <p><strong>Nome:</strong> João Pereira</p>
+            <p><strong>Email:</strong> joao@email.com</p>
+            <p><strong>Data:</strong> 27/11/2025</p>
+            <p><strong>Hora:</strong> 10:30</p>
+
+            <div class="notification-actions">
+                <button class="accept-btn">Aceitar</button>
+                <button class="reject-btn">Recusar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
+
+<script>
+    const bell = document.getElementById("openNotifications");
+    const sidebar = document.getElementById("notificationSidebar");
+    const closeSidebar = document.getElementById("closeSidebar");
+
+    bell.addEventListener("click", () => {
+        sidebar.classList.add("open");
+    });
+
+    closeSidebar.addEventListener("click", () => {
+        sidebar.classList.remove("open");
+    });
+</script>
+
 </html>
