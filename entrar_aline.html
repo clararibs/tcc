@@ -1,0 +1,390 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Hedone Clínica Estética</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="aline.css">
+</head>
+<body>
+
+    <div class="background-design">
+        <div class="geometric-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="clinic-name">Hedonê</h1>
+            <h2 class="welcome-message">Bem-vinda, Dra. Aline</h2>
+            <p class="subtitle">Gerencie sua clínica com elegância e precisão</p>
+        </header>
+
+        <section class="dashboard-content">
+            <div class="actions-grid">
+                <div class="action-card">
+                    <a href="agenda_adm.php">
+                        <div class="action-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="action-title">Agendar Pacientes</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Agende e visualize consultas de forma organizada</p>
+                    </a>
+                </div>
+
+                <div class="action-card">
+                    <a href="ficha-paciente.php">
+                        <div class="action-icon">
+                            <i class="fas fa-file-medical"></i>
+                        </div>
+                        <h3 class="action-title">Adicionar Ficha</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Registre informações dos pacientes</p>
+                    </a>
+                </div>
+
+                <div class="action-card">
+                    <a href="historico.php">
+                        <div class="action-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="action-title">Consultar Fichas</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Acesse históricos e dados dos pacientes</p>
+                    </a>
+                </div>
+
+                <div class="action-card">
+                    <a href="configurar_disponibilidade.php">
+                        <div class="action-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="action-title">Configurações</h3>
+                        <div class="action-divider"></div>
+                        <p class="action-description">Personalize o sistema conforme suas necessidades</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Sistema de Notificações -->
+    <div class="notification-container">
+        <button class="notification-bell" id="openNotifications">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" id="notificationCount">3</span>
+        </button>
+    </div>
+    
+    <!-- Sidebar de Notificações -->
+    <div class="notification-sidebar" id="notificationSidebar">
+        <div class="sidebar-header">
+            <h3>Solicitações de Agendamento</h3>
+            <span class="close-sidebar" id="closeSidebar">&times;</span>
+        </div>
+        
+        <div class="notifications-list" id="notificationsList">
+            <!-- Notificações serão carregadas aqui dinamicamente -->
+        </div>
+    </div>
+    
+    <!-- Overlay para fechar a sidebar ao clicar fora -->
+    <div class="overlay" id="overlay"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos DOM
+            const bell = document.getElementById("openNotifications");
+            const sidebar = document.getElementById("notificationSidebar");
+            const closeSidebar = document.getElementById("closeSidebar");
+            const overlay = document.getElementById("overlay");
+            const notificationsList = document.getElementById("notificationsList");
+            const notificationCount = document.getElementById("notificationCount");
+            
+            // Dados de notificações
+            let notifications = [
+                {
+                    id: 1,
+                    name: "Maria Silva",
+                    email: "maria@email.com",
+                    phone: "(11) 98765-4321",
+                    date: "25/11/2025",
+                    time: "14:00",
+                    service: "Limpeza de Pele",
+                    status: "pending"
+                },
+                {
+                    id: 2,
+                    name: "João Pereira",
+                    email: "joao@email.com",
+                    phone: "(11) 91234-5678",
+                    date: "27/11/2025",
+                    time: "10:30",
+                    service: "Botox",
+                    status: "pending"
+                },
+                {
+                    id: 3,
+                    name: "Ana Santos",
+                    email: "ana@email.com",
+                    phone: "(11) 99876-5432",
+                    date: "28/11/2025",
+                    time: "15:45",
+                    service: "Preenchimento Labial",
+                    status: "pending"
+                },
+                {
+                    id: 4,
+                    name: "Carlos Oliveira",
+                    email: "carlos@email.com",
+                    phone: "(11) 97654-3210",
+                    date: "30/11/2025",
+                    time: "09:00",
+                    service: "Drenagem Linfática",
+                    status: "accepted"
+                },
+                {
+                    id: 5,
+                    name: "Fernanda Costa",
+                    email: "fernanda@email.com",
+                    phone: "(11) 94567-8901",
+                    date: "02/12/2025",
+                    time: "16:30",
+                    service: "Depilação a Laser",
+                    status: "rejected"
+                }
+            ];
+            
+            // Função para contar notificações pendentes
+            function countPendingNotifications() {
+                const pending = notifications.filter(n => n.status === "pending").length;
+                notificationCount.textContent = pending;
+                
+                if (pending === 0) {
+                    notificationCount.style.display = "none";
+                } else {
+                    notificationCount.style.display = "flex";
+                }
+            }
+            
+            // Função para renderizar as notificações
+            function renderNotifications() {
+                notificationsList.innerHTML = "";
+                
+                if (notifications.length === 0) {
+                    notificationsList.innerHTML = `
+                        <div class="empty-notifications">
+                            <i class="far fa-bell-slash"></i>
+                            <p>Nenhuma solicitação de agendamento</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Ordenar notificações: pendentes primeiro
+                const sortedNotifications = [...notifications].sort((a, b) => {
+                    if (a.status === "pending" && b.status !== "pending") return -1;
+                    if (a.status !== "pending" && b.status === "pending") return 1;
+                    return 0;
+                });
+                
+                sortedNotifications.forEach(notification => {
+                    const notificationItem = document.createElement("div");
+                    notificationItem.className = `notification-item ${notification.status !== "pending" ? "responded" : ""}`;
+                    notificationItem.dataset.id = notification.id;
+                    
+                    let statusBadge = "";
+                    if (notification.status === "accepted") {
+                        statusBadge = `<span class="response-status accepted">✓ Agendamento confirmado</span>`;
+                    } else if (notification.status === "rejected") {
+                        statusBadge = `<span class="response-status rejected">✗ Solicitação recusada</span>`;
+                    }
+                    
+                    let actionButtons = "";
+                    if (notification.status === "pending") {
+                        actionButtons = `
+                            <div class="notification-actions">
+                                <button class="accept-btn" data-id="${notification.id}" data-action="accept">Aceitar</button>
+                                <button class="reject-btn" data-id="${notification.id}" data-action="reject">Recusar</button>
+                            </div>
+                        `;
+                    }
+                    
+                    notificationItem.innerHTML = `
+                        <p><strong>Nome:</strong> ${notification.name}</p>
+                        <p><strong>Email:</strong> ${notification.email}</p>
+                        <p><strong>Telefone:</strong> ${notification.phone}</p>
+                        <p><strong>Data desejada:</strong> ${notification.date}</p>
+                        <p><strong>Horário:</strong> ${notification.time}</p>
+                        <p><strong>Serviço:</strong> ${notification.service}</p>
+                        ${statusBadge}
+                        ${actionButtons}
+                    `;
+                    
+                    notificationsList.appendChild(notificationItem);
+                });
+                
+                // Adicionar event listeners aos botões de ação
+                document.querySelectorAll('.accept-btn, .reject-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id);
+                        const action = this.dataset.action;
+                        handleResponse(id, action);
+                    });
+                });
+                
+                // Atualizar contador
+                countPendingNotifications();
+            }
+            
+            // Função para lidar com a resposta (aceitar/recusar)
+            function handleResponse(id, action) {
+                const notificationIndex = notifications.findIndex(n => n.id === id);
+                
+                if (notificationIndex !== -1) {
+                    if (action === 'accept') {
+                        notifications[notificationIndex].status = "accepted";
+                        console.log(`Agendamento aceito para: ${notifications[notificationIndex].name}`);
+                        
+                        // Em um sistema real, você faria uma requisição AJAX aqui
+                        // fetch('/api/agendamentos/aceitar', {
+                        //     method: 'POST',
+                        //     headers: {'Content-Type': 'application/json'},
+                        //     body: JSON.stringify({ id: id })
+                        // })
+                        
+                    } else if (action === 'reject') {
+                        notifications[notificationIndex].status = "rejected";
+                        console.log(`Agendamento recusado para: ${notifications[notificationIndex].name}`);
+                    }
+                    
+                    // Re-renderizar as notificações
+                    renderNotifications();
+                }
+            }
+            
+            // Abrir sidebar
+            bell.addEventListener("click", () => {
+                sidebar.classList.add("open");
+                overlay.classList.add("active");
+                document.body.style.overflow = "hidden";
+            });
+            
+            // Fechar sidebar
+            function closeNotificationSidebar() {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("active");
+                document.body.style.overflow = "auto";
+            }
+            
+            closeSidebar.addEventListener("click", closeNotificationSidebar);
+            overlay.addEventListener("click", closeNotificationSidebar);
+            
+            // Fechar ao pressionar ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                    closeNotificationSidebar();
+                }
+            });
+            
+            // Função para adicionar uma nova notificação
+            function addNewNotification(notification) {
+                notifications.unshift(notification);
+                renderNotifications();
+                
+                // Animar o sino para indicar nova notificação
+                bell.classList.add("pulse");
+                setTimeout(() => {
+                    bell.classList.remove("pulse");
+                }, 1000);
+                
+                // Mostrar um toast de notificação
+                showToast(`Nova solicitação de agendamento de ${notification.name}`);
+            }
+            
+            // Função para mostrar toast de notificação
+            function showToast(message) {
+                const toast = document.createElement("div");
+                toast.textContent = message;
+                toast.classList.add("toast-notification");
+                
+                document.body.appendChild(toast);
+                
+                // Remover toast após 4 segundos
+                setTimeout(() => {
+                    toast.style.opacity = "0";
+                    toast.style.transform = "translateX(100%)";
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            document.body.removeChild(toast);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+            
+            // Adicionar estilos para o toast
+            const toastStyles = document.createElement('style');
+            toastStyles.textContent = `
+                .toast-notification {
+                    position: fixed;
+                    top: 100px;
+                    right: 30px;
+                    background: linear-gradient(135deg, var(--verde-medio) 0%, var(--verde-claro) 100%);
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 1001;
+                    font-family: 'Montserrat', sans-serif;
+                    font-weight: 500;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                }
+                
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                .pulse {
+                    animation: pulse 0.5s ease;
+                }
+                
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.2); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(toastStyles);
+            
+            // Inicializar as notificações
+            renderNotifications();
+            
+            // Simular chegada de nova notificação (apenas para demonstração)
+            setTimeout(() => {
+                const newNotification = {
+                    id: notifications.length + 1,
+                    name: "Beatriz Almeida",
+                    email: "beatriz@email.com",
+                    phone: "(11) 93210-9876",
+                    date: "03/12/2025",
+                    time: "11:15",
+                    service: "Massagem Relaxante",
+                    status: "pending"
+                };
+                
+                addNewNotification(newNotification);
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
