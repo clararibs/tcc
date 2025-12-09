@@ -19,40 +19,33 @@
             <h1>FICHA DO PACIENTE</h1>
 
             <form id="fichaFormulario" action="#" method="post">
-                <div class="campo">
-                    <label for="nome">Nome Completo *</label>
-                    <input type="text" id="nome" name="nome" placeholder="Nome completo" required>
-                </div>
-                
-                <div class="campo">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" placeholder="email@exemplo.com">
-                </div>
-                
-                <div class="campo">
-                    <label for="telefone">Telefone *</label>
-                    <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX" required>
-                </div>
-                
-                <div class="campo">
-                    <label for="idade">Idade</label>
-                    <input type="number" id="idade" name="idade" min="0" max="120">
-                </div>
-                
-                <div class="campo campo-descricao">
-                    <label for="descricao">Descrição/Anotações</label>
-                    <textarea id="descricao" name="descricao" rows="5" placeholder="Descrição do caso, histórico médico, observações..."></textarea>
-                </div>
-                
-                <div class="mensagem-status" id="mensagemStatus"></div>
-                
-                <div class="botao-container">
-                    <button type="submit" class="btn-confirmar" id="btnConfirmar">
-                        <span id="btnText">CONFIRMAR CADASTRO</span>
-                        <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
-                    </button>
-                </div>
-            </form>
+
+    <div class="campo">
+        <label for="nome">Nome Completo *</label>
+        <input type="text" id="nome" name="nome" required>
+    </div>
+
+    <div class="campo">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email">
+    </div>
+
+    <div class="campo">
+        <label for="telefone">Telefone *</label>
+        <input type="tel" id="telefone" name="telefone" required>
+    </div>
+
+    <div class="campo">
+        <label for="idade">Idade</label>
+        <input type="number" id="idade" name="idade">
+    </div>
+
+    <div class="campo campo-descricao">
+        <label for="descricao">Descrição/Anotações</label>
+        <textarea id="descricao" name="descricao" rows="5"></textarea>
+    </div>
+</form>
+
         </div>
     </main>
 

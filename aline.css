@@ -1,372 +1,185 @@
-:root {
-    --verde-escuro: #1a3c27;
-    --verde-medio: #2d5a3d;
-    --verde-claro: #4a7c59;
-    --dourado: #c8a97e;
-    --bege: #f5f1eb;
-    --branco: #ffffff;
-    --cinza-claro: #f8f8f8;
-    --cinza-texto: #555555;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #0f1f15 0%, #1a2f1f 100%);
-    color: var(--cinza-texto);
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-}
-
-.background-design {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
-
-.geometric-shapes .shape {
+/* Estilos para o ícone de notificação */
+.notification-bell {
     position: absolute;
-    opacity: 0.03;
-    background: var(--dourado);
-    animation: float 25s infinite ease-in-out;
-}
-
-.shape:nth-child(1) {
-    width: 400px;
-    height: 400px;
-    top: -150px;
-    left: -150px;
-    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-    animation-delay: 0s;
-}
-
-.shape:nth-child(2) {
-    width: 300px;
-    height: 300px;
-    top: 20%;
-    right: -100px;
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    animation-delay: 8s;
-}
-
-.shape:nth-child(3) {
-    width: 250px;
-    height: 250px;
-    bottom: -80px;
-    left: 30%;
-    border-radius: 50% 50% 50% 70% / 50% 50% 70% 60%;
-    animation-delay: 16s;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-    }
-    33% {
-        transform: translateY(-30px) rotate(5deg);
-    }
-    66% {
-        transform: translateY(15px) rotate(-5deg);
-    }
-}
-
-.dashboard-container {
-    width: 100%;
-    min-height: 100vh;
-    background: var(--branco);
-    position: relative;
-}
-
-.dashboard-header {
-    background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde-medio) 100%);
+    top: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #f5a3c7 0%, #e373a0 100%);
     color: white;
-    padding: 60px 40px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.dashboard-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        radial-gradient(circle at 20% 30%, rgba(200, 169, 126, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(200, 169, 126, 0.1) 0%, transparent 50%);
-}
-
-.clinic-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 3.5rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
-    position: relative;
-    display: inline-block;
-}
-
-.clinic-name::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 2px;
-    background: var(--dourado);
-}
-
-.welcome-message {
-    font-size: 2rem;
-    font-weight: 400;
-    margin: 25px 0 15px;
-    color: var(--bege);
-}
-
-.subtitle {
-    font-size: 1.2rem;
-    opacity: 0.8;
-    max-width: 600px;
-    margin: 0 auto;
-    font-weight: 300;
-}
-
-.dashboard-content {
-    padding: 60px 40px;
-    background: var(--bege);
-    min-height: calc(100vh - 300px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.actions-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.action-card {
-    background: var(--branco);
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    padding: 40px 25px;
-    text-align: center;
-    transition: all 0.4s ease;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(200, 169, 126, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 350px;
-}
-
-.action-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--verde-claro) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.action-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.action-card:hover::before {
-    opacity: 0.05;
-}
-
-.action-card a {
-    text-decoration: none;
-    color: var(--verde-escuro);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    position: relative;
-    z-index: 1;
-    justify-content: center;
-}
-
-.action-icon {
-    width: 80px;
-    height: 80px;
-    background: var(--bege);
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 25px;
-    transition: all 0.4s ease;
-    border: 1px solid rgba(200, 169, 126, 0.3);
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(227, 115, 160, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
-.action-card:hover .action-icon {
-    background: var(--verde-escuro);
-    transform: scale(1.15);
+.notification-bell:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(227, 115, 160, 0.4);
 }
 
-.action-icon i {
-    font-size: 2.2rem;
-    color: var(--verde-medio);
-    transition: all 0.4s ease;
-}
-
-.action-card:hover .action-icon i {
-    color: var(--dourado);
-}
-
-.action-title {
-    font-size: 1.4rem;
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 600;
+    border: 2px solid white;
+}
+
+/* Estilos para a sidebar de notificações */
+.notification-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 380px;
+    height: 100vh;
+    background: white;
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+    transition: right 0.4s ease;
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.notification-sidebar.open {
+    right: 0;
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #f5a3c7 0%, #e373a0 100%);
+    color: white;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.close-sidebar {
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.2s;
+}
+
+.close-sidebar:hover {
+    transform: scale(1.2);
+}
+
+.notifications-list {
+    padding: 20px;
+}
+
+.notification-item {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
     margin-bottom: 15px;
-    transition: color 0.3s ease;
-    color: var(--verde-escuro);
+    border-left: 4px solid #e373a0;
+    transition: transform 0.2s;
 }
 
-.action-card:hover .action-title {
-    color: var(--verde-claro);
+.notification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-.action-description {
+.notification-item p {
+    margin: 5px 0;
+    color: #333;
     font-size: 0.95rem;
-    color: var(--cinza-texto);
-    margin-top: 12px;
-    line-height: 1.6;
 }
 
-.action-divider {
-    width: 50px;
-    height: 2px;
-    background: var(--dourado);
-    margin: 18px auto;
-    transition: width 0.3s ease;
+.notification-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
 }
 
-.action-card:hover .action-divider {
-    width: 70px;
+.accept-btn, .reject-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    flex: 1;
 }
 
-@media (max-width: 1200px) {
-    .actions-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
-        max-width: 800px;
-    }
-    
-    .action-card {
-        min-height: 320px;
-        padding: 35px 20px;
-    }
+.accept-btn {
+    background: #2ed573;
+    color: white;
 }
 
+.accept-btn:hover {
+    background: #26c464;
+    transform: translateY(-2px);
+}
+
+.reject-btn {
+    background: #ff6b81;
+    color: white;
+}
+
+.reject-btn:hover {
+    background: #ff4757;
+    transform: translateY(-2px);
+}
+
+/* Overlay para quando a sidebar estiver aberta */
+.notification-sidebar.open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
-    .actions-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        max-width: 400px;
+    .notification-sidebar {
+        width: 90%;
+        right: -100%;
     }
     
-    .clinic-name {
-        font-size: 2.8rem;
+    .notification-bell {
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
     }
     
-    .welcome-message {
-        font-size: 1.7rem;
-    }
-    
-    .dashboard-header {
-        padding: 40px 25px;
-    }
-    
-    .dashboard-content {
-        padding: 40px 25px;
-    }
-    
-    .action-card {
-        min-height: 280px;
-        padding: 30px 20px;
-    }
-    
-    .action-icon {
-        width: 70px;
-        height: 70px;
-        margin-bottom: 20px;
-    }
-    
-    .action-icon i {
-        font-size: 2rem;
-    }
-    
-    .action-title {
-        font-size: 1.3rem;
+    .sidebar-header {
+        padding: 20px;
     }
 }
 
 @media (max-width: 480px) {
-    .clinic-name {
-        font-size: 2.2rem;
-    }
-    
-    .welcome-message {
-        font-size: 1.4rem;
-    }
-    
-    .subtitle {
-        font-size: 1rem;
-    }
-    
-    .dashboard-header {
-        padding: 30px 20px;
-    }
-    
-    .dashboard-content {
-        padding: 30px 20px;
-    }
-    
-    .action-card {
-        min-height: 250px;
-        padding: 25px 15px;
-    }
-    
-    .action-icon {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 15px;
-    }
-    
-    .action-icon i {
-        font-size: 1.8rem;
-    }
-    
-    .action-title {
-        font-size: 1.2rem;
-    }
-    
-    .action-description {
-        font-size: 0.9rem;
+    .notification-sidebar {
+        width: 100%;
     }
 }

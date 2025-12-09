@@ -1,4 +1,8 @@
+const response = await fetch('inserirPessoa.php', {
+
 class FichaPaciente {
+    
+
     constructor() {
         this.form = document.getElementById('fichaFormulario');
         this.btnConfirmar = document.getElementById('btnConfirmar');
@@ -222,40 +226,7 @@ class FichaPaciente {
         this.mensagemStatus.style.display = 'none';
     }
 
-    // Gerar dados de exemplo para teste (remover em produção)
-    preencherDadosExemplo() {
-        const exemplos = [
-            {
-                nome: 'Maria Silva Santos',
-                email: 'maria.silva@email.com',
-                telefone: '(31) 98765-4321',
-                idade: 35,
-                descricao: 'Paciente interessada em preenchimento labial. Primeira consulta.'
-            },
-            {
-                nome: 'João Oliveira Costa',
-                email: 'joao.costa@email.com',
-                telefone: '(31) 91234-5678',
-                idade: 42,
-                descricao: 'Paciente para aplicação de botox. Histórico de alergia a lidocaína.'
-            },
-            {
-                nome: 'Ana Paula Rodrigues',
-                email: 'ana.rodrigues@email.com',
-                telefone: '(31) 99876-5432',
-                idade: 28,
-                descricao: 'Consulta para limpeza de pele e avaliação de peeling químico.'
-            }
-        ];
-
-        const exemplo = exemplos[Math.floor(Math.random() * exemplos.length)];
-        
-        document.getElementById('nome').value = exemplo.nome;
-        document.getElementById('email').value = exemplo.email;
-        document.getElementById('telefone').value = exemplo.telefone;
-        document.getElementById('idade').value = exemplo.idade;
-        document.getElementById('descricao').value = exemplo.descricao;
-    }
+ 
 }
 
 // Instância global
