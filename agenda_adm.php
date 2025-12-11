@@ -52,6 +52,8 @@
  
   <div id="calendar"></div>
 
+ 
+
 
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
@@ -141,6 +143,34 @@
         }
       });
     });
+    // 1. PARA BUSCAR CONSULTAS (no FullCalendar):
+events: 'agenda_admin.php?acao=buscar'
+
+// 2. PARA SALVAR CONSULTA (no botão Adicionar):
+async function salvarConsulta() {
+    const formData = new FormData();
+    formData.append('nome', nome);
+    formData.append('telefone', telefone);
+    formData.append('email', email);
+    formData.append('procedimento', procedimento);
+    formData.append('data', data);
+    formData.append('hora', hora);
+    formData.append('duracao', duracao);
+    formData.append('salvar_consulta', 'true');
+    
+    const response = await fetch('agenda_admin.php', {
+        method: 'POST',
+        body: formData
+    });
+    
+    return await response.json();
+}
+
+// 3. PARA EXCLUIR CONSULTA (no eventClick):
+async function excluirConsulta(id) {
+    const response = await fetch(`agenda_admin.php?acao=excluir&id=${id}`);
+    return await response.json();
+}
   </script>
 </body>
 </html>
