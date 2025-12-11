@@ -19,7 +19,7 @@
         <div class="ficha-conteudo">
             <h1>FICHA DO PACIENTE</h1>
 
-            <form id="fichaFormulario" action="#" method="post">
+            <form id="fichaFormulario" action="inserirPessoa.php" method="POST">
 
                 <div class="campo">
                     <label for="nome">Nome Completo *</label>
@@ -52,7 +52,7 @@
         </div>
     </main>
 
-<script>
+    <script>
     document.getElementById("btnConfirmar").addEventListener("click", function() {
         const form = document.getElementById("fichaFormulario");
         const dados = new FormData(form);
@@ -67,18 +67,30 @@
             method: "POST",
             body: dados
         })
-        .then(response => response.json())
+        .then(response => response.text())  // Alterado para text() em vez de json()
         .then(retorno => {
-            if (retorno.success) {
+            // Verificar se começa com "SUCESSO:" ou "ERRO:"
+            if (retorno.startsWith("SUCESSO:")) {
+                // Extrair a mensagem (remove "SUCESSO:" do início)
+                const mensagem = retorno.substring(8).split('|')[0];
+                alert("✅ " + mensagem);
+                form.reset();
+            } else if (retorno.startsWith("ERRO:")) {
+                // Extrair a mensagem de erro
+                const mensagemErro = retorno.substring(5);
+                alert("❌ " + mensagemErro);
+            } else if (retorno.trim() === "OK") {
+                // Para a versão muito simples
                 alert("✅ Cliente cadastrado com sucesso!");
                 form.reset();
             } else {
-                alert("❌ Erro: " + retorno.message);
+                // Qualquer outra resposta
+                alert("❌ Resposta do servidor: " + retorno);
             }
         })
         .catch(erro => {
             console.error("Erro:", erro);
-            alert("❌ Erro de conexão!");
+            alert("❌ Erro de conexão com o servidor!");
         })
         .finally(() => {
             // Restaurar botão
@@ -86,6 +98,20 @@
             btn.disabled = false;
         });
     });
+    
+    // Função para confirmar voltar (se necessário)
+    function confirmarVoltar(event) {
+        const form = document.getElementById("fichaFormulario");
+        const possuiDados = Array.from(form.elements).some(
+            element => element.type !== 'submit' && element.type !== 'button' && element.value.trim() !== ''
+        );
+        
+        if (possuiDados) {
+            if (!confirm("Tem certeza que deseja voltar? Os dados não salvos serão perdidos.")) {
+                event.preventDefault();
+            }
+        }
+    }
     </script>
 </body>
 
