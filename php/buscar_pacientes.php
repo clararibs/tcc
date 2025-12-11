@@ -1,52 +1,50 @@
 <?php
-header("Content-Type: application/json; charset=UTF-8");
-include_once("conexao.php");
+// buscar_clientes.php - Retorna todos os clientes para o histórico
+header('Content-Type: application/json; charset=utf-8');
+include 'conexao.php';
+
+// Parâmetros de busca
+$search = $_GET['search'] ?? '';
 
 try {
-    // Consulta simples para buscar todos os pacientes
-    $sql = "SELECT 
-                idPessoa AS id,
-                CONCAT(nomePessoa, ' ', sobrenomePessoa) AS nome,
-                telefone,
-                email,
-                dataNasc
-            FROM tbpessoa
-            ORDER BY idPessoa DESC";
-
-    $result = $conn->query($sql);
-
-    $pacientes = [];
-
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-
-            // Calcular idade automaticamente
-            $idade = null;
-            if (!empty($row["dataNasc"])) {
-                $dataNasc = new DateTime($row["dataNasc"]);
-                $hoje = new DateTime();
-                $idade = $dataNasc->diff($hoje)->y;
-            }
-
-            $pacientes[] = [
-                "id" => $row["id"],
-                "nome" => $row["nome"],
-                "telefone" => $row["telefone"] ?? "",
-                "email" => $row["email"] ?? "",
-                "idade" => $idade
-            ];
-        }
+    if (!empty($search)) {
+        // Busca com filtro
+        $sql = "SELECT * FROM clientes 
+                WHERE nome_completo LIKE ? OR email LIKE ? OR telefone LIKE ?
+                ORDER BY data_cadastro DESC";
+        $searchTerm = "%{$search}%";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        // Busca todos
+        $sql = "SELECT * FROM clientes ORDER BY data_cadastro DESC";
+        $result = $conn->query($sql);
     }
-
+    
+    $clientes = [];
+    while ($row = $result->fetch_assoc()) {
+        $clientes[] = [
+            'id' => $row['id_cliente'],
+            'nome' => $row['nome_completo'],
+            'telefone' => $row['telefone'],
+            'email' => $row['email'],
+            'idade' => $row['idade'],
+            'descricao' => $row['descricao'],
+            'ultimaConsulta' => date('d/m/Y', strtotime($row['data_cadastro']))
+        ];
+    }
+    
     echo json_encode([
-        "success" => true,
-        "data" => $pacientes,
-        "total" => count($pacientes)
+        'success' => true,
+        'clientes' => $clientes,
+        'total' => count($clientes)
     ]);
-
+    
 } catch (Exception $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Erro ao buscar pacientes: " . $e->getMessage()
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Erro: ' . $e->getMessage()]);
 }
+
+$conn->close();
+?>

@@ -52,29 +52,40 @@
         </div>
     </main>
 
-    <script>
-        document.getElementById("btnConfirmar").addEventListener("click", function () {
-
-            const form = document.getElementById("fichaFormulario");
-            const dados = new FormData(form);
-
-            fetch("inserirPessoa.php", {
-                method: "POST",
-                body: dados
-            })
-                .then(response => response.text())
-                .then(retorno => {
-                    console.log(retorno); // para debugar
-                    alert("Registro enviado com sucesso!");
-                    form.reset();
-                })
-                .catch(erro => {
-                    console.error("Erro:", erro);
-                    alert("Erro ao enviar o registro!");
-                });
-
+<script>
+    document.getElementById("btnConfirmar").addEventListener("click", function() {
+        const form = document.getElementById("fichaFormulario");
+        const dados = new FormData(form);
+        const btn = this;
+        const originalText = btn.innerHTML;
+        
+        // Mostrar loading
+        btn.innerHTML = 'Salvando...';
+        btn.disabled = true;
+        
+        fetch("inserirPessoa.php", {
+            method: "POST",
+            body: dados
+        })
+        .then(response => response.json())
+        .then(retorno => {
+            if (retorno.success) {
+                alert("✅ Cliente cadastrado com sucesso!");
+                form.reset();
+            } else {
+                alert("❌ Erro: " + retorno.message);
+            }
+        })
+        .catch(erro => {
+            console.error("Erro:", erro);
+            alert("❌ Erro de conexão!");
+        })
+        .finally(() => {
+            // Restaurar botão
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         });
-
+    });
     </script>
 </body>
 
