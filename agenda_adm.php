@@ -17,7 +17,6 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
   <div class="sidebar">
     <h2>Nova Consulta</h2>
 
@@ -103,7 +102,6 @@
 
       calendar.render();
 
-      // Adicionar evento
       document.getElementById('addEvent').addEventListener('click', () => {
         const name = document.getElementById('name').value;
         const phone = document.getElementById('phone').value;
@@ -133,7 +131,6 @@
             }
           });
 
-          // Limpar campos
           ['name','phone','email','procedure','date','time','minutes'].forEach(id => {
             document.getElementById(id).value = '';
           });
@@ -143,10 +140,8 @@
         }
       });
     });
-    // 1. PARA BUSCAR CONSULTAS (no FullCalendar):
 events: 'agenda_admin.php?acao=buscar'
 
-// 2. PARA SALVAR CONSULTA (no botão Adicionar):
 async function salvarConsulta() {
     const formData = new FormData();
     formData.append('nome', nome);
@@ -166,7 +161,6 @@ async function salvarConsulta() {
     return await response.json();
 }
 
-// 3. PARA EXCLUIR CONSULTA (no eventClick):
 async function excluirConsulta(id) {
     const response = await fetch(`agenda_admin.php?acao=excluir&id=${id}`);
     return await response.json();

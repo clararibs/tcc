@@ -64,15 +64,13 @@ try {
     
     $stmt = $conn->prepare($sql);
     
-    // Bind dos parâmetros
     $stmt->bind_param("sssss", $nome_completo, $email, $telefone, $data_desejada, $hora_desejada);
     
     if ($stmt->execute()) {
-        // ID da solicitação inserida
         $id_solicitacao = $conn->insert_id;
         
-        // AQUI VOCÊ PODE CHAMAR SUA API DE EMAIL
-        // enviarEmailConfirmacao($email, $nome_completo, $data_desejada, $hora_desejada, $id_solicitacao);
+        // API
+        
         
         echo json_encode([
             'success' => true, 
@@ -91,12 +89,10 @@ try {
 
 $conn->close();
 
-// Função exemplo para enviar email (implemente com sua API)
+
 function enviarEmailConfirmacao($email, $nome, $data, $hora, $id) {
-    // Exemplo com PHPMailer ou sua API preferida
-    // $assunto = "Confirmação de Solicitação - Hedone";
-    // $mensagem = "Olá $nome,\n\nSua solicitação para $data às $hora foi recebida.\nID: $id";
-    // mail($email, $assunto, $mensagem);
+    // API
+    
     
     return true;
 }

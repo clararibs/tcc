@@ -1,14 +1,11 @@
 <?php
-// buscar_clientes.php - Retorna todos os clientes para o histórico
 header('Content-Type: application/json; charset=utf-8');
 include 'conexao.php';
 
-// Parâmetros de busca
 $search = $_GET['search'] ?? '';
 
 try {
     if (!empty($search)) {
-        // Busca com filtro
         $sql = "SELECT * FROM clientes 
                 WHERE nome_completo LIKE ? OR email LIKE ? OR telefone LIKE ?
                 ORDER BY data_cadastro DESC";
@@ -18,7 +15,6 @@ try {
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        // Busca todos
         $sql = "SELECT * FROM clientes ORDER BY data_cadastro DESC";
         $result = $conn->query($sql);
     }

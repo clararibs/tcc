@@ -1,15 +1,9 @@
 <?php
-// ============================================
-// agenda_admin.php - TUDO EM UM ARQUIVO PHP
-// ============================================
 
-// Incluir conexão
 include 'conexao.php';
 
-// Verificar ação
 $acao = $_GET['acao'] ?? '';
 
-// 1. SALVAR CONSULTA
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_consulta'])) {
     header('Content-Type: application/json');
     
@@ -50,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['salvar_consulta'])) {
     exit;
 }
 
-// 2. EXCLUIR CONSULTA
 if ($acao === 'excluir' && isset($_GET['id'])) {
     header('Content-Type: application/json');
     $id = intval($_GET['id']);
@@ -70,7 +63,6 @@ if ($acao === 'excluir' && isset($_GET['id'])) {
     exit;
 }
 
-// 3. BUSCAR CONSULTAS (para o calendário)
 if ($acao === 'buscar') {
     header('Content-Type: application/json');
     
@@ -108,14 +100,12 @@ if ($acao === 'buscar') {
     exit;
 }
 
-// 4. SE NÃO FOR NENHUMA DAS AÇÕES ACIMA, RETORNAR ERRO
 if ($acao) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Ação não reconhecida']);
     exit;
 }
 
-// 5. SE ACESSAR O ARQUIVO DIRETAMENTE SEM AÇÃO
 echo "Arquivo PHP da agenda admin. Use com JavaScript.";
 $conn->close();
 ?>
