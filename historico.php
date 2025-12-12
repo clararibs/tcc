@@ -79,10 +79,40 @@
             console.error('Erro:', error);
         }
     }
+
+
+
+
+
+
+
+
     
     function processarResposta(texto) {
-        const resposta = texto.trim();
-        
+         
+    const linhas = texto.split('\n');
+    let resposta = '';
+    
+    // Encontrar a primeira linha que parece ser uma resposta válida
+    for (let linha of linhas) {
+        linha = linha.trim();
+        if (linha.startsWith('clientes=') || 
+            linha.startsWith('ERRO:') || 
+            linha.startsWith('NENHUM_CLIENTE') ||
+            linha.includes('|') ||
+            linha.includes(',')) {
+            resposta = linha;
+            break;
+        }
+    }
+    
+    // Se não encontrou resposta válida, usar todo o texto
+    if (!resposta && texto.trim().length > 0) {
+        resposta = texto.trim();
+    }
+    
+    console.log('Resposta processada:', resposta);
+
         // Se for uma mensagem de erro simples
         if (resposta.startsWith('ERRO:')) {
             return {
@@ -163,7 +193,7 @@
             message: 'Formato de resposta não reconhecido: ' + resposta.substring(0, 100)
         };
     }
-    
+
     function exibirClientes(clientes) {
         const clientList = document.getElementById('clientList');
         
