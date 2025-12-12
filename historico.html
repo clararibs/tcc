@@ -1,14 +1,12 @@
-<?php include "conexao.php"; ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="historico.css">
     <title>Consulta de Clientes - Clínica</title>
 </head>
-
 <body>
     <div class="container">
         <header>
@@ -19,33 +17,25 @@
         </header>
 
         <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Digite o nome do cliente..."
-                onkeyup="filtrarClientes()">
+            <input type="text" class="search-input" id="searchInput" placeholder="Digite o nome do cliente..." onkeyup="filtrarClientes()">
             <button class="search-button" onclick="filtrarClientes()">Pesquisar</button>
         </div>
 
-        <div class="client-list" id="clientList">
-
-        </div>
-       
+        <div class="client-list" id="clientList"></div>
     </div>
 
-
-   
     <script>
     async function carregarClientes() {
         try {
             const response = await fetch('buscar_pacientes.php');
             const texto = await response.text();
+            console.log("Carregando:", texto);
             
-            // Verificar se a resposta é um erro HTML do servidor
-            if (texto.includes('<!DOCTYPE html>') || texto.includes('<html>')) {
-                console.error('Resposta HTML inesperada:', texto.substring(0, 200));
-                alert('Erro: O servidor retornou uma página HTML. Verifique se o arquivo PHP existe.');
+            if (texto.includes('<!DOCTYPE html>')) {
+                alert('Erro: O servidor retornou uma página HTML.');
                 return;
             }
             
-            // Processar resposta em texto simples
             const resultado = processarResposta(texto);
             
             if (resultado.success) {
@@ -55,83 +45,59 @@
             }
         } catch (error) {
             console.error('Erro:', error);
-            alert('Erro de conexão com o servidor');
+            alert('Erro de conexão');
         }
     }
     
     async function filtrarClientes() {
         const searchTerm = document.getElementById('searchInput').value;
+        console.log("Pesquisando:", searchTerm);
         
         try {
-            const response = await fetch(`buscar_pacientes.php?search=${encodeURIComponent(searchTerm)}`);
+            const url = `buscar_pacientes.php?search=${encodeURIComponent(searchTerm)}`;
+            console.log("URL:", url);
+            
+            const response = await fetch(url);
             const texto = await response.text();
+            console.log("Resposta:", texto);
+            
             const resultado = processarResposta(texto);
+            console.log("Processado:", resultado);
             
             if (resultado.success) {
                 exibirClientes(resultado.clientes);
             } else {
-                // Mostrar apenas se for um erro diferente de "nenhum cliente"
                 if (!resultado.message.includes('nenhum') && !resultado.message.includes('Nenhum')) {
                     alert('Erro: ' + resultado.message);
                 }
             }
         } catch (error) {
             console.error('Erro:', error);
+            alert('Erro ao pesquisar');
         }
     }
-
-
-
-
-
-
-
-
     
     function processarResposta(texto) {
-         
-    const linhas = texto.split('\n');
-    let resposta = '';
-    
-    // Encontrar a primeira linha que parece ser uma resposta válida
-    for (let linha of linhas) {
-        linha = linha.trim();
-        if (linha.startsWith('clientes=') || 
-            linha.startsWith('ERRO:') || 
-            linha.startsWith('NENHUM_CLIENTE') ||
-            linha.includes('|') ||
-            linha.includes(',')) {
-            resposta = linha;
-            break;
-        }
-    }
-    
-    // Se não encontrou resposta válida, usar todo o texto
-    if (!resposta && texto.trim().length > 0) {
-        resposta = texto.trim();
-    }
-    
-    console.log('Resposta processada:', resposta);
-
-        // Se for uma mensagem de erro simples
+        console.log("Texto original:", texto);
+        const resposta = texto.trim();
+        console.log("Texto trim:", resposta);
+        
         if (resposta.startsWith('ERRO:')) {
-            return {
-                success: false,
-                message: resposta.substring(5)
-            };
+            return { success: false, message: resposta.substring(5) };
         }
         
-        // Se for uma mensagem de sucesso simples
-        if (resposta.startsWith('SUCESSO:')) {
-            return {
-                success: true,
-                message: resposta.substring(8)
-            };
+        if (resposta === 'NENHUM_CLIENTE') {
+            return { success: true, clientes: [] };
         }
         
-        // Formato: clientes=nome1,telefone1,email1,idade1;nome2,telefone2,email2,idade2
         if (resposta.startsWith('clientes=')) {
             const dados = resposta.substring(9);
+            console.log("Dados após clientes=:", dados);
+            
+            if (!dados || dados.trim() === '') {
+                return { success: true, clientes: [] };
+            }
+            
             const clientesArray = dados.split(';');
             const clientes = [];
             
@@ -139,7 +105,9 @@
                 if (clienteStr.trim() === '') continue;
                 
                 const campos = clienteStr.split(',');
-                if (campos.length >= 4) {
+                console.log("Campos:", campos);
+                
+                if (campos.length >= 6) {
                     clientes.push({
                         id: campos[0] || '',
                         nome: campos[1] || '',
@@ -151,51 +119,16 @@
                 }
             }
             
-            return {
-                success: true,
-                clientes: clientes
-            };
+            return { success: true, clientes: clientes };
         }
         
-        // Formato alternativo: cada linha é um cliente
-        const linhas = resposta.split('\n').filter(line => line.trim() !== '');
-        if (linhas.length > 0 && linhas[0].includes(',')) {
-            const clientes = linhas.map(linha => {
-                const campos = linha.split(',');
-                return {
-                    id: campos[0] || '',
-                    nome: campos[1] || '',
-                    telefone: campos[2] || '',
-                    email: campos[3] || 'N/A',
-                    idade: campos[4] || 'N/A',
-                    ultimaConsulta: campos[5] || 'N/A'
-                };
-            });
-            
-            return {
-                success: true,
-                clientes: clientes
-            };
-        }
-        
-        // Se for apenas "NENHUM_CLIENTE" ou similar
-        if (resposta === 'NENHUM_CLIENTE' || resposta === 'nenhum') {
-            return {
-                success: true,
-                clientes: []
-            };
-        }
-        
-        // Se não reconhecer o formato
-        console.log('Resposta não processada:', resposta);
-        return {
-            success: false,
-            message: 'Formato de resposta não reconhecido: ' + resposta.substring(0, 100)
-        };
+        console.log("Formato não reconhecido");
+        return { success: false, message: 'Formato não reconhecido: ' + resposta.substring(0, 50) };
     }
 
     function exibirClientes(clientes) {
         const clientList = document.getElementById('clientList');
+        console.log("Exibindo clientes:", clientes);
         
         let html = `
             <div class="client-header">
@@ -218,9 +151,7 @@
                         <div>${cliente.idade || 'N/A'}</div>
                         <div>${cliente.ultimaConsulta || 'N/A'}</div>
                         <div>
-                            <button onclick="verDetalhes(${cliente.id})" class="botao">
-                                Ver
-                            </button>
+                            <button onclick="verDetalhes('${cliente.id}')" class="botao">Ver</button>
                         </div>
                     </div>
                 `;
@@ -234,16 +165,13 @@
     
     function verDetalhes(idCliente) {
         alert(`Detalhes do cliente ID: ${idCliente}`);
-        // Aqui você pode redirecionar para uma página de detalhes ou abrir modal
     }
     
     function voltar() {
         window.history.back();
     }
     
-    // Carregar clientes ao abrir a página
     window.onload = carregarClientes;
-</script>
+    </script>
 </body>
-
 </html>

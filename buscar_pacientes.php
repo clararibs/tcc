@@ -1,21 +1,13 @@
 <?php
-
-if (ob_get_length()) ob_clean();
-
-header('Content-Type: text/plain; charset=utf-8');
-
-
 ob_start();
-
+header('Content-Type: text/plain; charset=utf-8');
 include 'conexao.php';
 
 $search = $_GET['search'] ?? '';
 
 try {
     if (!empty($search)) {
-        $sql = "SELECT * FROM clientes 
-                WHERE nome_completo LIKE ? OR email LIKE ? OR telefone LIKE ?
-                ORDER BY data_cadastro DESC";
+        $sql = "SELECT * FROM clientes WHERE nome_completo LIKE ? OR email LIKE ? OR telefone LIKE ? ORDER BY data_cadastro DESC";
         $searchTerm = "%{$search}%";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
@@ -26,17 +18,16 @@ try {
         $result = $conn->query($sql);
     }
     
-    // Verificar se encontrou clientes
     if ($result->num_rows === 0) {
         echo "NENHUM_CLIENTE";
+        ob_end_flush();
         exit;
     }
     
-    $output = "";
+    $output = "clientes=";
     $count = 0;
     
     while ($row = $result->fetch_assoc()) {
-        // Formato: ID,Nome,Telefone,Email,Idade,DataCadastro
         $output .= $row['id_cliente'] . "," .
                    $row['nome_completo'] . "," .
                    $row['telefone'] . "," .
@@ -45,8 +36,6 @@ try {
                    date('d/m/Y', strtotime($row['data_cadastro']));
         
         $count++;
-        
-        // Separar clientes com ponto e vírgula, exceto no último
         if ($count < $result->num_rows) {
             $output .= ";";
         }
@@ -59,16 +48,5 @@ try {
 }
 
 $conn->close();
-?>
-
-
-
-
-
-
-
-
-
-
 ob_end_flush();
 ?>
