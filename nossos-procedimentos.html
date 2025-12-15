@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfólio de Procedimentos | Clínica Estética</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2d8a5c;
+            --primary-light: #5cb48c;
+            --primary-dark: #1c6b45;
+            --secondary: #f0f9f4;
+            --accent: #4caf50;
+            --text: #1a1a1a;
+            --text-light: #4a4a4a;
+            --text-lighter: #777;
+            --border: #d4e8dd;
+            --shadow: rgba(45, 138, 92, 0.08);
+            --radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: #fefefe;
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Título da Página */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .page-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .page-header .tagline {
+            color: var(--primary);
+            font-weight: 500;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        
+        /* Filtro de Categorias */
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .category-btn {
+            padding: 12px 28px;
+            border: 2px solid var(--primary-light);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .category-btn i {
+            font-size: 1.1rem;
+        }
+        
+        .category-btn.active, .category-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(45, 138, 92, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .category-btn.active i, .category-btn:hover i {
+            color: white;
+        }
+        
+        /* Grid de Procedimentos */
+        .procedures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .procedures-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .procedure-card {
+            background-color: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 5px 20px var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--border);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .procedure-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(45, 138, 92, 0.15);
+            border-color: var(--primary-light);
+        }
+        
+        .procedure-image {
+            height: 200px;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .procedure-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .procedure-card:hover .procedure-image img {
+            transform: scale(1.05);
+        }
+        
+        .procedure-image .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            color: var(--primary);
+        }
+        
+        .procedure-image .placeholder i {
+            font-size: 3.5rem;
+            opacity: 0.8;
+        }
+        
+        .procedure-category {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(255, 255, 255, 0.95);
+            color: var(--primary-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .procedure-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .procedure-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-weight: 700;
+        }
+        
+        .expand-btn {
+            background: var(--secondary);
+            border: none;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+        
+        .expand-btn:hover {
+            background-color: var(--primary-light);
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        .expand-btn.expanded {
+            background-color: var(--primary);
+            color: white;
+            transform: rotate(180deg);
+        }
+        
+        .procedure-description {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            color: var(--text-light);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        .procedure-description.expanded {
+            max-height: 300px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Indicador de Categoria */
+        .category-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .category-facial {
+            background-color: #2d8a5c;
+        }
+        
+        .category-capilar {
+            background-color: #5cb48c;
+        }
+        
+        .category-corporal {
+            background-color: #4caf50;
+        }
+        
+        /* Estatísticas */
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--secondary);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .procedure-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho da Página -->
+    <div class="page-header">
+        <h1><i class="fas fa-spa" style="color: var(--primary); margin-right: 10px;"></i> Portfólio de Procedimentos</h1>
+        <p>Conheça nossos tratamentos estéticos especializados, realizados com tecnologia de ponta e segurança.</p>
+        <p class="tagline">Beleza natural, resultados excepcionais</p>
+    </div>
+
+    <!-- Filtro de Categorias -->
+    <div class="category-filter">
+        <button class="category-btn active" data-category="all">
+            <i class="fas fa-layer-group"></i> Todos os Procedimentos
+        </button>
+        <button class="category-btn" data-category="facial">
+            <i class="fas fa-user"></i> Facial
+        </button>
+        <button class="category-btn" data-category="capilar">
+            <i class="fas fa-cut"></i> Capilar
+        </button>
+        <button class="category-btn" data-category="corporal">
+            <i class="fas fa-heartbeat"></i> Corporal
+        </button>
+    </div>
+
+    <!-- Grid de Procedimentos -->
+    <div class="procedures-grid" id="proceduresContainer">
+        <!-- Os procedimentos serão inseridos aqui via JavaScript -->
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="stats">
+        <p><i class="fas fa-check-circle" style="color: var(--primary); margin-right: 5px;"></i> 
+        <span id="totalCount">14</span> procedimentos disponíveis • 
+        <span id="facialCount">6</span> faciais • 
+        <span id="capilarCount">3</span> capilares • 
+        <span id="corporalCount">5</span> corporais</p>
+    </div>
+
+    <script>
+        // Dados dos procedimentos
+        const procedures = [
+            {
+                id: 1,
+                name: "Botox",
+                category: "facial",
+                description: "Toxina botulínica utilizada para suavizar linhas de expressão, deixando a pele com aparência mais jovem.",
+                icon: "fas fa-smile"
+            },
+            {
+                id: 2,
+                name: "PDRN",
+                category: "facial",
+                description: "Tratamento regenerativo que estimula a produção de colágeno, melhora textura e auxilia na revitalização da pele.",
+                icon: "fas fa-leaf"
+            },
+            {
+                id: 3,
+                name: "Skinbooster (Galderma) Facial",
+                category: "facial",
+                description: "Hidratação profunda que devolve brilho, firmeza e melhora a elasticidade da pele do rosto.",
+                icon: "fas fa-tint"
+            },
+            {
+                id: 4,
+                name: "Skinbooster (Galderma) Lábios",
+                category: "facial",
+                description: "Proporciona hidratação intensa dos lábios, deixando-os mais definidos e com aspecto saudável.",
+                icon: "fas fa-kiss-wink-heart"
+            },
+            {
+                id: 5,
+                name: "Skinbooster (PHD)",
+                category: "facial",
+                description: "Bioestimulador voltado para hidratação e firmeza, ideal para suavizar linhas finas.",
+                icon: "fas fa-vial"
+            },
+            {
+                id: 6,
+                name: "PRP",
+                category: "facial",
+                description: "Utiliza fatores de crescimento do próprio paciente para regenerar a pele e melhorar a aparência geral.",
+                icon: "fas fa-syringe"
+            },
+            {
+                id: 7,
+                name: "Fio Liso Agulhado",
+                category: "facial",
+                description: "Fios de sustentação que estimulam colágeno e promovem leve efeito lifting.",
+                icon: "fas fa-thread"
+            },
+            {
+                id: 8,
+                name: "Fio Liso Canulado (Área dos Olhos)",
+                category: "facial",
+                description: "Aplicação com cânula, ideal para tratar flacidez e suavizar linhas ao redor dos olhos.",
+                icon: "fas fa-eye"
+            },
+            {
+                id: 9,
+                name: "Fio Filler",
+                category: "facial",
+                description: "Fio com capacidade preenchedora, indicado para melhorar contornos e áreas com perda de volume.",
+                icon: "fas fa-weight"
+            },
+            {
+                id: 10,
+                name: "Fio Espiculado",
+                category: "facial",
+                description: "Fios com garras que tracionam a pele, proporcionando lifting imediato e estimulando colágeno.",
+                icon: "fas fa-anchor"
+            },
+            {
+                id: 11,
+                name: "Fio Sculpt",
+                category: "facial",
+                description: "Tecnologia avançada de fios que reforçam sustentação, remodelam e definem o contorno facial.",
+                icon: "fas fa-magic"
+            },
+            {
+                id: 12,
+                name: "Despigmentante",
+                category: "facial",
+                description: "Tratamento indicado para reduzir manchas, uniformizar o tom da pele e melhorar a luminosidade.",
+                icon: "fas fa-sun"
+            },
+            {
+                id: 13,
+                name: "Microagulhamento",
+                category: "facial",
+                description: "Técnica que induz colágeno através de microperfurações, melhorando textura, manchas e cicatrizes.",
+                icon: "fas fa-bullseye"
+            },
+            {
+                id: 14,
+                name: "Crescimento/Queda Capilar – Mulher",
+                category: "capilar",
+                description: "Protocolo destinado a fortalecer os fios, reduzir queda e estimular o crescimento capilar.",
+                icon: "fas fa-female"
+            },
+            {
+                id: 15,
+                name: "Crescimento/Queda Capilar – Homem",
+                category: "capilar",
+                description: "Tratamento focado no fortalecimento do bulbo capilar para diminuição da queda e estímulo de novos fios.",
+                icon: "fas fa-male"
+            },
+            {
+                id: 16,
+                name: "PRP Capilar",
+                category: "capilar",
+                description: "Aplicação de plasma rico em plaquetas para regenerar folículos e promover crescimento saudável.",
+                icon: "fas fa-allergies"
+            },
+            {
+                id: 17,
+                name: "BCAA",
+                category: "corporal",
+                description: "Suplementação injetável que auxilia no aumento de energia, recuperação muscular e desempenho físico.",
+                icon: "fas fa-battery-full"
+            },
+            {
+                id: 18,
+                name: "Glúteo Max",
+                category: "corporal",
+                description: "Protocolo estético voltado para volumização e melhora da firmeza dos glúteos.",
+                icon: "fas fa-dumbbell"
+            },
+            {
+                id: 19,
+                name: "Pump Glúteo",
+                category: "corporal",
+                description: "Técnica que estimula hipertrofia estética dos glúteos, deixando-os mais arredondados e projetados.",
+                icon: "fas fa-arrow-up"
+            },
+            {
+                id: 20,
+                name: "Power Músculo (Hipertrofia Muscular)",
+                category: "corporal",
+                description: "Aplicação que ajuda no ganho de massa e definição muscular em áreas específicas.",
+                icon: "fas fa-weight-hanging"
+            },
+            {
+                id: 21,
+                name: "Gordura Localizada IM",
+                category: "corporal",
+                description: "Tratamento injetável para reduzir gordura em regiões como abdômen, flancos e coxas.",
+                icon: "fas fa-burn"
+            },
+            {
+                id: 22,
+                name: "Inibidor de Apetite",
+                category: "corporal",
+                description: "Aplicação auxiliar para controle de fome e suporte em protocolos de emagrecimento.",
+                icon: "fas fa-utensils"
+            },
+            {
+                id: 23,
+                name: "Liposoma de Girassol",
+                category: "corporal",
+                description: "Substância lipolítica usada para quebrar gordura localizada, promovendo remodelamento corporal.",
+                icon: "fas fa-seedling"
+            },
+            {
+                id: 24,
+                name: "Redutor de Gordura (Prega menor que 3cm)",
+                category: "corporal",
+                description: "Protocolo indicado para pequenas áreas com acúmulo de gordura resistente.",
+                icon: "fas fa-ruler"
+            },
+            {
+                id: 25,
+                name: "Definição Abdominal",
+                category: "corporal",
+                description: "Técnicas injetáveis que ajudam a evidenciar o contorno do abdômen, proporcionando aparência mais definida.",
+                icon: "fas fa-chart-line"
+            }
+        ];
+
+        // Função para atualizar estatísticas
+        function updateStats() {
+            const facialCount = procedures.filter(p => p.category === "facial").length;
+            const capilarCount = procedures.filter(p => p.category === "capilar").length;
+            const corporalCount = procedures.filter(p => p.category === "corporal").length;
+            
+            document.getElementById("totalCount").textContent = procedures.length;
+            document.getElementById("facialCount").textContent = facialCount;
+            document.getElementById("capilarCount").textContent = capilarCount;
+            document.getElementById("corporalCount").textContent = corporalCount;
+        }
+        
+        // Função para renderizar procedimentos
+        function renderProcedures(filterCategory = 'all') {
+            const container = document.getElementById('proceduresContainer');
+            container.innerHTML = '';
+            
+            const filteredProcedures = filterCategory === 'all' 
+                ? procedures 
+                : procedures.filter(p => p.category === filterCategory);
+            
+            // Ordenar procedimentos por ID
+            filteredProcedures.sort((a, b) => a.id - b.id);
+            
+            filteredProcedures.forEach(procedure => {
+                const categoryName = {
+                    'facial': 'Facial',
+                    'capilar': 'Capilar',
+                    'corporal': 'Corporal'
+                }[procedure.category];
+                
+                const categoryColor = {
+                    'facial': '#2d8a5c',
+                    'capilar': '#5cb48c',
+                    'corporal': '#4caf50'
+                }[procedure.category];
+                
+                const categoryClass = {
+                    'facial': 'category-facial',
+                    'capilar': 'category-capilar',
+                    'corporal': 'category-corporal'
+                }[procedure.category];
+                
+                const card = document.createElement('div');
+                card.className = 'procedure-card';
+                card.setAttribute('data-category', procedure.category);
+                card.style.animationDelay = `${procedure.id * 0.05}s`;
+                
+                card.innerHTML = `
+                    <div class="procedure-image">
+                        <div class="placeholder">
+                            <i class="${procedure.icon}" style="color: ${categoryColor}; font-size: 3.5rem;"></i>
+                            <span style="color: ${categoryColor}; font-size: 1.2rem; font-weight: 600;">${categoryName}</span>
+                        </div>
+                        <div class="procedure-category" style="background-color: rgba(255, 255, 255, 0.95); color: ${categoryColor};">
+                            <span class="category-indicator ${categoryClass}"></span>${categoryName}
+                        </div>
+                    </div>
+                    <div class="procedure-content">
+                        <div class="procedure-title">
+                            <span>${procedure.name}</span>
+                            <button class="expand-btn" data-id="${procedure.id}" aria-label="Expandir descrição">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <div class="procedure-description" id="desc-${procedure.id}">
+                            ${procedure.description}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            // Adicionar eventos aos botões de expandir
+            document.querySelectorAll('.expand-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const desc = document.getElementById(`desc-${id}`);
+                    const icon = this.querySelector('i');
+                    
+                    if (desc.classList.contains('expanded')) {
+                        desc.classList.remove('expanded');
+                        this.classList.remove('expanded');
+                        icon.className = 'fas fa-chevron-down';
+                    } else {
+                        // Fechar todos os outros descrições abertas
+                        document.querySelectorAll('.procedure-description.expanded').forEach(el => {
+                            if (el.id !== `desc-${id}`) {
+                                el.classList.remove('expanded');
+                                const otherBtn = document.querySelector(`.expand-btn[data-id="${el.id.split('-')[1]}"]`);
+                                if (otherBtn) {
+                                    otherBtn.classList.remove('expanded');
+                                    otherBtn.querySelector('i').className = 'fas fa-chevron-down';
+                                }
+                            }
+                        });
+                        
+                        desc.classList.add('expanded');
+                        this.classList.add('expanded');
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                });
+            });
+        }
+        
+        // Filtro por categoria
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remover classe active de todos os botões
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                
+                // Adicionar classe active ao botão clicado
+                this.classList.add('active');
+                
+                // Filtrar procedimentos
+                const category = this.getAttribute('data-category');
+                renderProcedures(category);
+                
+                // Atualizar título da página
+                const titleElement = document.querySelector('.page-header h1');
+                if (category === 'all') {
+                    titleElement.innerHTML = '<i class="fas fa-spa" style="color: var(--primary); margin-right: 10px;"></i> Portfólio de Procedimentos';
+                } else {
+                    const categoryName = {
+                        'facial': 'Facial',
+                        'capilar': 'Capilar',
+                        'corporal': 'Corporal'
+                    }[category];
+                    
+                    titleElement.innerHTML = `<i class="fas fa-spa" style="color: var(--primary); margin-right: 10px;"></i> Procedimentos ${categoryName}`;
+                }
+            });
+        });
+        
+        // Inicializar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProcedures();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
