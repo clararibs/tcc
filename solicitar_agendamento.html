@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicite sua Avaliação</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+       
+        body {
+            background: linear-gradient(135deg, #95b495 0%, #90ac90 100%);
+            color: #dddddd;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+       
+        .container {
+            display: flex;
+            max-width: 1100px;
+            width: 100%;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+       
+        .container:hover {
+            transform: translateY(-5px);
+        }
+       
+        .form-section {
+            flex: 1;
+            padding: 40px;
+            background: white;
+        }
+       
+        .info-section {
+            flex: 1;
+            padding: 40px;
+            background: linear-gradient(135deg, #213d23 0%, #235f25 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+       
+        .info-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+       
+        .info-section::after {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+       
+        h1 {
+            color: #143816;
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+         
+        }
+       
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: #4caf50;
+            border-radius: 2px;
+        }
+       
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+       
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #050505;
+        }
+       
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+       
+        input:focus {
+            border-color: #a2dba4;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+       
+        /* Estilo para o calendário */
+        .calendar-container {
+            position: relative;
+        }
+       
+        .calendar-toggle {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+        }
+       
+        .calendar-toggle:hover {
+            border-color: #a2dba4;
+        }
+       
+        .calendar-toggle.selected {
+            border-color: #4caf50;
+            background: #f1f8e9;
+        }
+       
+        .calendar-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 5px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+       
+        .calendar-dropdown.active {
+            display: block;
+        }
+       
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+       
+        .calendar-nav {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+       
+        .calendar-nav:hover {
+            background: #f5f5f5;
+        }
+       
+        .calendar-month {
+            font-weight: 600;
+            color: #333;
+        }
+       
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 10px;
+            color: #666;
+            font-weight: 500;
+        }
+       
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+       
+        .calendar-day {
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+       
+        .calendar-day:hover {
+            background: #f0f9f0;
+        }
+       
+        .calendar-day.selected {
+            background: #4caf50;
+            color: white;
+        }
+       
+        .calendar-day.available {
+            color: #333;
+        }
+       
+        .calendar-day.unavailable {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+       
+        .calendar-day.other-month {
+            color: #aaa;
+        }
+       
+        .calendar-day.today {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+       
+        /* Estilo para os horários */
+        .time-options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+       
+        .time-option {
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+       
+        .time-option:hover {
+            border-color: #a2dba4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.1);
+        }
+       
+        .time-option.selected {
+            border-color: #4caf50;
+            background: #4caf50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+        }
+       
+        .time-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+       
+        .no-times-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+       
+        .btn-submit {
+            background: linear-gradient(135deg, #396e3c 0%, #1d3a1e 100%);
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+       
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+       
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+       
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #4caf50;
+            grid-column: 1 / -1;
+        }
+       
+        .selected-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f8e9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+       
+        .selected-date-info, .selected-time-info {
+            display: flex;
+            flex-direction: column;
+        }
+       
+        .selected-label {
+            font-size: 12px;
+            color: #666;
+        }
+       
+        .selected-value {
+            font-weight: 600;
+            color: #2e7d32;
+        }
+       
+        .info-section h2 {
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+       
+        .info-list {
+            list-style-type: none;
+            position: relative;
+            z-index: 1;
+        }
+       
+        .info-list li {
+            margin-bottom: 18px;
+            padding-left: 30px;
+            position: relative;
+        }
+       
+        .info-list li:before {
+            content: "✓";
+            color: #4caf50;
+            font-size: 16px;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            background: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+       
+        .contact-info {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+       
+        .contact-info h3 {
+            margin-bottom: 15px;
+        }
+       
+        .contact-info p {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+       
+        .contact-info i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+       
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+       
+        .logo-icon {
+            background: #4caf50;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+       
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2e7d32;
+            letter-spacing: 2px;
+        }
+       
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+           
+            .form-section {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+           
+            body {
+                padding: 10px;
+            }
+           
+            .calendar-dropdown {
+                position: fixed;
+                top: 50%;
+                left: 20px;
+                right: 20px;
+                transform: translateY(-50%);
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+           
+            .time-options-container {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="logo">
+                <div class="logo-text">HEDONÊ</div>
+            </div>
+           
+            <h1>Solicite sua Avaliação</h1>
+           
+            <form id="appointment-form">
+                <div class="form-group">
+                    <label for="fullname">Nome completo:</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </div>
+               
+                <div class="form-group">
+                    <label for="phone">Telefone:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+               
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+               
+                <!-- Seletor de Data com Calendário -->
+                <div class="form-group">
+                    <label for="date">Selecione uma data:</label>
+                    <div class="calendar-container">
+                        <div class="calendar-toggle" id="calendar-toggle">
+                            <span id="selected-date-display">Clique para selecionar uma data</span>
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="calendar-dropdown" id="calendar-dropdown">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" id="prev-month">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div class="calendar-month" id="current-month"></div>
+                                <button class="calendar-nav" id="next-month">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <div>Dom</div>
+                                <div>Seg</div>
+                                <div>Ter</div>
+                                <div>Qua</div>
+                                <div>Qui</div>
+                                <div>Sex</div>
+                                <div>Sáb</div>
+                            </div>
+                            <div class="calendar-days" id="calendar-days">
+                                <!-- Os dias serão gerados dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selected-date" name="date" required>
+                </div>
+               
+                <!-- Seletor de Horário -->
+                <div class="form-group">
+                    <label>Selecione um horário:</label>
+                   
+                    <!-- Informações da seleção atual -->
+                    <div class="selected-info" id="selection-info" style="display: none;">
+                        <div class="selected-date-info">
+                            <span class="selected-label">Data selecionada:</span>
+                            <span class="selected-value" id="info-date"></span>
+                        </div>
+                        <div class="selected-time-info">
+                            <span class="selected-label">Horário selecionado:</span>
+                            <span class="selected-value" id="info-time"></span>
+                        </div>
+                    </div>
+                   
+                    <!-- Container para os horários -->
+                    <div class="loading-indicator" id="loading-times">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando horários disponíveis...
+                    </div>
+                    <div class="time-options-container" id="time-options">
+                        <!-- Os horários serão carregados dinamicamente -->
+                        <div class="no-times-message">
+                            Selecione uma data primeiro
+                        </div>
+                    </div>
+                    <input type="hidden" id="selected-time" name="time" required>
+                </div>
+               
+                <button type="submit" class="btn-submit" id="submit-btn" disabled>
+                    <i class="fas fa-paper-plane"></i> Solicitar Avaliação
+                </button>
+            </form>
+        </div>
+       
+        <div class="info-section">
+            <h2>Informações Importantes</h2>
+           
+            <ul class="info-list">
+                <li>Esse agendamento é apenas para uma avaliação, não é possível marcar um procedimento</li>
+                <li>A profissional irá realizar as indicações durante a consulta</li>
+                <li>A avaliação será confirmada pelo email que foi cadastrado em até dois dias úteis</li>
+            </ul>
+           
+            <div class="contact-info">
+                <h3>Dúvidas?</h3>
+                <p><i class="fas fa-phone"></i> Telefone:(31) 99430-4522</p>
+                <p><i class="fas fa-envelope"></i> E-mail: clinicahedone@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> Endereço: Rua Getúlio Vargas, 395, Pioneiros - Ouro Branco</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos do DOM
+            const calendarToggle = document.getElementById('calendar-toggle');
+            const calendarDropdown = document.getElementById('calendar-dropdown');
+            const calendarDays = document.getElementById('calendar-days');
+            const currentMonthEl = document.getElementById('current-month');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const timeOptionsContainer = document.getElementById('time-options');
+            const loadingIndicator = document.getElementById('loading-times');
+            const submitBtn = document.getElementById('submit-btn');
+            const selectionInfo = document.getElementById('selection-info');
+            const infoDate = document.getElementById('info-date');
+            const infoTime = document.getElementById('info-time');
+           
+            // Variáveis de estado
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+            let selectedDate = null;
+            let selectedTime = null;
+           
+            // Nomes dos meses
+            const monthNames = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+           
+            // Dias da semana
+            const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+           
+            // Inicializar calendário
+            initCalendar();
+           
+            // Event Listeners
+            calendarToggle.addEventListener('click', toggleCalendar);
+            prevMonthBtn.addEventListener('click', showPrevMonth);
+            nextMonthBtn.addEventListener('click', showNextMonth);
+           
+            // Fechar calendário ao clicar fora
+            document.addEventListener('click', function(event) {
+                if (!calendarToggle.contains(event.target) && !calendarDropdown.contains(event.target)) {
+                    calendarDropdown.classList.remove('active');
+                }
+            });
+           
+            // Função para alternar calendário
+            function toggleCalendar() {
+                calendarDropdown.classList.toggle('active');
+            }
+           
+            // Função para inicializar calendário
+            function initCalendar() {
+                updateCalendar();
+            }
+           
+            // Função para atualizar calendário
+            function updateCalendar() {
+                currentMonthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+               
+                // Primeiro dia do mês
+                const firstDay = new Date(currentYear, currentMonth, 1);
+                const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startingDay = firstDay.getDay();
+               
+                calendarDays.innerHTML = '';
+               
+                // Dias do mês anterior
+                const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+                for (let i = startingDay - 1; i >= 0; i--) {
+                    const day = document.createElement('div');
+                    day.className = 'calendar-day other-month';
+                    day.textContent = prevMonthLastDay - i;
+                    calendarDays.appendChild(day);
+                }
+               
+                // Dias do mês atual
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+               
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(currentYear, currentMonth, day);
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'calendar-day available';
+                    dayEl.textContent = day;
+                    dayEl.dataset.date = date.toISOString().split('T')[0];
+                   
+                    // Verifica se é hoje
+                    if (date.getTime() === today.getTime()) {
+                        dayEl.classList.add('today');
+                    }
+                   
+                    // Verifica se é passado
+                    if (date < today) {
+                        dayEl.classList.remove('available');
+                        dayEl.classList.add('unavailable');
+                    }
+                   
+                    // Verifica se é fim de semana
+                    const dayOfWeek = date.getDay();
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        dayEl.classList.remove('available');
+                        dayEl.classList.add('unavailable');
+                    }
+                   
+                    // Verifica se está selecionado
+                    if (selectedDate && dayEl.dataset.date === selectedDate) {
+                        dayEl.classList.add('selected');
+                    }
+                   
+                    // Adiciona evento de clique
+                    if (dayEl.classList.contains('available')) {
+                        dayEl.addEventListener('click', selectDate);
+                    }
+                   
+                    calendarDays.appendChild(dayEl);
+                }
+               
+                // Dias do próximo mês
+                const totalCells = 42; // 6 semanas * 7 dias
+                const remainingCells = totalCells - (startingDay + daysInMonth);
+                for (let i = 1; i <= remainingCells; i++) {
+                    const day = document.createElement('div');
+                    day.className = 'calendar-day other-month';
+                    day.textContent = i;
+                    calendarDays.appendChild(day);
+                }
+            }
+           
+            // Função para mostrar mês anterior
+            function showPrevMonth() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                updateCalendar();
+            }
+           
+            // Função para mostrar próximo mês
+            function showNextMonth() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                updateCalendar();
+            }
+           
+            // Função para selecionar data
+            function selectDate(event) {
+                const dateStr = event.target.dataset.date;
+                const date = new Date(dateStr);
+               
+                // Atualiza seleção visual
+                document.querySelectorAll('.calendar-day.selected').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                event.target.classList.add('selected');
+               
+                // Atualiza estado
+                selectedDate = dateStr;
+               
+                // Atualiza display
+                const formattedDate = formatDate(date);
+                document.getElementById('selected-date-display').textContent = formattedDate;
+                document.getElementById('selected-date').value = dateStr;
+                calendarToggle.classList.add('selected');
+               
+                // Fecha calendário (opcional)
+                calendarDropdown.classList.remove('active');
+               
+                // Carrega horários para esta data
+                loadTimeOptions(dateStr, formattedDate);
+               
+                // Atualiza informações
+                infoDate.textContent = formattedDate;
+                infoTime.textContent = 'Não selecionado';
+                selectionInfo.style.display = 'flex';
+               
+                // Desabilita botão até selecionar horário
+                submitBtn.disabled = true;
+                selectedTime = null;
+            }
+           
+            // Função para formatar data
+            function formatDate(date) {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            }
+           
+            // Função para carregar horários disponíveis
+            async function loadTimeOptions(dateStr, formattedDate) {
+                // Limpa horários anteriores
+                timeOptionsContainer.innerHTML = '';
+                loadingIndicator.style.display = 'flex';
+               
+                try {
+                    // SIMULAÇÃO - Substitua por chamada real ao seu backend
+                    // Exemplo: const response = await fetch(`php/get_horarios.php?data=${dateStr}`);
+                   
+                    // Para exemplo, vamos gerar horários baseados no dia da semana
+                    setTimeout(() => {
+                        const horarios = generateSampleTimes(dateStr);
+                       
+                        loadingIndicator.style.display = 'none';
+                       
+                        if (horarios.length === 0) {
+                            timeOptionsContainer.innerHTML =
+                                '<div class="no-times-message">' +
+                                'Não há horários disponíveis para ' + formattedDate + '. Por favor, selecione outra data.' +
+                                '</div>';
+                            return;
+                        }
+                       
+                        // Adiciona botões para cada horário
+                        horarios.forEach(time => {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'time-option';
+                            btn.textContent = time;
+                            btn.dataset.time = time;
+                           
+                            btn.addEventListener('click', function() {
+                                selectTime(time, this);
+                            });
+                           
+                            timeOptionsContainer.appendChild(btn);
+                        });
+                       
+                    }, 500);
+                   
+                } catch (error) {
+                    console.error('Erro ao carregar horários:', error);
+                    loadingIndicator.style.display = 'none';
+                    timeOptionsContainer.innerHTML =
+                        '<div class="no-times-message">' +
+                        'Erro ao carregar horários. Tente novamente.' +
+                        '</div>';
+                }
+            }
+           
+            // Função para gerar horários de exemplo
+            function generateSampleTimes(dateStr) {
+                const date = new Date(dateStr);
+                const dayOfWeek = date.getDay();
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+               
+                // Horários baseados no dia da semana e data (para variação)
+                let horarios = [];
+               
+                // Configurações diferentes por dia da semana
+                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // Segunda, Quarta, Sexta
+                    horarios = ['08:00', '09:30', '11:00', '14:00', '15:30', '17:00'];
+                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // Terça, Quinta
+                    horarios = ['08:30', '10:00', '11:30', '14:30', '16:00', '17:30'];
+                }
+               
+                // Remove aleatoriamente alguns horários para simular indisponibilidade
+                // Baseado no dia para ter consistência
+                const seed = day * month;
+                return horarios.filter((_, index) => {
+                    return (seed + index) % 3 !== 0; // Remove aproximadamente 1/3 dos horários
+                });
+            }
+           
+            // Função para selecionar horário
+            function selectTime(time, element) {
+                // Remove seleção anterior
+                document.querySelectorAll('#time-options .time-option.selected').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+               
+                // Adiciona seleção atual
+                element.classList.add('selected');
+                selectedTime = time;
+                document.getElementById('selected-time').value = time;
+               
+                // Atualiza informações
+                infoTime.textContent = time;
+               
+                // Habilita botão de submit
+                submitBtn.disabled = false;
+            }
+           
+            // Manipulação do envio do formulário
+            document.getElementById('appointment-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+               
+                if (!selectedDate || !selectedTime) {
+                    alert('Por favor, selecione uma data e um horário.');
+                    return;
+                }
+               
+                const fullname = document.getElementById('fullname').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const email = document.getElementById('email').value.trim();
+               
+                // Validações básicas
+                if (!fullname || !phone || !email) {
+                    alert('Por favor, preencha todos os campos obrigatórios.');
+                    return;
+                }
+               
+                // Validação de email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Por favor, insira um e-mail válido.');
+                    return;
+                }
+               
+                // Desabilita botão e mostra loading
+                submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+               
+                try {
+                    // Aqui você fará a chamada REAL para seu backend
+                    // Exemplo:
+                    // const response = await fetch('php/salvar_agendamento.php', {
+                    //     method: 'POST',
+                    //     headers: {'Content-Type': 'application/json'},
+                    //     body: JSON.stringify({
+                    //         nome: fullname,
+                    //         telefone: phone,
+                    //         email: email,
+                    //         data: selectedDate,
+                    //         hora: selectedTime
+                    //     })
+                    // });
+                    // const result = await response.json();
+                   
+                    // SIMULAÇÃO - Substitua pela chamada real
+                    setTimeout(() => {
+                        const formattedDate = formatDate(new Date(selectedDate));
+                       
+                        alert(`✅ Solicitação de avaliação enviada com sucesso!\n\n📅 Data: ${formattedDate}\n⏰ Horário: ${selectedTime}\n👤 Nome: ${fullname}\n📞 Telefone: ${phone}\n\nEntraremos em contato em breve para confirmação.`);
+                       
+                        // Reseta o formulário
+                        resetForm();
+                       
+                        // Restaura botão
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = true;
+                       
+                    }, 1500);
+                   
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('❌ Erro ao enviar solicitação. Tente novamente.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+           
+            // Função para resetar o formulário
+            function resetForm() {
+                // Limpa campos
+                document.getElementById('appointment-form').reset();
+               
+                // Reseta seleções
+                selectedDate = null;
+                selectedTime = null;
+               
+                // Limpa seleções visuais
+                document.querySelectorAll('.calendar-day.selected').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                document.querySelectorAll('.time-option.selected').forEach(el => {
+                    el.classList.remove('selected');
+                });
+               
+                // Reseta displays
+                document.getElementById('selected-date-display').textContent = 'Clique para selecionar uma data';
+                calendarToggle.classList.remove('selected');
+                document.getElementById('selected-date').value = '';
+                document.getElementById('selected-time').value = '';
+               
+                // Esconde informações
+                selectionInfo.style.display = 'none';
+               
+                // Limpa horários
+                timeOptionsContainer.innerHTML = '<div class="no-times-message">Selecione uma data primeiro</div>';
+            }
+           
+            // Validação em tempo real dos campos
+            const textInputs = document.querySelectorAll('#fullname, #phone, #email');
+            textInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateInput(this);
+                });
+            });
+           
+            function validateInput(input) {
+                const value = input.value.trim();
+               
+                if (input.id === 'email' && value) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (emailRegex.test(value)) {
+                        input.style.borderColor = '#4caf50';
+                    } else {
+                        input.style.borderColor = '#ff6b6b';
+                    }
+                } else if (!value && input.hasAttribute('required')) {
+                    input.style.borderColor = '#ff6b6b';
+                } else {
+                    input.style.borderColor = '#e0e0e0';
+                }
+            }
+           
+            // Efeitos visuais nos campos
+            const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+               
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
