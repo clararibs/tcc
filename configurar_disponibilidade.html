@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuração de Agenda - Clínica Estética</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .container {
+      display: flex;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    
+    .controls {
+      width: 300px;
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .controls h2 {
+      margin-top: 20px;
+      color: #333;
+      font-size: 16px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    
+    .controls label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    
+    .controls select, .controls input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .controls button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+    }
+    
+    .controls button:hover {
+      background: #45a049;
+    }
+    
+    #calendar {
+      flex: 1;
+    }
+    
+    /* Estilos para os diferentes tipos de eventos */
+    .disponibilidade {
+      background-color: #4CAF50 !important;
+      border-color: #4CAF50 !important;
+    }
+    
+    .intervalo {
+      background-color: #ff9800 !important;
+      border-color: #ff9800 !important;
+    }
+    
+    .excecao {
+      background-color: #f44336 !important;
+      border-color: #f44336 !important;
+    }
+    
+    .slot-disponivel {
+      background-color: #2196F3 !important;
+      border-color: #2196F3 !important;
+      font-size: 12px;
+      padding: 2px !important;
+      margin: 1px !important;
+    }
+    
+    .slot-label {
+      font-size: 10px;
+      opacity: 0.9;
+    }
+    
+    .slot-controls {
+      background: #e8f5e9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 6px;
+      border: 1px solid #c8e6c9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Configuração de Agenda - Clínica Estética</h1>
+  <div class="container">
+    <div class="controls">
+      <div class="slot-controls">
+        <h2>Configuração de Lacunas/Slots</h2>
+        <label>Duração do Slot (minutos):</label>
+        <select id="duracaoSlot">
+          <option value="30">30 minutos</option>
+          <option value="60">60 minutos</option>
+          <option value="90">90 minutos</option>
+          <option value="120">120 minutos</option>
+        </select>
+        <button onclick="gerarSlots()">Gerar Slots de Horários</button>
+        <button onclick="limparSlots()" style="background: #757575;">Limpar Slots</button>
+        <p><small>Slots são gerados dentro das disponibilidades, exceto nos intervalos e exceções.</small></p>
+      </div>
+
+      <h2>Disponibilidade</h2>
+      <label>Dia da semana:</label>
+      <select id="diaSemanaDisponibilidade">
+        <option value="1">Segunda-feira</option>
+        <option value="2">Terça-feira</option>
+        <option value="3">Quarta-feira</option>
+        <option value="4">Quinta-feira</option>
+        <option value="5">Sexta-feira</option>
+        <option value="6">Sábado</option>
+      </select>
+      <label>Hora Início:</label>
+      <input type="time" id="horaInicioDisponibilidade">
+      <label>Hora Fim:</label>
+      <input type="time" id="horaFimDisponibilidade">
+      <button onclick="addDisponibilidade()">Adicionar/Alterar</button>
+
+      <h2>Intervalo Fixo</h2>
+      <label>Dia da semana:</label>
+      <select id="diaSemanaIntervalo">
+        <option value="1">Segunda-feira</option>
+        <option value="2">Terça-feira</option>
+        <option value="3">Quarta-feira</option>
+        <option value="4">Quinta-feira</option>
+        <option value="5">Sexta-feira</option>
+        <option value="6">Sábado</option>
+      </select>
+      <label>Hora Início:</label>
+      <input type="time" id="horaInicioIntervalo">
+      <label>Hora Fim:</label>
+      <input type="time" id="horaFimIntervalo">
+      <button onclick="addIntervalo()">Adicionar/Alterar</button>
+
+      <h2>Exceções</h2>
+      <label>Data:</label>
+      <input type="date" id="dataExcecao">
+      <label>Hora Início (opcional):</label>
+      <input type="time" id="horaInicioExcecao">
+      <label>Hora Fim (opcional):</label>
+      <input type="time" id="horaFimExcecao">
+      <button onclick="addExcecao()">Adicionar Exceção</button>
+    </div>
+    <div id="calendar"></div>
+  </div>
+
+  <script>
+    let disponibilidades = [];
+    let intervalos = [];
+    let excecoes = [];
+    let slots = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      window.calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+        initialView: 'timeGridWeek',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        locale: 'pt-br',
+        editable: true,
+        selectable: true,
+        slotDuration: '00:30:00', // Mostra slots de 30min na visualização
+        slotLabelInterval: '01:00', // Mostra rótulo a cada hora
+        allDaySlot: false,
+        slotMinTime: '06:00:00', // Hora mínima visível
+        slotMaxTime: '20:00:00', // Hora máxima visível
+        eventClick: function(info) {
+          if(info.event.extendedProps.tipo === 'excecao'){
+            if(confirm('Deseja excluir esta exceção?')){
+              excecoes = excecoes.filter(e => e.id !== info.event.id);
+              info.event.remove();
+              atualizarEventos();
+            }
+          }
+        },
+        events: []
+      });
+      window.calendar.render();
+    });
+
+    function atualizarEventos(){
+      window.calendar.removeAllEvents();
+
+      // Adiciona disponibilidades
+      disponibilidades.forEach(d => {
+        let dia = parseInt(d.diaSemana);
+        let excecaoNoDia = excecoes.some(e => new Date(e.data).getDay() === dia);
+        if(!excecaoNoDia){
+          window.calendar.addEvent({
+            daysOfWeek:[dia],
+            startTime:d.inicio,
+            endTime:d.fim,
+            title:'Disponível',
+            className:'disponibilidade',
+            tipo:'disponibilidade'
+          });
+        }
+      });
+
+      // Adiciona intervalos
+      intervalos.forEach(i => {
+        let dia = parseInt(i.diaSemana);
+        window.calendar.addEvent({
+          daysOfWeek:[dia],
+          startTime:i.inicio,
+          endTime:i.fim,
+          title:'Intervalo',
+          className:'intervalo',
+          tipo:'intervalo'
+        });
+      });
+
+      // Adiciona exceções
+      excecoes.forEach(e => {
+        window.calendar.addEvent({
+          id:e.id,
+          start:e.inicio ? `${e.data}T${e.inicio}` : `${e.data}T00:00`,
+          end:e.fim ? `${e.data}T${e.fim}` : `${e.data}T23:59`,
+          title:'Exceção',
+          className:'excecao',
+          tipo:'excecao'
+        });
+      });
+
+      // Adiciona slots
+      slots.forEach(slot => {
+        window.calendar.addEvent({
+          daysOfWeek:[slot.diaSemana],
+          startTime:slot.inicio,
+          endTime:slot.fim,
+          title:`Slot: ${slot.inicio} - ${slot.fim}`,
+          className:'slot-disponivel',
+          tipo:'slot'
+        });
+      });
+    }
+
+    function addDisponibilidade(){
+      const dia = document.getElementById('diaSemanaDisponibilidade').value;
+      const inicio = document.getElementById('horaInicioDisponibilidade').value;
+      const fim = document.getElementById('horaFimDisponibilidade').value;
+      if(!inicio || !fim) return alert('Preencha horários.');
+     
+      disponibilidades = disponibilidades.filter(d => d.diaSemana !== dia);
+      disponibilidades.push({diaSemana:dia,inicio:inicio,fim:fim});
+      atualizarEventos();
+    }
+
+    function addIntervalo(){
+      const dia = document.getElementById('diaSemanaIntervalo').value;
+      const inicio = document.getElementById('horaInicioIntervalo').value;
+      const fim = document.getElementById('horaFimIntervalo').value;
+      if(!inicio || !fim) return alert('Preencha horários.');
+    
+      intervalos = intervalos.filter(i => i.diaSemana !== dia);
+      intervalos.push({diaSemana:dia,inicio:inicio,fim:fim});
+      atualizarEventos();
+    }
+
+    function addExcecao(){
+      const data = document.getElementById('dataExcecao').value;
+      const inicio = document.getElementById('horaInicioExcecao').value;
+      const fim = document.getElementById('horaFimExcecao').value;
+      if(!data) return alert('Selecione uma data.');
+      const id = Date.now().toString();
+      excecoes.push({id:id,data:data,inicio:inicio,fim:fim});
+      atualizarEventos();
+    }
+
+    // Nova função para gerar slots
+    function gerarSlots() {
+      const duracaoSlot = parseInt(document.getElementById('duracaoSlot').value);
+      slots = [];
+      
+      disponibilidades.forEach(disp => {
+        const diaSemana = parseInt(disp.diaSemana);
+        const inicioTotal = timeToMinutes(disp.inicio);
+        const fimTotal = timeToMinutes(disp.fim);
+        const intervalosDoDia = intervalos.filter(i => parseInt(i.diaSemana) === diaSemana);
+        const excecoesDoDia = excecoes.filter(e => new Date(e.data).getDay() === diaSemana);
+        
+        let horarioAtual = inicioTotal;
+        
+        while (horarioAtual + duracaoSlot <= fimTotal) {
+          const slotInicio = minutesToTime(horarioAtual);
+          const slotFim = minutesToTime(horarioAtual + duracaoSlot);
+          
+          // Verifica se o slot não está dentro de um intervalo
+          const estaEmIntervalo = intervalosDoDia.some(intervalo => {
+            const intervaloInicio = timeToMinutes(intervalo.inicio);
+            const intervaloFim = timeToMinutes(intervalo.fim);
+            return (horarioAtual >= intervaloInicio && horarioAtual < intervaloFim) ||
+                   (horarioAtual + duracaoSlot > intervaloInicio && horarioAtual + duracaoSlot <= intervaloFim);
+          });
+          
+          // Verifica se o slot não está em uma exceção do dia
+          const estaEmExcecao = excecoesDoDia.some(excecao => {
+            if (!excecao.inicio || !excecao.fim) return true; // Exceção para o dia todo
+            const excecaoInicio = timeToMinutes(excecao.inicio);
+            const excecaoFim = timeToMinutes(excecao.fim);
+            return (horarioAtual >= excecaoInicio && horarioAtual < excecaoFim);
+          });
+          
+          if (!estaEmIntervalo && !estaEmExcecao) {
+            slots.push({
+              diaSemana: diaSemana,
+              inicio: slotInicio,
+              fim: slotFim,
+              duracao: duracaoSlot
+            });
+          }
+          
+          horarioAtual += duracaoSlot;
+        }
+      });
+      
+      atualizarEventos();
+      alert(`Foram gerados ${slots.length} slots de ${duracaoSlot} minutos cada.`);
+    }
+
+    // Função para limpar slots
+    function limparSlots() {
+      slots = [];
+      atualizarEventos();
+    }
+
+    // Funções auxiliares para trabalhar com horários
+    function timeToMinutes(timeStr) {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return hours * 60 + minutes;
+    }
+
+    function minutesToTime(minutes) {
+      const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
+      const mins = (minutes % 60).toString().padStart(2, '0');
+      return `${hours}:${mins}`;
+    }
+  </script>
+</body>
+</html>

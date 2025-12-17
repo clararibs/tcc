@@ -43,6 +43,8 @@
             flex: 1;
             padding: 40px;
             background: white;
+            position: relative;
+            z-index: 1;
         }
        
         .info-section {
@@ -83,7 +85,6 @@
             font-weight: 700;
             position: relative;
             padding-bottom: 15px;
-         
         }
        
         h1::after {
@@ -128,9 +129,10 @@
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
         }
        
-        /* Estilo para o calendário */
+        /* Estilo para o calendário - CORRIGIDO */
         .calendar-container {
             position: relative;
+            z-index: 1000;
         }
        
         .calendar-toggle {
@@ -144,6 +146,7 @@
             justify-content: space-between;
             align-items: center;
             font-size: 16px;
+            min-height: 52px;
         }
        
         .calendar-toggle:hover {
@@ -158,16 +161,18 @@
         .calendar-dropdown {
             display: none;
             position: absolute;
-            top: 100%;
+            top: calc(100% + 5px);
             left: 0;
-            right: 0;
+            width: 100%;
+            max-width: 320px;
             background: white;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            padding: 20px;
-            margin-top: 5px;
-            z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 12px;
+            z-index: 1001;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow: visible;
         }
        
         .calendar-dropdown.active {
@@ -178,17 +183,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            padding: 0 5px;
         }
        
         .calendar-nav {
             background: none;
             border: none;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            padding: 5px 10px;
+            padding: 5px;
             border-radius: 5px;
             transition: background 0.3s;
+            color: #333;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
        
         .calendar-nav:hover {
@@ -198,30 +210,46 @@
         .calendar-month {
             font-weight: 600;
             color: #333;
+            font-size: 15px;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0 5px;
         }
        
         .calendar-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #666;
             font-weight: 500;
+            font-size: 12px;
+            gap: 2px;
+        }
+       
+        .calendar-weekdays div {
+            padding: 5px 0;
         }
        
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 4px;
         }
        
         .calendar-day {
-            padding: 10px;
+            padding: 8px 4px;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
+            font-size: 13px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
         }
        
         .calendar-day:hover {
@@ -244,11 +272,13 @@
        
         .calendar-day.other-month {
             color: #aaa;
+            cursor: default;
         }
        
         .calendar-day.today {
             background: #e8f5e9;
             color: #2e7d32;
+            font-weight: 600;
         }
        
         /* Estilo para os horários */
@@ -444,32 +474,195 @@
             letter-spacing: 2px;
         }
        
+        /* Overlay para mobile */
+        .calendar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+       
+        .calendar-overlay.active {
+            display: block;
+        }
+       
+        /* Contêiner de calendário móvel */
+        .calendar-mobile-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 320px;
+            max-height: 80vh;
+            z-index: 1002;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+       
+        .calendar-mobile-container.active {
+            display: block;
+        }
+       
+        .calendar-mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+       
+        .calendar-mobile-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+       
+        .calendar-mobile-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+       
+        .calendar-mobile-close:hover {
+            background: #f0f0f0;
+        }
+       
+        .calendar-mobile-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: calc(80vh - 70px);
+        }
+       
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
+                margin: 10px;
+                max-width: 100%;
             }
            
             .form-section {
-                border-right: none;
-                border-bottom: 1px solid #eee;
+                padding: 25px;
+            }
+           
+            .info-section {
+                padding: 25px;
             }
            
             body {
                 padding: 10px;
             }
            
+            h1 {
+                font-size: 26px;
+                margin-bottom: 20px;
+            }
+           
             .calendar-dropdown {
-                position: fixed;
-                top: 50%;
-                left: 20px;
-                right: 20px;
-                transform: translateY(-50%);
-                max-height: 80vh;
-                overflow-y: auto;
+                display: none !important; /* Esconde o dropdown em mobile */
+            }
+           
+            .calendar-mobile-container {
+                display: block;
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+                transition: all 0.3s ease;
+            }
+           
+            .calendar-mobile-container.active {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
             }
            
             .time-options-container {
                 grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+                gap: 8px;
+            }
+           
+            .time-option {
+                padding: 10px 6px;
+                font-size: 13px;
+            }
+           
+            .selected-info {
+                flex-direction: column;
+                gap: 8px;
+            }
+           
+            .btn-submit {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+        }
+       
+        @media (min-width: 769px) {
+            .calendar-mobile-container,
+            .calendar-overlay {
+                display: none !important;
+            }
+           
+            /* Ajuste para garantir que o calendário caiba na tela */
+            .calendar-dropdown {
+                max-width: 320px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+           
+            /* Posicionamento inteligente - verifica se há espaço abaixo */
+            .calendar-dropdown.position-top {
+                top: auto;
+                bottom: calc(100% + 5px);
+            }
+        }
+       
+        @media (max-width: 480px) {
+            .calendar-mobile-container {
+                max-width: 300px;
+            }
+           
+            .calendar-mobile-content {
+                padding: 12px;
+            }
+           
+            .calendar-day {
+                height: 34px;
+                min-width: 34px;
+                font-size: 12px;
+                padding: 6px 3px;
+            }
+           
+            .calendar-month {
+                font-size: 14px;
+            }
+           
+            .calendar-weekdays {
+                font-size: 11px;
+            }
+           
+            .time-options-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+           
+            .form-section,
+            .info-section {
+                padding: 20px;
             }
         }
     </style>
@@ -507,6 +700,7 @@
                             <span id="selected-date-display">Clique para selecionar uma data</span>
                             <i class="fas fa-calendar-alt"></i>
                         </div>
+                        <!-- Dropdown para desktop -->
                         <div class="calendar-dropdown" id="calendar-dropdown">
                             <div class="calendar-header">
                                 <button class="calendar-nav" id="prev-month">
@@ -527,6 +721,40 @@
                                 <div>Sáb</div>
                             </div>
                             <div class="calendar-days" id="calendar-days">
+                                <!-- Os dias serão gerados dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Overlay para mobile -->
+                    <div class="calendar-overlay" id="calendar-overlay"></div>
+                    <!-- Modal para mobile -->
+                    <div class="calendar-mobile-container" id="calendar-mobile">
+                        <div class="calendar-mobile-header">
+                            <div class="calendar-mobile-title">Selecione uma data</div>
+                            <button class="calendar-mobile-close" id="calendar-mobile-close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="calendar-mobile-content">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" id="prev-month-mobile">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div class="calendar-month" id="current-month-mobile"></div>
+                                <button class="calendar-nav" id="next-month-mobile">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <div>Dom</div>
+                                <div>Seg</div>
+                                <div>Ter</div>
+                                <div>Qua</div>
+                                <div>Qui</div>
+                                <div>Sex</div>
+                                <div>Sáb</div>
+                            </div>
+                            <div class="calendar-days" id="calendar-days-mobile">
                                 <!-- Os dias serão gerados dinamicamente -->
                             </div>
                         </div>
@@ -592,10 +820,17 @@
             // Elementos do DOM
             const calendarToggle = document.getElementById('calendar-toggle');
             const calendarDropdown = document.getElementById('calendar-dropdown');
-            const calendarDays = document.getElementById('calendar-days');
+            const calendarOverlay = document.getElementById('calendar-overlay');
+            const calendarMobile = document.getElementById('calendar-mobile');
+            const calendarMobileClose = document.getElementById('calendar-mobile-close');
+            const calendarDaysDesktop = document.getElementById('calendar-days');
+            const calendarDaysMobile = document.getElementById('calendar-days-mobile');
             const currentMonthEl = document.getElementById('current-month');
+            const currentMonthMobileEl = document.getElementById('current-month-mobile');
             const prevMonthBtn = document.getElementById('prev-month');
             const nextMonthBtn = document.getElementById('next-month');
+            const prevMonthMobileBtn = document.getElementById('prev-month-mobile');
+            const nextMonthMobileBtn = document.getElementById('next-month-mobile');
             const timeOptionsContainer = document.getElementById('time-options');
             const loadingIndicator = document.getElementById('loading-times');
             const submitBtn = document.getElementById('submit-btn');
@@ -616,27 +851,73 @@
                 "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
             ];
            
-            // Dias da semana
-            const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-           
             // Inicializar calendário
             initCalendar();
            
             // Event Listeners
             calendarToggle.addEventListener('click', toggleCalendar);
-            prevMonthBtn.addEventListener('click', showPrevMonth);
-            nextMonthBtn.addEventListener('click', showNextMonth);
+            calendarMobileClose.addEventListener('click', closeCalendarMobile);
+            calendarOverlay.addEventListener('click', closeCalendarMobile);
            
-            // Fechar calendário ao clicar fora
+            // Navegação desktop
+            if (prevMonthBtn) prevMonthBtn.addEventListener('click', showPrevMonth);
+            if (nextMonthBtn) nextMonthBtn.addEventListener('click', showNextMonth);
+           
+            // Navegação mobile
+            if (prevMonthMobileBtn) prevMonthMobileBtn.addEventListener('click', showPrevMonthMobile);
+            if (nextMonthMobileBtn) nextMonthMobileBtn.addEventListener('click', showNextMonthMobile);
+           
+            // Fechar calendário desktop ao clicar fora
             document.addEventListener('click', function(event) {
-                if (!calendarToggle.contains(event.target) && !calendarDropdown.contains(event.target)) {
+                if (window.innerWidth > 768 && 
+                    !calendarToggle.contains(event.target) && 
+                    !calendarDropdown.contains(event.target) && 
+                    calendarDropdown.classList.contains('active')) {
                     calendarDropdown.classList.remove('active');
                 }
             });
            
             // Função para alternar calendário
             function toggleCalendar() {
-                calendarDropdown.classList.toggle('active');
+                const isMobile = window.innerWidth <= 768;
+                
+                if (isMobile) {
+                    // Mobile: abre modal
+                    calendarOverlay.classList.add('active');
+                    calendarMobile.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Previne scroll
+                } else {
+                    // Desktop: alterna dropdown
+                    calendarDropdown.classList.toggle('active');
+                    
+                    // Posicionamento inteligente - verifica espaço abaixo
+                    if (calendarDropdown.classList.contains('active')) {
+                        const dropdownRect = calendarDropdown.getBoundingClientRect();
+                        const viewportHeight = window.innerHeight;
+                        
+                        // Se não houver espaço abaixo, posiciona acima
+                        if (dropdownRect.bottom > viewportHeight - 10) {
+                            calendarDropdown.classList.add('position-top');
+                        } else {
+                            calendarDropdown.classList.remove('position-top');
+                        }
+                    }
+                }
+                
+                // Foca no mês atual ou no mês selecionado
+                if (selectedDate) {
+                    const date = new Date(selectedDate);
+                    currentMonth = date.getMonth();
+                    currentYear = date.getFullYear();
+                }
+                updateCalendar();
+            }
+           
+            // Função para fechar calendário mobile
+            function closeCalendarMobile() {
+                calendarOverlay.classList.remove('active');
+                calendarMobile.classList.remove('active');
+                document.body.style.overflow = ''; // Restaura scroll
             }
            
             // Função para inicializar calendário
@@ -644,9 +925,13 @@
                 updateCalendar();
             }
            
-            // Função para atualizar calendário
+            // Função para atualizar calendário (ambas as versões)
             function updateCalendar() {
-                currentMonthEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+                const monthYear = `${monthNames[currentMonth]} ${currentYear}`;
+                
+                // Atualiza cabeçalhos
+                if (currentMonthEl) currentMonthEl.textContent = monthYear;
+                if (currentMonthMobileEl) currentMonthMobileEl.textContent = monthYear;
                
                 // Primeiro dia do mês
                 const firstDay = new Date(currentYear, currentMonth, 1);
@@ -654,7 +939,20 @@
                 const daysInMonth = lastDay.getDate();
                 const startingDay = firstDay.getDay();
                
-                calendarDays.innerHTML = '';
+                // Atualiza calendário desktop
+                if (calendarDaysDesktop) {
+                    updateCalendarDays(calendarDaysDesktop, daysInMonth, startingDay);
+                }
+               
+                // Atualiza calendário mobile
+                if (calendarDaysMobile) {
+                    updateCalendarDays(calendarDaysMobile, daysInMonth, startingDay);
+                }
+            }
+           
+            // Função para atualizar os dias do calendário
+            function updateCalendarDays(container, daysInMonth, startingDay) {
+                container.innerHTML = '';
                
                 // Dias do mês anterior
                 const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
@@ -662,7 +960,7 @@
                     const day = document.createElement('div');
                     day.className = 'calendar-day other-month';
                     day.textContent = prevMonthLastDay - i;
-                    calendarDays.appendChild(day);
+                    container.appendChild(day);
                 }
                
                 // Dias do mês atual
@@ -701,10 +999,12 @@
                    
                     // Adiciona evento de clique
                     if (dayEl.classList.contains('available')) {
-                        dayEl.addEventListener('click', selectDate);
+                        dayEl.addEventListener('click', function() {
+                            handleDateSelect(this.dataset.date, this);
+                        });
                     }
                    
-                    calendarDays.appendChild(dayEl);
+                    container.appendChild(dayEl);
                 }
                
                 // Dias do próximo mês
@@ -714,12 +1014,13 @@
                     const day = document.createElement('div');
                     day.className = 'calendar-day other-month';
                     day.textContent = i;
-                    calendarDays.appendChild(day);
+                    container.appendChild(day);
                 }
             }
            
-            // Função para mostrar mês anterior
-            function showPrevMonth() {
+            // Função para mostrar mês anterior (desktop)
+            function showPrevMonth(e) {
+                if (e) e.stopPropagation();
                 currentMonth--;
                 if (currentMonth < 0) {
                     currentMonth = 11;
@@ -728,8 +1029,9 @@
                 updateCalendar();
             }
            
-            // Função para mostrar próximo mês
-            function showNextMonth() {
+            // Função para mostrar próximo mês (desktop)
+            function showNextMonth(e) {
+                if (e) e.stopPropagation();
                 currentMonth++;
                 if (currentMonth > 11) {
                     currentMonth = 0;
@@ -738,16 +1040,27 @@
                 updateCalendar();
             }
            
-            // Função para selecionar data
-            function selectDate(event) {
-                const dateStr = event.target.dataset.date;
+            // Função para mostrar mês anterior (mobile)
+            function showPrevMonthMobile(e) {
+                if (e) e.stopPropagation();
+                showPrevMonth();
+            }
+           
+            // Função para mostrar próximo mês (mobile)
+            function showNextMonthMobile(e) {
+                if (e) e.stopPropagation();
+                showNextMonth();
+            }
+           
+            // Função para lidar com seleção de data
+            function handleDateSelect(dateStr, element) {
                 const date = new Date(dateStr);
                
-                // Atualiza seleção visual
+                // Atualiza seleção visual em todos os calendários
                 document.querySelectorAll('.calendar-day.selected').forEach(el => {
                     el.classList.remove('selected');
                 });
-                event.target.classList.add('selected');
+                element.classList.add('selected');
                
                 // Atualiza estado
                 selectedDate = dateStr;
@@ -758,8 +1071,12 @@
                 document.getElementById('selected-date').value = dateStr;
                 calendarToggle.classList.add('selected');
                
-                // Fecha calendário (opcional)
-                calendarDropdown.classList.remove('active');
+                // Fecha calendários
+                if (window.innerWidth <= 768) {
+                    closeCalendarMobile();
+                } else {
+                    calendarDropdown.classList.remove('active');
+                }
                
                 // Carrega horários para esta data
                 loadTimeOptions(dateStr, formattedDate);
@@ -782,6 +1099,7 @@
                 return `${day}/${month}/${year}`;
             }
            
+            // Restante do código permanece igual...
             // Função para carregar horários disponíveis
             async function loadTimeOptions(dateStr, formattedDate) {
                 // Limpa horários anteriores
@@ -1012,6 +1330,20 @@
                 input.addEventListener('blur', function() {
                     this.parentElement.style.transform = 'translateY(0)';
                 });
+            });
+           
+            // Ajusta posicionamento do calendário quando a janela é redimensionada
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && calendarDropdown.classList.contains('active')) {
+                    const dropdownRect = calendarDropdown.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    
+                    if (dropdownRect.bottom > viewportHeight - 10) {
+                        calendarDropdown.classList.add('position-top');
+                    } else {
+                        calendarDropdown.classList.remove('position-top');
+                    }
+                }
             });
         });
     </script>
