@@ -676,15 +676,16 @@
            
             <h1>Solicite sua Avaliação</h1>
            
-            <form id="appointment-form">
+            <!-- FORMULÁRIO COM ACTION PARA PHP -->
+            <form id="appointment-form" action="php/salvar_solicitacao.php" method="POST">
                 <div class="form-group">
                     <label for="fullname">Nome completo:</label>
-                    <input type="text" id="fullname" name="fullname" required>
+                    <input type="text" id="fullname" name="nome" required>
                 </div>
                
                 <div class="form-group">
                     <label for="phone">Telefone:</label>
-                    <input type="tel" id="phone" name="phone" required>
+                    <input type="tel" id="phone" name="telefone" required>
                 </div>
                
                 <div class="form-group">
@@ -759,7 +760,8 @@
                             </div>
                         </div>
                     </div>
-                    <input type="hidden" id="selected-date" name="date" required>
+                    <!-- INPUT HIDDEN PARA DATA (OBRIGATÓRIO PARA PHP) -->
+                    <input type="hidden" id="selected-date" name="data" required>
                 </div>
                
                 <!-- Seletor de Horário -->
@@ -788,7 +790,8 @@
                             Selecione uma data primeiro
                         </div>
                     </div>
-                    <input type="hidden" id="selected-time" name="time" required>
+                    <!-- INPUT HIDDEN PARA HORA (OBRIGATÓRIO PARA PHP) -->
+                    <input type="hidden" id="selected-time" name="hora" required>
                 </div>
                
                 <button type="submit" class="btn-submit" id="submit-btn" disabled>
@@ -1099,7 +1102,6 @@
                 return `${day}/${month}/${year}`;
             }
            
-            // Restante do código permanece igual...
             // Função para carregar horários disponíveis
             async function loadTimeOptions(dateStr, formattedDate) {
                 // Limpa horários anteriores
@@ -1107,10 +1109,10 @@
                 loadingIndicator.style.display = 'flex';
                
                 try {
-                    // SIMULAÇÃO - Substitua por chamada real ao seu backend
-                    // Exemplo: const response = await fetch(`php/get_horarios.php?data=${dateStr}`);
+                    // SIMULAÇÃO - Aqui você pode conectar com PHP depois
+                    // Exemplo real: const response = await fetch(`php/get_horarios.php?data=${dateStr}`);
                    
-                    // Para exemplo, vamos gerar horários baseados no dia da semana
+                    // Para agora, mantemos a simulação
                     setTimeout(() => {
                         const horarios = generateSampleTimes(dateStr);
                        
@@ -1169,7 +1171,6 @@
                 }
                
                 // Remove aleatoriamente alguns horários para simular indisponibilidade
-                // Baseado no dia para ter consistência
                 const seed = day * month;
                 return horarios.filter((_, index) => {
                     return (seed + index) % 3 !== 0; // Remove aproximadamente 1/3 dos horários
@@ -1196,104 +1197,26 @@
             }
            
             // Manipulação do envio do formulário
-            document.getElementById('appointment-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-               
+            document.getElementById('appointment-form').addEventListener('submit', function(e) {
+                // Validação básica no cliente
                 if (!selectedDate || !selectedTime) {
+                    e.preventDefault();
                     alert('Por favor, selecione uma data e um horário.');
                     return;
                 }
                
-                const fullname = document.getElementById('fullname').value.trim();
-                const phone = document.getElementById('phone').value.trim();
-                const email = document.getElementById('email').value.trim();
-               
-                // Validações básicas
-                if (!fullname || !phone || !email) {
-                    alert('Por favor, preencha todos os campos obrigatórios.');
-                    return;
-                }
-               
-                // Validação de email
+                // Validação de email básica
+                const email = document.getElementById('email').value;
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+               
                 if (!emailRegex.test(email)) {
+                    e.preventDefault();
                     alert('Por favor, insira um e-mail válido.');
                     return;
                 }
                
-                // Desabilita botão e mostra loading
-                submitBtn.disabled = true;
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-               
-                try {
-                    // Aqui você fará a chamada REAL para seu backend
-                    // Exemplo:
-                    // const response = await fetch('php/salvar_agendamento.php', {
-                    //     method: 'POST',
-                    //     headers: {'Content-Type': 'application/json'},
-                    //     body: JSON.stringify({
-                    //         nome: fullname,
-                    //         telefone: phone,
-                    //         email: email,
-                    //         data: selectedDate,
-                    //         hora: selectedTime
-                    //     })
-                    // });
-                    // const result = await response.json();
-                   
-                    // SIMULAÇÃO - Substitua pela chamada real
-                    setTimeout(() => {
-                        const formattedDate = formatDate(new Date(selectedDate));
-                       
-                        alert(`✅ Solicitação de avaliação enviada com sucesso!\n\n📅 Data: ${formattedDate}\n⏰ Horário: ${selectedTime}\n👤 Nome: ${fullname}\n📞 Telefone: ${phone}\n\nEntraremos em contato em breve para confirmação.`);
-                       
-                        // Reseta o formulário
-                        resetForm();
-                       
-                        // Restaura botão
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = true;
-                       
-                    }, 1500);
-                   
-                } catch (error) {
-                    console.error('Erro:', error);
-                    alert('❌ Erro ao enviar solicitação. Tente novamente.');
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
+                // Se tudo ok, o formulário envia normalmente para o PHP
             });
-           
-            // Função para resetar o formulário
-            function resetForm() {
-                // Limpa campos
-                document.getElementById('appointment-form').reset();
-               
-                // Reseta seleções
-                selectedDate = null;
-                selectedTime = null;
-               
-                // Limpa seleções visuais
-                document.querySelectorAll('.calendar-day.selected').forEach(el => {
-                    el.classList.remove('selected');
-                });
-                document.querySelectorAll('.time-option.selected').forEach(el => {
-                    el.classList.remove('selected');
-                });
-               
-                // Reseta displays
-                document.getElementById('selected-date-display').textContent = 'Clique para selecionar uma data';
-                calendarToggle.classList.remove('selected');
-                document.getElementById('selected-date').value = '';
-                document.getElementById('selected-time').value = '';
-               
-                // Esconde informações
-                selectionInfo.style.display = 'none';
-               
-                // Limpa horários
-                timeOptionsContainer.innerHTML = '<div class="no-times-message">Selecione uma data primeiro</div>';
-            }
            
             // Validação em tempo real dos campos
             const textInputs = document.querySelectorAll('#fullname, #phone, #email');

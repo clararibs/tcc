@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda Clínica Estética Avançada</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+  
+  <style>
+    /* Reset e estilos gerais */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      padding: 20px;
+    }
+
+    /* Botão de voltar */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #2a5a3c;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      background: #1a3c27;
+      transform: translateY(-2px);
+    }
+
+    /* Mensagens */
+    .message {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Layout principal */
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 30px;
+    }
+
+    /* Sidebar (Formulário) */
+    .sidebar {
+      width: 350px;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    .sidebar h2 {
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    /* Formulário */
+    #consultaForm {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    #consultaForm label {
+      font-weight: 500;
+      color: #2c3e50;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    #consultaForm input {
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      background: #f9f9f9;
+    }
+
+    #consultaForm input:focus {
+      outline: none;
+      border-color: #3498db;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    #consultaForm input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    #consultaForm input[type="number"]::-webkit-outer-spin-button,
+    #consultaForm input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Botão do formulário */
+    #addEvent {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    #addEvent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Informação */
+    .info-tip {
+      margin-top: 20px;
+      padding: 12px;
+      background: #e8f4fc;
+      border-radius: 8px;
+      color: #2c3e50;
+      font-size: 13px;
+      text-align: center;
+      border: 1px solid #d1e7f7;
+    }
+
+    /* Calendário */
+    #calendar {
+      flex: 1;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    /* Responsivo */
+    @media (max-width: 1024px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+      
+      #calendar {
+        min-height: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botão para voltar -->
+  <a href="entrar_aline.html" class="back-button">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M10.5 13.5L5 8l5.5-5.5L11 1l-7 7 7 7z"/>
+    </svg>
+    Voltar ao Dashboard
+  </a>
+
+  <!-- Mensagens (serão preenchidas pelo PHP) -->
+  <?php 
+  // Inclui o controlador único
+  require_once 'php/agenda_crud.php';
+  
+  // Verifica se há mensagens na URL
+  if(isset($_GET['msg'])): 
+  ?>
+    <div class="message <?php echo $_GET['tipo'] ?? 'success'; ?>">
+      <?php echo htmlspecialchars($_GET['msg']); ?>
+    </div>
+    <script>
+      // Remove a mensagem após 5 segundos
+      setTimeout(() => {
+        const msg = document.querySelector('.message');
+        if(msg) msg.remove();
+      }, 5000);
+    </script>
+  <?php endif; ?>
+
+  <div class="container">
+    <!-- Sidebar com formulário -->
+    <div class="sidebar">
+      <h2>📅 Nova Consulta</h2>
+      
+      <!-- FORMULÁRIO ATUALIZADO - Usa o controlador único -->
+      <form id="consultaForm" method="POST" action="php/agenda_crud.php">
+        <input type="hidden" name="acao" value="salvar_consulta">
+        
+        <label for="name">Nome do Paciente</label>
+        <input type="text" id="name" name="nome" placeholder="Ex: Aline Silva" required>
+
+        <label for="phone">Telefone</label>
+        <input type="text" id="phone" name="telefone" placeholder="(xx) xxxxx-xxxx" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="email@exemplo.com">
+
+        <label for="procedure">Procedimento</label>
+        <input type="text" id="procedure" name="procedimento" placeholder="Ex: Botox" required>
+
+        <label for="date">Data</label>
+        <input type="date" id="date" name="data" required>
+
+        <label for="time">Horário de Início</label>
+        <input type="time" id="time" name="hora" required>
+
+        <label for="minutes">Duração (minutos)</label>
+        <input type="number" id="minutes" name="duracao" placeholder="Ex: 45" min="1" required>
+
+        <button type="submit" id="addEvent">✅ Adicionar Consulta</button>
+      </form>
+
+      <p class="info-tip">
+        💡 Clique em um evento no calendário para ver detalhes ou excluir.
+      </p>
+    </div>
+
+    <!-- Calendário -->
+    <div id="calendar"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        editable: false,
+        locale: 'pt-br',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        
+        // Eventos carregados do controlador único
+        events: 'php/agenda_crud.php?acao=listar_consultas',
+        
+        eventContent: function(arg) {
+          const title = arg.event.title || 'Consulta';
+          const time = arg.event.start ? arg.event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+          
+          return {
+            html: `
+              <div class="fc-event-main">
+                <div class="fc-event-time">${time}</div>
+                <div class="fc-event-title">${title}</div>
+              </div>
+            `
+          };
+        },
+
+        eventClick: function(info) {
+          const paciente = info.event.extendedProps;
+          const detalhes = `
+✨ Procedimento: ${paciente.procedure || "não informado"}
+👤 Paciente: ${paciente.name || "não informado"}
+📞 Telefone: ${paciente.phone || "não informado"}
+📧 Email: ${paciente.email || "não informado"}
+⏳ Duração: ${paciente.durationText || "não informado"}
+🗓️ Data: ${info.event.start ? info.event.start.toLocaleDateString('pt-BR') : "não definido"}
+⏰ Horário: ${info.event.start ? info.event.start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : "não definido"}
+          `;
+          
+          if (confirm(detalhes + "\n\n❓ Deseja excluir esta consulta?")) {
+            // Redireciona para o controlador único
+            const eventId = info.event.id;
+            window.location.href = `php/agenda_crud.php?acao=excluir_consulta&id=${eventId}`;
+          }
+        },
+
+        // Quando seleciona um período no calendário
+        select: function(info) {
+          const startStr = info.startStr.substring(0, 10);
+          document.getElementById('date').value = startStr;
+          calendar.unselect();
+        }
+      });
+
+      calendar.render();
+
+      // Configurar data mínima para hoje
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').min = today;
+      document.getElementById('date').value = today;
+
+      // Validação do formulário
+      document.getElementById('consultaForm').addEventListener('submit', function(e) {
+        const nome = document.getElementById('name').value.trim();
+        const telefone = document.getElementById('phone').value.trim();
+        const procedimento = document.getElementById('procedure').value.trim();
+        const data = document.getElementById('date').value;
+        const hora = document.getElementById('time').value;
+        const duracao = parseInt(document.getElementById('minutes').value) || 0;
+
+        if (!nome || !telefone || !procedimento || !data || !hora || duracao <= 0) {
+          e.preventDefault();
+          alert('⚠️ Preencha todos os campos obrigatórios!');
+          return;
+        }
+
+        // Validação de telefone
+        const telefoneLimpo = telefone.replace(/\D/g, '');
+        if (telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
+          e.preventDefault();
+          alert('⚠️ Telefone inválido! Digite DDD + número (10 ou 11 dígitos)');
+          return;
+        }
+
+        // Validação de data
+        const dataSelecionada = new Date(data);
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        if (dataSelecionada < hoje) {
+          e.preventDefault();
+          alert('⚠️ Não é possível agendar para datas passadas!');
+          return;
+        }
+
+        // Validação de horário
+        const horaInt = parseInt(hora.split(':')[0]);
+        if (horaInt < 8 || horaInt > 18) {
+          e.preventDefault();
+          if (!confirm('⚠️ Horário fora do expediente comercial (8h-18h).\nDeseja continuar mesmo assim?')) {
+            return;
+          }
+        }
+
+        // Mostra loading
+        document.getElementById('addEvent').innerHTML = '⏳ Agendando...';
+        document.getElementById('addEvent').disabled = true;
+      });
+
+      // Carrega horários disponíveis quando seleciona data
+      document.getElementById('date').addEventListener('change', function() {
+        const data = this.value;
+        if (data) {
+          carregarHorariosDisponiveis(data);
+        }
+      });
+
+      // Função para carregar horários disponíveis
+      function carregarHorariosDisponiveis(data) {
+        // Implementação futura - pode usar slots_disponiveis
+        console.log('Carregando horários para:', data);
+      }
+
+      // Atualizar calendário a cada 2 minutos
+      setInterval(() => {
+        calendar.refetchEvents();
+      }, 120000);
+    });
+  </script>
+</body>
+</html>

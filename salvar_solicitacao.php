@@ -1,74 +1,195 @@
 <?php
-// salvar_solicitacao.php - Processa solicitações de agendamento SEM JSON
-session_start();
+// ============================================
+// CONFIGURAÇÃO DA CONEXÃO - AJUSTE PARA SUA CASA!
+// ============================================
 
-// Incluir conexão
-include 'conexao.php';
+// OPÇÃO A: Para CASA (XAMPP padrão) - TENTE ESTA PRIMEIRO
+$host = 'localhost';     // ou '127.0.0.1'
+$port = 3306;           // padrão do MySQL
+$dbname = 'teste1';     // seu banco
+$username = 'root';     // usuário mais comum
+$password = '';         // senha vazia no XAMPP
 
-// Verificar se é POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: solicitar_agendamento.php?erro=Método não permitido');
-    exit;
-}
+// OPÇÃO B: Se a de cima não funcionar, tente sem porta
+// $host = 'localhost';
+// $port = null;
+// $username = 'root';
+// $password = '';
 
-// Receber dados via POST
-$nome_completo = $_POST['fullname'] ?? '';
-$telefone = $_POST['phone'] ?? '';
-$email = $_POST['email'] ?? '';
-$data_desejada = $_POST['date'] ?? '';
-$hora = $_POST['hour'] ?? '';
-$minuto = $_POST['minute'] ?? '';
+// OPÇÃO C: Para ESCOLA (com porta 3307)
+// $host = 'localhost';
+// $port = 3307;
+// $username = 'root';
+// $password = '';
 
-// Formatar hora
-$hora_desejada = sprintf("%02d:%02d:00", $hora, $minuto);
+// ============================================
+// NÃO MUDE DAQUI PARA BAIXO
+// ============================================
 
-// Validar campos
-$erros = [];
-
-if (empty($nome_completo)) $erros[] = "Nome é obrigatório";
-if (empty($telefone)) $erros[] = "Telefone é obrigatório";
-if (empty($email)) $erros[] = "Email é obrigatório";
-if (empty($data_desejada)) $erros[] = "Data é obrigatória";
-if (empty($hora) || empty($minuto)) $erros[] = "Horário é obrigatório";
-
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $erros[] = "Email inválido";
-
-$hoje = date('Y-m-d');
-if ($data_desejada < $hoje) $erros[] = "Data não pode ser no passado";
-
-$hora_int = (int)$hora;
-if ($hora_int < 8 || $hora_int > 18) $erros[] = "Horário deve ser entre 8:00 e 18:00";
-
-// Se houver erros, redirecionar de volta
-if (!empty($erros)) {
-    $_SESSION['erros'] = $erros;
-    $_SESSION['dados_form'] = $_POST;
-    header('Location: solicitar_agendamento.php');
-    exit;
-}
-
-// Inserir no banco
-$sql = "INSERT INTO solicitacoes_agendamento 
-        (nome_completo, email, telefone, data_desejada, hora_desejada, status) 
-        VALUES (?, ?, ?, ?, ?, 'pendente')";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sssss", $nome_completo, $email, $telefone, $data_desejada, $hora_desejada);
-
-if ($stmt->execute()) {
-    $_SESSION['sucesso'] = true;
-    $_SESSION['nome_cliente'] = $nome_completo;
-    $_SESSION['data'] = date('d/m/Y', strtotime($data_desejada));
-    $_SESSION['hora'] = substr($hora_desejada, 0, 5);
+try {
+    // Monta a string de conexão
+    $dsn = "mysql:host=$host";
+    if ($port) {
+        $dsn .= ":$port";
+    }
+    $dsn .= ";dbname=$dbname;charset=utf8";
     
-    // CORREÇÃO: adicionar .php
-    header('Location: solicitar_agendamento.php?sucesso=true');
-} else {
-    $_SESSION['erro_banco'] = "Erro ao salvar: " . $stmt->error;
-    // CORREÇÃO: adicionar .php
-    header('Location: solicitar_agendamento.php?erro=banco');
+    // Tenta conectar
+    $pdo = new PDO($dsn, $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // DEBUG: Log de sucesso
+    error_log("✅ Conexão estabelecida com $host" . ($port ? ":$port" : ""));
+    
+} catch (PDOException $e) {
+    // Se falhar, mostra erro detalhado
+    die("<script>
+        alert('❌ ERRO DE CONEXÃO COM O BANCO!\\\\\\\\n\\\\\\\\nERRO: " . addslashes($e->getMessage()) . "\\\\\\\\n\\\\\\\\nVERIFIQUE:\\\\\\\\n1. XAMPP está aberto?\\\\\\\\n2. MySQL está iniciado (botão verde)?\\\\\\\\n3. Banco \\'hedone\\' existe?\\\\\\\\n\\\\\\\\nConfiguração tentada:\\\\\\\\nHost: $host\\\\\\\\nPorta: " . ($port ?: 'padrão') . "\\\\\\\\nUsuário: $username\\\\\\\\nSenha: " . ($password ?: '(vazia)') . "');
+        console.error('Erro DB: " . addslashes($e->getMessage()) . "');
+    </script>");
 }
 
-$stmt->close();
-$conn->close();
+// ============================================
+// PROCESSAMENTO DO FORMULÁRIO
+// ============================================
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // DEBUG: Mostra o que está chegando
+    error_log("=== DADOS RECEBIDOS DO FORMULÁRIO ===");
+    foreach ($_POST as $key => $value) {
+        error_log("POST['$key'] = '$value'");
+    }
+    
+    // Recebe e limpa os dados
+    $nome = trim($_POST['nome'] ?? '');
+    $telefone = trim($_POST['telefone'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $data = trim($_POST['data'] ?? '');
+    $hora = trim($_POST['hora'] ?? '');
+    
+    // Validação básica
+    if (empty($nome) || empty($telefone) || empty($email) || empty($data) || empty($hora)) {
+        echo "<script>
+            alert('❌ Preencha todos os campos!');
+            window.history.back();
+        </script>";
+        exit;
+    }
+    
+    // Valida email
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "<script>
+            alert('❌ E-mail inválido!');
+            window.history.back();
+        </script>";
+        exit;
+    }
+    
+    try {
+        // ============================================
+        // VERIFICA SE O HORÁRIO JÁ ESTÁ OCUPADO
+        // ============================================
+        
+        // 1. Verifica em SOLICITAÇÕES CONFIRMADAS
+        $stmt = $pdo->prepare("
+            SELECT id_solicitacao 
+            FROM solicitacoes_agendamento 
+            WHERE data_desejada = ? 
+            AND hora_desejada = ?
+            AND status = 'confirmada'
+        ");
+        $stmt->execute([$data, $hora]);
+        
+        if ($stmt->rowCount() > 0) {
+            echo "<script>
+                alert('❌ Este horário já foi reservado por outra pessoa!\\\\\\\\nEscolha outro horário.');
+                window.history.back();
+            </script>";
+            exit;
+        }
+        
+        // 2. Verifica em CONSULTAS AGENDADAS (tabela consultas)
+        $stmt2 = $pdo->prepare("
+            SELECT id_consulta 
+            FROM consultas 
+            WHERE data_consulta = ? 
+            AND hora_inicio = ?
+        ");
+        $stmt2->execute([$data, $hora]);
+        
+        if ($stmt2->rowCount() > 0) {
+            echo "<script>
+                alert('❌ Este horário já tem uma consulta agendada!\\\\\\\\nEscolha outro horário.');
+                window.history.back();
+            </script>";
+            exit;
+        }
+        
+        // ============================================
+        // SALVA A SOLICITAÇÃO COMO CONFIRMADA
+        // ============================================
+        
+        $stmt = $pdo->prepare("
+            INSERT INTO solicitacoes_agendamento 
+            (nome_completo, email, telefone, data_desejada, hora_desejada, status) 
+            VALUES (?, ?, ?, ?, ?, 'confirmada')
+        ");
+        
+        $stmt->execute([$nome, $email, $telefone, $data, $hora]);
+        $id_solicitacao = $pdo->lastInsertId();
+        
+        // DEBUG: Log do sucesso
+        error_log("✅ Solicitação salva! ID: $id_solicitacao - Data: $data - Hora: $hora");
+        
+        // ============================================
+        // TAMBÉM SALVA NA TABELA DE CONSULTAS
+        // (para ocupar o horário na agenda)
+        // ============================================
+        
+        try {
+            $stmt3 = $pdo->prepare("
+                INSERT INTO consultas 
+                (nome_paciente, telefone, email, procedimento, data_consulta, hora_inicio, duracao_minutos) 
+                VALUES (?, ?, ?, 'Avaliação Inicial', ?, ?, 60)
+            ");
+            
+            $stmt3->execute([$nome, $telefone, $email, $data, $hora]);
+            $id_consulta = $pdo->lastInsertId();
+            
+            error_log("✅ Também salvo na tabela consultas! ID: $id_consulta");
+            
+        } catch (PDOException $e2) {
+            // Se falhar, apenas registra o erro mas não impede
+            error_log("⚠️ Não salvou na tabela consultas: " . $e2->getMessage());
+        }
+        
+        // ============================================
+        // SUCESSO - REDIRECIONA COM MENSAGEM
+        // ============================================
+        
+        // Formata a data para exibição
+        $data_formatada = date('d/m/Y', strtotime($data));
+        
+        echo "<script>
+            alert('✅ AVALIAÇÃO AGENDADA COM SUCESSO!\\\\\\\\n\\\\\\\\n📅 Data: $data_formatada\\\\\\\\n⏰ Horário: $hora\\\\\\\\n👤 Nome: $nome\\\\\\\\n📞 Telefone: $telefone\\\\\\\\n\\\\\\\\nChegue 10 minutos antes do horário!');
+            window.location.href = 'solicitar_avaliacao.html';
+        </script>";
+        
+    } catch (PDOException $e) {
+        // ERRO NO BANCO
+        error_log("❌ ERRO AO SALVAR NO BANCO: " . $e->getMessage());
+        
+        echo "<script>
+            alert('❌ ERRO NO SERVIDOR!\\\\\\\\n\\\\\\\\n" . addslashes($e->getMessage()) . "\\\\\\\\n\\\\\\\\nTente novamente ou entre em contato.');
+            window.history.back();
+        </script>";
+    }
+    
+} else {
+    // Se não for POST
+    echo "<script>
+        alert('Método inválido');
+        window.location.href = 'solicitar_avaliacao.html';
+    </script>";
+}
 ?>

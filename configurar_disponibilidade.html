@@ -102,6 +102,14 @@
       border-radius: 6px;
       border: 1px solid #c8e6c9;
     }
+    
+    .btn-danger {
+      background: #f44336 !important;
+    }
+    
+    .btn-danger:hover {
+      background: #d32f2f !important;
+    }
   </style>
 </head>
 <body>
@@ -117,8 +125,20 @@
           <option value="90">90 minutos</option>
           <option value="120">120 minutos</option>
         </select>
-        <button onclick="gerarSlots()">Gerar Slots de Horários</button>
-        <button onclick="limparSlots()" style="background: #757575;">Limpar Slots</button>
+        
+        <!-- Botão Gerar Slots com Formulário -->
+        <form method="POST" action="php/agenda_controller.php" id="formGerarSlots" style="display: inline;">
+          <input type="hidden" name="action" value="gerar_slots">
+          <input type="hidden" name="duracao" id="hiddenDuracao">
+          <button type="button" onclick="gerarSlots()" style="margin-bottom: 10px;">Gerar Slots de Horários</button>
+        </form>
+        
+        <!-- Botão Limpar Slots com Formulário -->
+        <form method="POST" action="php/agenda_controller.php" style="display: inline;">
+          <input type="hidden" name="action" value="limpar_slots">
+          <button type="button" onclick="limparSlots()" style="background: #757575;">Limpar Slots</button>
+        </form>
+        
         <p><small>Slots são gerados dentro das disponibilidades, exceto nos intervalos e exceções.</small></p>
       </div>
 
@@ -136,7 +156,16 @@
       <input type="time" id="horaInicioDisponibilidade">
       <label>Hora Fim:</label>
       <input type="time" id="horaFimDisponibilidade">
-      <button onclick="addDisponibilidade()">Adicionar/Alterar</button>
+      
+      <!-- Formulário para Disponibilidade -->
+      <form method="POST" action="php/agenda_controller.php" id="formDisponibilidade" style="display: none;">
+        <input type="hidden" name="action" value="salvar_config">
+        <input type="hidden" name="tipo" value="disponibilidade">
+        <input type="hidden" name="dia_semana" id="hiddenDiaDisponibilidade">
+        <input type="hidden" name="horario_inicio" id="hiddenInicioDisponibilidade">
+        <input type="hidden" name="horario_fim" id="hiddenFimDisponibilidade">
+      </form>
+      <button type="button" onclick="salvarDisponibilidade()">Adicionar/Alterar</button>
 
       <h2>Intervalo Fixo</h2>
       <label>Dia da semana:</label>
@@ -152,7 +181,16 @@
       <input type="time" id="horaInicioIntervalo">
       <label>Hora Fim:</label>
       <input type="time" id="horaFimIntervalo">
-      <button onclick="addIntervalo()">Adicionar/Alterar</button>
+      
+      <!-- Formulário para Intervalo -->
+      <form method="POST" action="php/agenda_controller.php" id="formIntervalo" style="display: none;">
+        <input type="hidden" name="action" value="salvar_config">
+        <input type="hidden" name="tipo" value="intervalo">
+        <input type="hidden" name="dia_semana" id="hiddenDiaIntervalo">
+        <input type="hidden" name="horario_inicio" id="hiddenInicioIntervalo">
+        <input type="hidden" name="horario_fim" id="hiddenFimIntervalo">
+      </form>
+      <button type="button" onclick="salvarIntervalo()">Adicionar/Alterar</button>
 
       <h2>Exceções</h2>
       <label>Data:</label>
@@ -161,18 +199,40 @@
       <input type="time" id="horaInicioExcecao">
       <label>Hora Fim (opcional):</label>
       <input type="time" id="horaFimExcecao">
-      <button onclick="addExcecao()">Adicionar Exceção</button>
+      <label>Motivo:</label>
+      <input type="text" id="motivoExcecao" placeholder="Ex: Feriado">
+      
+      <!-- Formulário para Exceção -->
+      <form method="POST" action="php/agenda_controller.php" id="formExcecao" style="display: none;">
+        <input type="hidden" name="action" value="salvar_excecao">
+        <input type="hidden" name="data_excecao" id="hiddenDataExcecao">
+        <input type="hidden" name="horario_inicio" id="hiddenInicioExcecao">
+        <input type="hidden" name="horario_fim" id="hiddenFimExcecao">
+        <input type="hidden" name="motivo" id="hiddenMotivoExcecao">
+      </form>
+      <button type="button" onclick="salvarExcecao()">Adicionar Exceção</button>
     </div>
     <div id="calendar"></div>
   </div>
 
+  <!-- Script para carregar dados do banco -->
+  <script src="php/carregar_dados.php?tipo=disponibilidade"></script>
+  <script src="php/carregar_dados.php?tipo=intervalo"></script>
+  <script src="php/carregar_dados.php?tipo=excecoes"></script>
+
   <script>
-    let disponibilidades = [];
-    let intervalos = [];
-    let excecoes = [];
+    // Variáveis globais que serão preenchidas pelos scripts acima
+    let disponibilidades = window.disponibilidades || [];
+    let intervalos = window.intervalos || [];
+    let excecoes = window.excecoes || [];
     let slots = [];
 
     document.addEventListener('DOMContentLoaded', function() {
+      // Configura data atual no campo de exceção
+      const hoje = new Date();
+      document.getElementById('dataExcecao').value = hoje.toISOString().split('T')[0];
+      
+      // Inicializa o calendário
       window.calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         initialView: 'timeGridWeek',
         headerToolbar: {
@@ -183,37 +243,165 @@
         locale: 'pt-br',
         editable: true,
         selectable: true,
-        slotDuration: '00:30:00', // Mostra slots de 30min na visualização
-        slotLabelInterval: '01:00', // Mostra rótulo a cada hora
+        slotDuration: '00:30:00',
+        slotLabelInterval: '01:00',
         allDaySlot: false,
-        slotMinTime: '06:00:00', // Hora mínima visível
-        slotMaxTime: '20:00:00', // Hora máxima visível
+        slotMinTime: '06:00:00',
+        slotMaxTime: '20:00:00',
         eventClick: function(info) {
           if(info.event.extendedProps.tipo === 'excecao'){
             if(confirm('Deseja excluir esta exceção?')){
-              excecoes = excecoes.filter(e => e.id !== info.event.id);
-              info.event.remove();
-              atualizarEventos();
+              excluirExcecao(info.event.id);
             }
           }
         },
         events: []
       });
       window.calendar.render();
+      
+      // Atualiza os eventos no calendário
+      atualizarEventos();
     });
 
+    // ========== FUNÇÕES PARA SALVAR NO BANCO ==========
+
+    function salvarDisponibilidade() {
+      const dia = document.getElementById('diaSemanaDisponibilidade').value;
+      const inicio = document.getElementById('horaInicioDisponibilidade').value;
+      const fim = document.getElementById('horaFimDisponibilidade').value;
+      
+      if(!inicio || !fim) {
+        alert('Preencha horários.');
+        return;
+      }
+      
+      // Preenche o formulário hidden
+      document.getElementById('hiddenDiaDisponibilidade').value = dia;
+      document.getElementById('hiddenInicioDisponibilidade').value = inicio + ':00';
+      document.getElementById('hiddenFimDisponibilidade').value = fim + ':00';
+      
+      // Confirma e envia
+      if(confirm(`Salvar disponibilidade para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
+        document.getElementById('formDisponibilidade').submit();
+      }
+    }
+
+    function salvarIntervalo() {
+      const dia = document.getElementById('diaSemanaIntervalo').value;
+      const inicio = document.getElementById('horaInicioIntervalo').value;
+      const fim = document.getElementById('horaFimIntervalo').value;
+      
+      if(!inicio || !fim) {
+        alert('Preencha horários.');
+        return;
+      }
+      
+      document.getElementById('hiddenDiaIntervalo').value = dia;
+      document.getElementById('hiddenInicioIntervalo').value = inicio + ':00';
+      document.getElementById('hiddenFimIntervalo').value = fim + ':00';
+      
+      if(confirm(`Salvar intervalo para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
+        document.getElementById('formIntervalo').submit();
+      }
+    }
+
+    function salvarExcecao() {
+      const data = document.getElementById('dataExcecao').value;
+      const inicio = document.getElementById('horaInicioExcecao').value;
+      const fim = document.getElementById('horaFimExcecao').value;
+      const motivo = document.getElementById('motivoExcecao').value || 'Sem atendimento';
+      
+      if(!data) {
+        alert('Selecione uma data.');
+        return;
+      }
+      
+      document.getElementById('hiddenDataExcecao').value = data;
+      document.getElementById('hiddenInicioExcecao').value = inicio ? inicio + ':00' : '';
+      document.getElementById('hiddenFimExcecao').value = fim ? fim + ':00' : '';
+      document.getElementById('hiddenMotivoExcecao').value = motivo;
+      
+      let mensagem = `Salvar exceção para ${formatarData(data)}?\nMotivo: ${motivo}`;
+      if(inicio && fim) {
+        mensagem += `\nHorário: ${inicio} às ${fim}`;
+      }
+      
+      if(confirm(mensagem)) {
+        document.getElementById('formExcecao').submit();
+      }
+    }
+
+    function excluirExcecao(idExcecao) {
+      if(!confirm('Tem certeza que deseja excluir esta exceção?')) return;
+      
+      // Cria formulário dinâmico para exclusão
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'php/agenda_controller.php';
+      form.style.display = 'none';
+      
+      const inputAction = document.createElement('input');
+      inputAction.type = 'hidden';
+      inputAction.name = 'action';
+      inputAction.value = 'excluir_excecao';
+      
+      const inputId = document.createElement('input');
+      inputId.type = 'hidden';
+      inputId.name = 'id_excecao';
+      inputId.value = idExcecao;
+      
+      form.appendChild(inputAction);
+      form.appendChild(inputId);
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    function gerarSlots() {
+      const duracao = document.getElementById('duracaoSlot').value;
+      document.getElementById('hiddenDuracao').value = duracao;
+      
+      if(confirm(`Gerar slots de ${duracao} minutos para os próximos 60 dias?`)) {
+        document.getElementById('formGerarSlots').submit();
+      }
+    }
+
+    function limparSlots() {
+      if(!confirm('Limpar todos os slots disponíveis?\nIsso não afeta agendamentos já confirmados.')) {
+        return;
+      }
+      
+      // Cria formulário dinâmico
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'php/agenda_controller.php';
+      form.style.display = 'none';
+      
+      const inputAction = document.createElement('input');
+      inputAction.type = 'hidden';
+      inputAction.name = 'action';
+      inputAction.value = 'limpar_slots';
+      
+      form.appendChild(inputAction);
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    // ========== FUNÇÕES DO CALENDÁRIO ==========
+
     function atualizarEventos(){
+      if (!window.calendar) return;
+      
       window.calendar.removeAllEvents();
 
       // Adiciona disponibilidades
       disponibilidades.forEach(d => {
-        let dia = parseInt(d.diaSemana);
-        let excecaoNoDia = excecoes.some(e => new Date(e.data).getDay() === dia);
+        let dia = parseInt(d.dia_semana);
+        let excecaoNoDia = excecoes.some(e => new Date(e.data_excecao).getDay() === dia);
         if(!excecaoNoDia){
           window.calendar.addEvent({
             daysOfWeek:[dia],
-            startTime:d.inicio,
-            endTime:d.fim,
+            startTime:d.horario_inicio,
+            endTime:d.horario_fim,
             title:'Disponível',
             className:'disponibilidade',
             tipo:'disponibilidade'
@@ -223,11 +411,11 @@
 
       // Adiciona intervalos
       intervalos.forEach(i => {
-        let dia = parseInt(i.diaSemana);
+        let dia = parseInt(i.dia_semana);
         window.calendar.addEvent({
           daysOfWeek:[dia],
-          startTime:i.inicio,
-          endTime:i.fim,
+          startTime:i.horario_inicio,
+          endTime:i.horario_fim,
           title:'Intervalo',
           className:'intervalo',
           tipo:'intervalo'
@@ -237,16 +425,16 @@
       // Adiciona exceções
       excecoes.forEach(e => {
         window.calendar.addEvent({
-          id:e.id,
-          start:e.inicio ? `${e.data}T${e.inicio}` : `${e.data}T00:00`,
-          end:e.fim ? `${e.data}T${e.fim}` : `${e.data}T23:59`,
+          id:e.id_excecao,
+          start:e.horario_inicio ? `${e.data_excecao}T${e.horario_inicio}` : `${e.data_excecao}T00:00`,
+          end:e.horario_fim ? `${e.data_excecao}T${e.horario_fim}` : `${e.data_excecao}T23:59`,
           title:'Exceção',
           className:'excecao',
           tipo:'excecao'
         });
       });
 
-      // Adiciona slots
+      // Adiciona slots (se estiverem carregados)
       slots.forEach(slot => {
         window.calendar.addEvent({
           daysOfWeek:[slot.diaSemana],
@@ -259,96 +447,27 @@
       });
     }
 
-    function addDisponibilidade(){
-      const dia = document.getElementById('diaSemanaDisponibilidade').value;
-      const inicio = document.getElementById('horaInicioDisponibilidade').value;
-      const fim = document.getElementById('horaFimDisponibilidade').value;
-      if(!inicio || !fim) return alert('Preencha horários.');
-     
-      disponibilidades = disponibilidades.filter(d => d.diaSemana !== dia);
-      disponibilidades.push({diaSemana:dia,inicio:inicio,fim:fim});
-      atualizarEventos();
+    // ========== FUNÇÕES AUXILIARES ==========
+
+    function getNomeDia(numero) {
+      const dias = {
+        '1': 'Segunda-feira',
+        '2': 'Terça-feira',
+        '3': 'Quarta-feira',
+        '4': 'Quinta-feira',
+        '5': 'Sexta-feira',
+        '6': 'Sábado',
+        '7': 'Domingo'
+      };
+      return dias[numero] || 'Dia ' + numero;
     }
 
-    function addIntervalo(){
-      const dia = document.getElementById('diaSemanaIntervalo').value;
-      const inicio = document.getElementById('horaInicioIntervalo').value;
-      const fim = document.getElementById('horaFimIntervalo').value;
-      if(!inicio || !fim) return alert('Preencha horários.');
-    
-      intervalos = intervalos.filter(i => i.diaSemana !== dia);
-      intervalos.push({diaSemana:dia,inicio:inicio,fim:fim});
-      atualizarEventos();
+    function formatarData(dataStr) {
+      const data = new Date(dataStr);
+      return data.toLocaleDateString('pt-BR');
     }
 
-    function addExcecao(){
-      const data = document.getElementById('dataExcecao').value;
-      const inicio = document.getElementById('horaInicioExcecao').value;
-      const fim = document.getElementById('horaFimExcecao').value;
-      if(!data) return alert('Selecione uma data.');
-      const id = Date.now().toString();
-      excecoes.push({id:id,data:data,inicio:inicio,fim:fim});
-      atualizarEventos();
-    }
-
-    // Nova função para gerar slots
-    function gerarSlots() {
-      const duracaoSlot = parseInt(document.getElementById('duracaoSlot').value);
-      slots = [];
-      
-      disponibilidades.forEach(disp => {
-        const diaSemana = parseInt(disp.diaSemana);
-        const inicioTotal = timeToMinutes(disp.inicio);
-        const fimTotal = timeToMinutes(disp.fim);
-        const intervalosDoDia = intervalos.filter(i => parseInt(i.diaSemana) === diaSemana);
-        const excecoesDoDia = excecoes.filter(e => new Date(e.data).getDay() === diaSemana);
-        
-        let horarioAtual = inicioTotal;
-        
-        while (horarioAtual + duracaoSlot <= fimTotal) {
-          const slotInicio = minutesToTime(horarioAtual);
-          const slotFim = minutesToTime(horarioAtual + duracaoSlot);
-          
-          // Verifica se o slot não está dentro de um intervalo
-          const estaEmIntervalo = intervalosDoDia.some(intervalo => {
-            const intervaloInicio = timeToMinutes(intervalo.inicio);
-            const intervaloFim = timeToMinutes(intervalo.fim);
-            return (horarioAtual >= intervaloInicio && horarioAtual < intervaloFim) ||
-                   (horarioAtual + duracaoSlot > intervaloInicio && horarioAtual + duracaoSlot <= intervaloFim);
-          });
-          
-          // Verifica se o slot não está em uma exceção do dia
-          const estaEmExcecao = excecoesDoDia.some(excecao => {
-            if (!excecao.inicio || !excecao.fim) return true; // Exceção para o dia todo
-            const excecaoInicio = timeToMinutes(excecao.inicio);
-            const excecaoFim = timeToMinutes(excecao.fim);
-            return (horarioAtual >= excecaoInicio && horarioAtual < excecaoFim);
-          });
-          
-          if (!estaEmIntervalo && !estaEmExcecao) {
-            slots.push({
-              diaSemana: diaSemana,
-              inicio: slotInicio,
-              fim: slotFim,
-              duracao: duracaoSlot
-            });
-          }
-          
-          horarioAtual += duracaoSlot;
-        }
-      });
-      
-      atualizarEventos();
-      alert(`Foram gerados ${slots.length} slots de ${duracaoSlot} minutos cada.`);
-    }
-
-    // Função para limpar slots
-    function limparSlots() {
-      slots = [];
-      atualizarEventos();
-    }
-
-    // Funções auxiliares para trabalhar com horários
+    // Funções auxiliares para trabalhar com horários (mantidas da versão original)
     function timeToMinutes(timeStr) {
       const [hours, minutes] = timeStr.split(':').map(Number);
       return hours * 60 + minutes;
