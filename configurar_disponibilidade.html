@@ -114,6 +114,11 @@
 </head>
 <body>
   <h1>Configuração de Agenda - Clínica Estética</h1>
+  
+  <div class="status-bar" style="background: #e3f2fd; padding: 10px; border-radius: 4px; margin-bottom: 15px; border-left: 4px solid #2196F3;">
+    <strong>Status:</strong> Carregando configurações...
+  </div>
+  
   <div class="container">
     <div class="controls">
       <div class="slot-controls">
@@ -121,20 +126,20 @@
         <label>Duração do Slot (minutos):</label>
         <select id="duracaoSlot">
           <option value="30">30 minutos</option>
-          <option value="60">60 minutos</option>
+          <option value="60" selected>60 minutos</option>
           <option value="90">90 minutos</option>
           <option value="120">120 minutos</option>
         </select>
         
         <!-- Botão Gerar Slots com Formulário -->
-        <form method="POST" action="php/agenda_controller.php" id="formGerarSlots" style="display: inline;">
+        <form method="POST" action="agenda_controller.php" id="formGerarSlots" style="display: inline;">
           <input type="hidden" name="action" value="gerar_slots">
           <input type="hidden" name="duracao" id="hiddenDuracao">
           <button type="button" onclick="gerarSlots()" style="margin-bottom: 10px;">Gerar Slots de Horários</button>
         </form>
         
         <!-- Botão Limpar Slots com Formulário -->
-        <form method="POST" action="php/agenda_controller.php" style="display: inline;">
+        <form method="POST" action="agenda_controller.php" style="display: inline;">
           <input type="hidden" name="action" value="limpar_slots">
           <button type="button" onclick="limparSlots()" style="background: #757575;">Limpar Slots</button>
         </form>
@@ -145,12 +150,13 @@
       <h2>Disponibilidade</h2>
       <label>Dia da semana:</label>
       <select id="diaSemanaDisponibilidade">
-        <option value="1">Segunda-feira</option>
-        <option value="2">Terça-feira</option>
-        <option value="3">Quarta-feira</option>
-        <option value="4">Quinta-feira</option>
-        <option value="5">Sexta-feira</option>
-        <option value="6">Sábado</option>
+        <option value="">Selecione um dia</option>
+        <option value="segunda">Segunda-feira</option>
+        <option value="terca">Terça-feira</option>
+        <option value="quarta">Quarta-feira</option>
+        <option value="quinta">Quinta-feira</option>
+        <option value="sexta">Sexta-feira</option>
+        <option value="sabado">Sábado</option>
       </select>
       <label>Hora Início:</label>
       <input type="time" id="horaInicioDisponibilidade">
@@ -158,7 +164,7 @@
       <input type="time" id="horaFimDisponibilidade">
       
       <!-- Formulário para Disponibilidade -->
-      <form method="POST" action="php/agenda_controller.php" id="formDisponibilidade" style="display: none;">
+      <form method="POST" action="agenda_controller.php" id="formDisponibilidade" style="display: none;">
         <input type="hidden" name="action" value="salvar_config">
         <input type="hidden" name="tipo" value="disponibilidade">
         <input type="hidden" name="dia_semana" id="hiddenDiaDisponibilidade">
@@ -170,12 +176,13 @@
       <h2>Intervalo Fixo</h2>
       <label>Dia da semana:</label>
       <select id="diaSemanaIntervalo">
-        <option value="1">Segunda-feira</option>
-        <option value="2">Terça-feira</option>
-        <option value="3">Quarta-feira</option>
-        <option value="4">Quinta-feira</option>
-        <option value="5">Sexta-feira</option>
-        <option value="6">Sábado</option>
+        <option value="">Selecione um dia</option>
+        <option value="segunda">Segunda-feira</option>
+        <option value="terca">Terça-feira</option>
+        <option value="quarta">Quarta-feira</option>
+        <option value="quinta">Quinta-feira</option>
+        <option value="sexta">Sexta-feira</option>
+        <option value="sabado">Sábado</option>
       </select>
       <label>Hora Início:</label>
       <input type="time" id="horaInicioIntervalo">
@@ -183,7 +190,7 @@
       <input type="time" id="horaFimIntervalo">
       
       <!-- Formulário para Intervalo -->
-      <form method="POST" action="php/agenda_controller.php" id="formIntervalo" style="display: none;">
+      <form method="POST" action="agenda_controller.php" id="formIntervalo" style="display: none;">
         <input type="hidden" name="action" value="salvar_config">
         <input type="hidden" name="tipo" value="intervalo">
         <input type="hidden" name="dia_semana" id="hiddenDiaIntervalo">
@@ -203,7 +210,7 @@
       <input type="text" id="motivoExcecao" placeholder="Ex: Feriado">
       
       <!-- Formulário para Exceção -->
-      <form method="POST" action="php/agenda_controller.php" id="formExcecao" style="display: none;">
+      <form method="POST" action="agenda_controller.php" id="formExcecao" style="display: none;">
         <input type="hidden" name="action" value="salvar_excecao">
         <input type="hidden" name="data_excecao" id="hiddenDataExcecao">
         <input type="hidden" name="horario_inicio" id="hiddenInicioExcecao">
@@ -215,25 +222,81 @@
     <div id="calendar"></div>
   </div>
 
-  <!-- Script para carregar dados do banco -->
-  <script src="php/carregar_dados.php?tipo=disponibilidade"></script>
-  <script src="php/carregar_dados.php?tipo=intervalo"></script>
-  <script src="php/carregar_dados.php?tipo=excecoes"></script>
-
   <script>
-    // Variáveis globais que serão preenchidas pelos scripts acima
-    let disponibilidades = window.disponibilidades || [];
-    let intervalos = window.intervalos || [];
-    let excecoes = window.excecoes || [];
+    // Variáveis globais
+    let disponibilidades = [];
+    let intervalos = [];
+    let excecoes = [];
     let slots = [];
+    let calendar;
 
     document.addEventListener('DOMContentLoaded', function() {
       // Configura data atual no campo de exceção
       const hoje = new Date();
       document.getElementById('dataExcecao').value = hoje.toISOString().split('T')[0];
       
-      // Inicializa o calendário
-      window.calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+      // Inicializa o calendário primeiro
+      inicializarCalendario();
+      
+      // Depois carrega os dados
+      carregarDadosIniciais();
+    });
+
+    // ========== CARREGAR DADOS ==========
+
+    async function carregarDadosIniciais() {
+      try {
+        // Carrega disponibilidades
+        const response1 = await fetch('carregar_dados.php?tipo=disponibilidade&_=' + Date.now());
+        const disponibilidadeData = await response1.text();
+        disponibilidades = extrairDadosDeScript(disponibilidadeData) || [];
+        
+        // Carrega intervalos
+        const response2 = await fetch('carregar_dados.php?tipo=intervalo&_=' + Date.now());
+        const intervaloData = await response2.text();
+        intervalos = extrairDadosDeScript(intervaloData) || [];
+        
+        // Carrega exceções
+        const response3 = await fetch('carregar_dados.php?tipo=excecoes&_=' + Date.now());
+        const excecaoData = await response3.text();
+        excecoes = extrairDadosDeScript(excecaoData) || [];
+        
+        console.log('Dados carregados:', { disponibilidades, intervalos, excecoes });
+        
+        // Atualiza status
+        document.querySelector('.status-bar').innerHTML = 
+          `<strong>Status:</strong> ${disponibilidades.length} disponibilidades, ${intervalos.length} intervalos, ${excecoes.length} exceções carregadas`;
+        
+        // Atualiza os eventos no calendário
+        atualizarEventosCalendario();
+        
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        document.querySelector('.status-bar').innerHTML = 
+          `<strong>Erro:</strong> Não foi possível carregar configurações. Tente recarregar a página.`;
+      }
+    }
+
+    function extrairDadosDeScript(scriptContent) {
+      // Procura por window.nomeArray = [...];
+      const match = scriptContent.match(/window\.\w+\s*=\s*(\[.*?\])/s);
+      if (match) {
+        try {
+          // Remove comentários e eval
+          const cleanScript = match[1].replace(/\n/g, '');
+          return eval('(' + cleanScript + ')');
+        } catch (e) {
+          console.error('Erro ao parsear dados:', e);
+          return [];
+        }
+      }
+      return [];
+    }
+
+    // ========== INICIALIZAR CALENDÁRIO ==========
+
+    function inicializarCalendario() {
+      calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         initialView: 'timeGridWeek',
         headerToolbar: {
           left: 'prev,next today',
@@ -241,37 +304,135 @@
           right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         locale: 'pt-br',
-        editable: true,
-        selectable: true,
+        editable: false,
+        selectable: false,
         slotDuration: '00:30:00',
         slotLabelInterval: '01:00',
         allDaySlot: false,
         slotMinTime: '06:00:00',
-        slotMaxTime: '20:00:00',
+        slotMaxTime: '22:00:00',
+        height: 650,
+        events: [],
         eventClick: function(info) {
           if(info.event.extendedProps.tipo === 'excecao'){
             if(confirm('Deseja excluir esta exceção?')){
               excluirExcecao(info.event.id);
             }
           }
-        },
-        events: []
+        }
       });
-      window.calendar.render();
       
-      // Atualiza os eventos no calendário
-      atualizarEventos();
-    });
+      calendar.render();
+    }
 
-    // ========== FUNÇÕES PARA SALVAR NO BANCO ==========
+    function atualizarEventosCalendario() {
+      if (!calendar) return;
+      
+      calendar.removeAllEvents();
+      const eventos = [];
+      
+      // Mapeia dias da semana para números do FullCalendar (0=Domingo, 1=Segunda...)
+      const diasMap = {
+        'segunda': 1,
+        'terca': 2,
+        'quarta': 3,
+        'quinta': 4,
+        'sexta': 5,
+        'sabado': 6,
+        'domingo': 0
+      };
+      
+      // Adiciona disponibilidades
+      disponibilidades.forEach(d => {
+        const diaNumero = diasMap[d.dia_semana.toLowerCase()] || parseInt(d.dia_semana);
+        const inicio = d.horario_inicio.substring(0, 5); // Pega apenas HH:MM
+        const fim = d.horario_fim.substring(0, 5);
+        
+        eventos.push({
+          daysOfWeek: [diaNumero],
+          startTime: inicio,
+          endTime: fim,
+          title: `Disponível (${inicio} - ${fim})`,
+          className: 'disponibilidade',
+          tipo: 'disponibilidade',
+          color: '#4CAF50'
+        });
+      });
+      
+      // Adiciona intervalos
+      intervalos.forEach(i => {
+        const diaNumero = diasMap[i.dia_semana.toLowerCase()] || parseInt(i.dia_semana);
+        const inicio = i.horario_inicio.substring(0, 5);
+        const fim = i.horario_fim.substring(0, 5);
+        
+        eventos.push({
+          daysOfWeek: [diaNumero],
+          startTime: inicio,
+          endTime: fim,
+          title: `Intervalo (${inicio} - ${fim})`,
+          className: 'intervalo',
+          tipo: 'intervalo',
+          color: '#ff9800'
+        });
+      });
+      
+      // Adiciona exceções
+      excecoes.forEach(e => {
+        const isTodoDia = !e.horario_inicio && !e.horario_fim;
+        const inicio = e.horario_inicio ? e.horario_inicio.substring(0, 5) : '';
+        const fim = e.horario_fim ? e.horario_fim.substring(0, 5) : '';
+        
+        eventos.push({
+          id: e.id_excecao.toString(),
+          start: isTodoDia ? e.data_excecao : `${e.data_excecao}T${inicio}`,
+          end: isTodoDia ? e.data_excecao : `${e.data_excecao}T${fim}`,
+          title: `Exceção: ${e.motivo}` + (isTodoDia ? '' : ` (${inicio} - ${fim})`),
+          className: 'excecao',
+          tipo: 'excecao',
+          color: '#f44336',
+          allDay: isTodoDia
+        });
+      });
+      
+      // Adiciona todos os eventos
+      eventos.forEach(evento => calendar.addEvent(evento));
+      
+      // Atualiza o calendário
+      calendar.render();
+    }
+
+    // ========== VALIDAÇÕES ==========
+
+    function validarHorario(idInicio, idFim) {
+      const inicio = document.getElementById(idInicio).value;
+      const fim = document.getElementById(idFim).value;
+      
+      if (inicio && fim && inicio >= fim) {
+        alert('A hora de início deve ser anterior à hora de fim.');
+        return false;
+      }
+      return true;
+    }
+
+    // ========== FUNÇÕES PARA SALVAR ==========
 
     function salvarDisponibilidade() {
       const dia = document.getElementById('diaSemanaDisponibilidade').value;
       const inicio = document.getElementById('horaInicioDisponibilidade').value;
       const fim = document.getElementById('horaFimDisponibilidade').value;
       
-      if(!inicio || !fim) {
-        alert('Preencha horários.');
+      // Validações
+      if (!dia) {
+        alert('Por favor, selecione um dia da semana.');
+        return;
+      }
+      
+      if (!inicio || !fim) {
+        alert('Por favor, preencha ambos os horários.');
+        return;
+      }
+      
+      if (!validarHorario('horaInicioDisponibilidade', 'horaFimDisponibilidade')) {
         return;
       }
       
@@ -281,7 +442,7 @@
       document.getElementById('hiddenFimDisponibilidade').value = fim + ':00';
       
       // Confirma e envia
-      if(confirm(`Salvar disponibilidade para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
+      if (confirm(`Salvar disponibilidade para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
         document.getElementById('formDisponibilidade').submit();
       }
     }
@@ -291,8 +452,18 @@
       const inicio = document.getElementById('horaInicioIntervalo').value;
       const fim = document.getElementById('horaFimIntervalo').value;
       
-      if(!inicio || !fim) {
-        alert('Preencha horários.');
+      // Validações
+      if (!dia) {
+        alert('Por favor, selecione um dia da semana.');
+        return;
+      }
+      
+      if (!inicio || !fim) {
+        alert('Por favor, preencha ambos os horários.');
+        return;
+      }
+      
+      if (!validarHorario('horaInicioIntervalo', 'horaFimIntervalo')) {
         return;
       }
       
@@ -300,7 +471,7 @@
       document.getElementById('hiddenInicioIntervalo').value = inicio + ':00';
       document.getElementById('hiddenFimIntervalo').value = fim + ':00';
       
-      if(confirm(`Salvar intervalo para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
+      if (confirm(`Salvar intervalo para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
         document.getElementById('formIntervalo').submit();
       }
     }
@@ -309,10 +480,27 @@
       const data = document.getElementById('dataExcecao').value;
       const inicio = document.getElementById('horaInicioExcecao').value;
       const fim = document.getElementById('horaFimExcecao').value;
-      const motivo = document.getElementById('motivoExcecao').value || 'Sem atendimento';
+      const motivo = document.getElementById('motivoExcecao').value.trim();
       
-      if(!data) {
-        alert('Selecione uma data.');
+      // Validações
+      if (!data) {
+        alert('Por favor, selecione uma data.');
+        return;
+      }
+      
+      if (!motivo) {
+        alert('Por favor, informe o motivo da exceção.');
+        return;
+      }
+      
+      // Valida horário se preenchido
+      if ((inicio && !fim) || (!inicio && fim)) {
+        alert('Para exceção com horário, preencha ambos início e fim.');
+        return;
+      }
+      
+      if (inicio && fim && inicio >= fim) {
+        alert('A hora de início deve ser anterior à hora de fim.');
         return;
       }
       
@@ -322,22 +510,24 @@
       document.getElementById('hiddenMotivoExcecao').value = motivo;
       
       let mensagem = `Salvar exceção para ${formatarData(data)}?\nMotivo: ${motivo}`;
-      if(inicio && fim) {
+      if (inicio && fim) {
         mensagem += `\nHorário: ${inicio} às ${fim}`;
+      } else {
+        mensagem += `\nDia inteiro`;
       }
       
-      if(confirm(mensagem)) {
+      if (confirm(mensagem)) {
         document.getElementById('formExcecao').submit();
       }
     }
 
     function excluirExcecao(idExcecao) {
-      if(!confirm('Tem certeza que deseja excluir esta exceção?')) return;
+      if (!confirm('Tem certeza que deseja excluir esta exceção?')) return;
       
       // Cria formulário dinâmico para exclusão
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = 'php/agenda_controller.php';
+      form.action = 'agenda_controller.php';
       form.style.display = 'none';
       
       const inputAction = document.createElement('input');
@@ -360,20 +550,20 @@
       const duracao = document.getElementById('duracaoSlot').value;
       document.getElementById('hiddenDuracao').value = duracao;
       
-      if(confirm(`Gerar slots de ${duracao} minutos para os próximos 60 dias?`)) {
+      if (confirm(`Gerar slots de ${duracao} minutos para os próximos 60 dias?`)) {
         document.getElementById('formGerarSlots').submit();
       }
     }
 
     function limparSlots() {
-      if(!confirm('Limpar todos os slots disponíveis?\nIsso não afeta agendamentos já confirmados.')) {
+      if (!confirm('Limpar todos os slots disponíveis?\nIsso não afeta agendamentos já confirmados.')) {
         return;
       }
       
       // Cria formulário dinâmico
       const form = document.createElement('form');
       form.method = 'POST';
-      form.action = 'php/agenda_controller.php';
+      form.action = 'agenda_controller.php';
       form.style.display = 'none';
       
       const inputAction = document.createElement('input');
@@ -386,98 +576,59 @@
       form.submit();
     }
 
-    // ========== FUNÇÕES DO CALENDÁRIO ==========
-
-    function atualizarEventos(){
-      if (!window.calendar) return;
-      
-      window.calendar.removeAllEvents();
-
-      // Adiciona disponibilidades
-      disponibilidades.forEach(d => {
-        let dia = parseInt(d.dia_semana);
-        let excecaoNoDia = excecoes.some(e => new Date(e.data_excecao).getDay() === dia);
-        if(!excecaoNoDia){
-          window.calendar.addEvent({
-            daysOfWeek:[dia],
-            startTime:d.horario_inicio,
-            endTime:d.horario_fim,
-            title:'Disponível',
-            className:'disponibilidade',
-            tipo:'disponibilidade'
-          });
-        }
-      });
-
-      // Adiciona intervalos
-      intervalos.forEach(i => {
-        let dia = parseInt(i.dia_semana);
-        window.calendar.addEvent({
-          daysOfWeek:[dia],
-          startTime:i.horario_inicio,
-          endTime:i.horario_fim,
-          title:'Intervalo',
-          className:'intervalo',
-          tipo:'intervalo'
-        });
-      });
-
-      // Adiciona exceções
-      excecoes.forEach(e => {
-        window.calendar.addEvent({
-          id:e.id_excecao,
-          start:e.horario_inicio ? `${e.data_excecao}T${e.horario_inicio}` : `${e.data_excecao}T00:00`,
-          end:e.horario_fim ? `${e.data_excecao}T${e.horario_fim}` : `${e.data_excecao}T23:59`,
-          title:'Exceção',
-          className:'excecao',
-          tipo:'excecao'
-        });
-      });
-
-      // Adiciona slots (se estiverem carregados)
-      slots.forEach(slot => {
-        window.calendar.addEvent({
-          daysOfWeek:[slot.diaSemana],
-          startTime:slot.inicio,
-          endTime:slot.fim,
-          title:`Slot: ${slot.inicio} - ${slot.fim}`,
-          className:'slot-disponivel',
-          tipo:'slot'
-        });
-      });
-    }
-
     // ========== FUNÇÕES AUXILIARES ==========
 
-    function getNomeDia(numero) {
+    function getNomeDia(valor) {
       const dias = {
-        '1': 'Segunda-feira',
-        '2': 'Terça-feira',
-        '3': 'Quarta-feira',
-        '4': 'Quinta-feira',
-        '5': 'Sexta-feira',
-        '6': 'Sábado',
-        '7': 'Domingo'
+        'segunda': 'Segunda-feira',
+        'terca': 'Terça-feira',
+        'quarta': 'Quarta-feira',
+        'quinta': 'Quinta-feira',
+        'sexta': 'Sexta-feira',
+        'sabado': 'Sábado',
+        'domingo': 'Domingo'
       };
-      return dias[numero] || 'Dia ' + numero;
+      return dias[valor] || valor;
     }
 
     function formatarData(dataStr) {
-      const data = new Date(dataStr);
-      return data.toLocaleDateString('pt-BR');
+      const data = new Date(dataStr + 'T00:00:00');
+      return data.toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long',
+        year: 'numeric'
+      });
     }
 
-    // Funções auxiliares para trabalhar com horários (mantidas da versão original)
-    function timeToMinutes(timeStr) {
-      const [hours, minutes] = timeStr.split(':').map(Number);
-      return hours * 60 + minutes;
+    // Função para recarregar dados manualmente
+    function recarregarDados() {
+      document.querySelector('.status-bar').innerHTML = 
+        '<strong>Status:</strong> Recarregando configurações...';
+      carregarDadosIniciais();
     }
 
-    function minutesToTime(minutes) {
-      const hours = Math.floor(minutes / 60).toString().padStart(2, '0');
-      const mins = (minutes % 60).toString().padStart(2, '0');
-      return `${hours}:${mins}`;
-    }
+    // Adiciona botão de recarregar ao status bar
+    setTimeout(function() {
+      const statusBar = document.querySelector('.status-bar');
+      if (statusBar) {
+        const reloadBtn = document.createElement('button');
+        reloadBtn.innerHTML = '↻';
+        reloadBtn.style.cssText = `
+          background: #3498db;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 5px 10px;
+          cursor: pointer;
+          margin-left: 10px;
+          font-size: 12px;
+        `;
+        reloadBtn.title = 'Recarregar configurações';
+        reloadBtn.onclick = recarregarDados;
+        statusBar.appendChild(reloadBtn);
+      }
+    }, 1000);
   </script>
 </body>
 </html>

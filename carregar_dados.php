@@ -1,6 +1,6 @@
-//php da consfiguração da agenda
-
 <?php
+//php da configuração da agenda
+
 require_once 'conexao.php';
 
 $tipo = $_GET['tipo'] ?? '';
@@ -9,95 +9,110 @@ header('Content-Type: application/javascript');
 
 switch ($tipo) {
     case 'disponibilidade':
-        carregarDisponibilidade();
+        carregarDisponibilidade($conn);
         break;
     case 'intervalo':
-        carregarIntervalo();
+        carregarIntervalo($conn);
         break;
     case 'excecoes':
-        carregarExcecoes();
+        carregarExcecoes($conn);
         break;
     default:
         echo "// Tipo não especificado";
         break;
 }
 
-function carregarDisponibilidade() {
-    global $pdo;
+function carregarDisponibilidade($conn) {
     
     try {
-        $stmt = $pdo->query("
+        $result = $conn->query("
             SELECT * FROM config_disponibilidade 
             WHERE tipo = 'disponibilidade' AND ativo = 1
             ORDER BY dia_semana, horario_inicio
         ");
         
         echo "window.disponibilidades = [\n";
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "  {\n";
-            echo "    id_config: " . $row['id_config'] . ",\n";
-            echo "    dia_semana: '" . $row['dia_semana'] . "',\n";
-            echo "    horario_inicio: '" . $row['horario_inicio'] . "',\n";
-            echo "    horario_fim: '" . $row['horario_fim'] . "',\n";
-            echo "    tipo: '" . $row['tipo'] . "'\n";
-            echo "  },\n";
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo "  {\n";
+                echo "    id_config: " . $row['id_config'] . ",\n";
+                echo "    dia_semana: '" . $row['dia_semana'] . "',\n";
+                echo "    horario_inicio: '" . $row['horario_inicio'] . "',\n";
+                echo "    horario_fim: '" . $row['horario_fim'] . "',\n";
+                echo "    tipo: '" . $row['tipo'] . "'\n";
+                echo "  },\n";
+            }
         }
         echo "];\n";
         
-    } catch (PDOException $e) {
+        if ($result) {
+            $result->free();
+        }
+        
+    } catch (Exception $e) {
         echo "window.disponibilidades = [];\n";
     }
 }
 
-function carregarIntervalo() {
-    global $pdo;
+function carregarIntervalo($conn) {
     
     try {
-        $stmt = $pdo->query("
+        $result = $conn->query("
             SELECT * FROM config_disponibilidade 
             WHERE tipo = 'intervalo' AND ativo = 1
             ORDER BY dia_semana, horario_inicio
         ");
         
         echo "window.intervalos = [\n";
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "  {\n";
-            echo "    id_config: " . $row['id_config'] . ",\n";
-            echo "    dia_semana: '" . $row['dia_semana'] . "',\n";
-            echo "    horario_inicio: '" . $row['horario_inicio'] . "',\n";
-            echo "    horario_fim: '" . $row['horario_fim'] . "',\n";
-            echo "    tipo: '" . $row['tipo'] . "'\n";
-            echo "  },\n";
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo "  {\n";
+                echo "    id_config: " . $row['id_config'] . ",\n";
+                echo "    dia_semana: '" . $row['dia_semana'] . "',\n";
+                echo "    horario_inicio: '" . $row['horario_inicio'] . "',\n";
+                echo "    horario_fim: '" . $row['horario_fim'] . "',\n";
+                echo "    tipo: '" . $row['tipo'] . "'\n";
+                echo "  },\n";
+            }
         }
         echo "];\n";
         
-    } catch (PDOException $e) {
+        if ($result) {
+            $result->free();
+        }
+        
+    } catch (Exception $e) {
         echo "window.intervalos = [];\n";
     }
 }
 
-function carregarExcecoes() {
-    global $pdo;
+function carregarExcecoes($conn) {
     
     try {
-        $stmt = $pdo->query("
+        $result = $conn->query("
             SELECT * FROM config_excecoes 
             ORDER BY data_excecao
         ");
         
         echo "window.excecoes = [\n";
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "  {\n";
-            echo "    id_excecao: " . $row['id_excecao'] . ",\n";
-            echo "    data_excecao: '" . $row['data_excecao'] . "',\n";
-            echo "    horario_inicio: " . ($row['horario_inicio'] ? "'" . $row['horario_inicio'] . "'" : 'null') . ",\n";
-            echo "    horario_fim: " . ($row['horario_fim'] ? "'" . $row['horario_fim'] . "'" : 'null') . ",\n";
-            echo "    motivo: '" . addslashes($row['motivo']) . "'\n";
-            echo "  },\n";
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo "  {\n";
+                echo "    id_excecao: " . $row['id_excecao'] . ",\n";
+                echo "    data_excecao: '" . $row['data_excecao'] . "',\n";
+                echo "    horario_inicio: " . ($row['horario_inicio'] ? "'" . $row['horario_inicio'] . "'" : 'null') . ",\n";
+                echo "    horario_fim: " . ($row['horario_fim'] ? "'" . $row['horario_fim'] . "'" : 'null') . ",\n";
+                echo "    motivo: '" . addslashes($row['motivo']) . "'\n";
+                echo "  },\n";
+            }
         }
         echo "];\n";
         
-    } catch (PDOException $e) {
+        if ($result) {
+            $result->free();
+        }
+        
+    } catch (Exception $e) {
         echo "window.excecoes = [];\n";
     }
 }
