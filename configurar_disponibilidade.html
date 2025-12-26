@@ -82,12 +82,23 @@
       border-color: #f44336 !important;
     }
     
+    /* CSS APENAS DOS SLOTS - CORRIGIDO */
     .slot-disponivel {
       background-color: #2196F3 !important;
-      border-color: #2196F3 !important;
-      font-size: 12px;
-      padding: 2px !important;
-      margin: 1px !important;
+      border-color: #1976D2 !important;
+      color: white !important;
+      font-size: 11px !important;
+      padding: 3px 6px !important;
+      margin: 1px 0 !important;
+      border-radius: 3px !important;
+      border-left: 3px solid #0D47A1 !important;
+      cursor: pointer;
+    }
+    
+    .slot-disponivel:hover {
+      background-color: #1976D2 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
     .slot-label {
@@ -261,11 +272,18 @@
         const excecaoData = await response3.text();
         excecoes = extrairDadosDeScript(excecaoData) || [];
         
-        console.log('Dados carregados:', { disponibilidades, intervalos, excecoes });
+        // Carrega slots
+        await carregarSlots();
+        
+        console.log('Dados carregados:', { 
+          disponibilidades: disponibilidades.length, 
+          intervalos: intervalos.length, 
+          excecoes: excecoes.length,
+          slots: slots.length
+        });
         
         // Atualiza status
-        document.querySelector('.status-bar').innerHTML = 
-          `<strong>Status:</strong> ${disponibilidades.length} disponibilidades, ${intervalos.length} intervalos, ${excecoes.length} exceções carregadas`;
+        atualizarStatusBar();
         
         // Atualiza os eventos no calendário
         atualizarEventosCalendario();
@@ -275,6 +293,62 @@
         document.querySelector('.status-bar').innerHTML = 
           `<strong>Erro:</strong> Não foi possível carregar configurações. Tente recarregar a página.`;
       }
+    }
+
+    async function carregarSlots() {
+      try {
+        // Carrega slots para os próximos 30 dias
+        const hoje = new Date();
+        const dataFim = new Date();
+        dataFim.setDate(hoje.getDate() + 30);
+        
+        const dataInicioStr = hoje.toISOString().split('T')[0];
+        const dataFimStr = dataFim.toISOString().split('T')[0];
+        
+        const response = await fetch(`carregar_slots.php?data_inicio=${dataInicioStr}&data_fim=${dataFimStr}&_=${Date.now()}`);
+        const slotsData = await response.text();
+        
+        // Executa o script para definir window.slots
+        eval(slotsData);
+        
+        // Atualiza a variável global
+        slots = window.slots || [];
+        
+        console.log(`✅ ${slots.length} slots carregados de ${dataInicioStr} até ${dataFimStr}`);
+        
+      } catch (error) {
+        console.error('Erro ao carregar slots:', error);
+        slots = [];
+      }
+    }
+
+    function atualizarStatusBar() {
+      const totalSlots = slots.length;
+      const disponiveis = disponibilidades.length;
+      const intervalosCount = intervalos.length;
+      const excecoesCount = excecoes.length;
+      
+      let statusHTML = `<strong>Status:</strong> ${disponiveis} disponibilidades, `;
+      statusHTML += `${intervalosCount} intervalos, ${excecoesCount} exceções`;
+      
+      if (totalSlots > 0) {
+        statusHTML += `, ${totalSlots} slots`;
+      }
+      
+      // Se houver parâmetro de slots gerados na URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const slotsGerados = urlParams.get('slots_gerados');
+      
+      if (slotsGerados) {
+        statusHTML += ` <span style="color: #4CAF50; font-weight: bold;">(${slotsGerados} novos slots gerados!)</span>`;
+        
+        // Remove o parâmetro da URL
+        setTimeout(() => {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }, 3000);
+      }
+      
+      document.querySelector('.status-bar').innerHTML = statusHTML;
     }
 
     function extrairDadosDeScript(scriptContent) {
@@ -313,11 +387,57 @@
         slotMaxTime: '22:00:00',
         height: 650,
         events: [],
+        
         eventClick: function(info) {
-          if(info.event.extendedProps.tipo === 'excecao'){
-            if(confirm('Deseja excluir esta exceção?')){
+          const tipo = info.event.extendedProps.tipo;
+          
+          if (tipo === 'excecao') {
+            if (confirm('Deseja excluir esta exceção?')) {
               excluirExcecao(info.event.id);
             }
+          } else if (tipo === 'slot') {
+            const id_slot = info.event.extendedProps.id_slot;
+            const duracao = info.event.extendedProps.duracao || 60;
+            const data = info.event.start.toLocaleDateString('pt-BR');
+            const hora = info.event.start.toLocaleTimeString('pt-BR', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            
+            const mensagem = `📅 Slot Disponível\n\n` +
+                            `Data: ${data}\n` +
+                            `Horário: ${hora}\n` +
+                            `Duração: ${duracao} minutos\n\n` +
+                            `ID do Slot: ${id_slot}\n\n` +
+                            `O que deseja fazer?`;
+            
+            const acao = confirm(`${mensagem}\n\nClique em OK para agendar neste slot\nou em Cancelar para voltar`);
+            
+            if (acao) {
+              // Aqui você pode integrar com o sistema de agendamento
+              alert(`🚀 Redirecionando para agendamento no slot ${id_slot}...`);
+              // window.location.href = `agendar.php?slot_id=${id_slot}`;
+            }
+          }
+        },
+        
+        // Tooltip para eventos
+        eventDidMount: function(info) {
+          const tipo = info.event.extendedProps.tipo;
+          const descricao = info.event.extendedProps.descricao || '';
+          
+          // Adiciona tooltip
+          if (descricao) {
+            info.el.title = descricao;
+          }
+          
+          // Estilo específico para slots
+          if (tipo === 'slot') {
+            info.el.style.fontSize = '11px';
+            info.el.style.padding = '3px 6px';
+            info.el.style.margin = '1px 0';
+            info.el.style.borderRadius = '3px';
+            info.el.style.borderLeft = '3px solid #0D47A1';
           }
         }
       });
@@ -345,8 +465,8 @@
       // Adiciona disponibilidades
       disponibilidades.forEach(d => {
         const diaNumero = diasMap[d.dia_semana.toLowerCase()] || parseInt(d.dia_semana);
-        const inicio = d.horario_inicio.substring(0, 5); // Pega apenas HH:MM
-        const fim = d.horario_fim.substring(0, 5);
+        const inicio = d.horario_inicio ? d.horario_inicio.substring(0, 5) : '';
+        const fim = d.horario_fim ? d.horario_fim.substring(0, 5) : '';
         
         eventos.push({
           daysOfWeek: [diaNumero],
@@ -355,15 +475,18 @@
           title: `Disponível (${inicio} - ${fim})`,
           className: 'disponibilidade',
           tipo: 'disponibilidade',
-          color: '#4CAF50'
+          color: '#4CAF50',
+          extendedProps: {
+            descricao: `Horário disponível para agendamento`
+          }
         });
       });
       
       // Adiciona intervalos
       intervalos.forEach(i => {
         const diaNumero = diasMap[i.dia_semana.toLowerCase()] || parseInt(i.dia_semana);
-        const inicio = i.horario_inicio.substring(0, 5);
-        const fim = i.horario_fim.substring(0, 5);
+        const inicio = i.horario_inicio ? i.horario_inicio.substring(0, 5) : '';
+        const fim = i.horario_fim ? i.horario_fim.substring(0, 5) : '';
         
         eventos.push({
           daysOfWeek: [diaNumero],
@@ -372,7 +495,10 @@
           title: `Intervalo (${inicio} - ${fim})`,
           className: 'intervalo',
           tipo: 'intervalo',
-          color: '#ff9800'
+          color: '#ff9800',
+          extendedProps: {
+            descricao: `Intervalo fixo - não disponível para agendamento`
+          }
         });
       });
       
@@ -383,22 +509,55 @@
         const fim = e.horario_fim ? e.horario_fim.substring(0, 5) : '';
         
         eventos.push({
-          id: e.id_excecao.toString(),
+          id: e.id_excecao ? e.id_excecao.toString() : '',
           start: isTodoDia ? e.data_excecao : `${e.data_excecao}T${inicio}`,
           end: isTodoDia ? e.data_excecao : `${e.data_excecao}T${fim}`,
           title: `Exceção: ${e.motivo}` + (isTodoDia ? '' : ` (${inicio} - ${fim})`),
           className: 'excecao',
           tipo: 'excecao',
           color: '#f44336',
-          allDay: isTodoDia
+          allDay: isTodoDia,
+          extendedProps: {
+            descricao: `Exceção: ${e.motivo}`
+          }
+        });
+      });
+      
+      // Adiciona slots
+      slots.forEach(s => {
+        const inicio = s.horario_inicio ? s.horario_inicio.substring(0, 5) : '';
+        const fim = s.horario_fim ? s.horario_fim.substring(0, 5) : '';
+        const duracao = s.duracao_minutos || 60;
+        
+        eventos.push({
+          id: 'slot_' + s.id_slot,
+          start: `${s.data_slot}T${inicio}`,
+          end: `${s.data_slot}T${fim}`,
+          title: `Slot ${duracao}min`,
+          className: 'slot-disponivel',
+          tipo: 'slot',
+          color: '#2196F3',
+          extendedProps: {
+            descricao: `Slot disponível para agendamento (${duracao} minutos)`,
+            duracao: duracao,
+            id_slot: s.id_slot
+          }
         });
       });
       
       // Adiciona todos os eventos
-      eventos.forEach(evento => calendar.addEvent(evento));
+      eventos.forEach(evento => {
+        try {
+          calendar.addEvent(evento);
+        } catch (e) {
+          console.error('Erro ao adicionar evento:', evento, e);
+        }
+      });
       
       // Atualiza o calendário
       calendar.render();
+      
+      console.log(`📊 Calendário atualizado com ${eventos.length} eventos (${slots.length} slots)`);
     }
 
     // ========== VALIDAÇÕES ==========
@@ -417,13 +576,20 @@
     // ========== FUNÇÕES PARA SALVAR ==========
 
     function salvarDisponibilidade() {
-      const dia = document.getElementById('diaSemanaDisponibilidade').value;
+      const diaSelect = document.getElementById('diaSemanaDisponibilidade');
+      const dia = diaSelect.value;
       const inicio = document.getElementById('horaInicioDisponibilidade').value;
       const fim = document.getElementById('horaFimDisponibilidade').value;
       
+      console.log('DEBUG - salvarDisponibilidade:');
+      console.log('Dia selecionado:', dia);
+      console.log('Horário início:', inicio);
+      console.log('Horário fim:', fim);
+      
       // Validações
-      if (!dia) {
+      if (!dia || dia === "") {
         alert('Por favor, selecione um dia da semana.');
+        diaSelect.focus();
         return;
       }
       
@@ -432,29 +598,52 @@
         return;
       }
       
-      if (!validarHorario('horaInicioDisponibilidade', 'horaFimDisponibilidade')) {
+      if (inicio >= fim) {
+        alert('A hora de início deve ser anterior à hora de fim.');
         return;
       }
       
-      // Preenche o formulário hidden
-      document.getElementById('hiddenDiaDisponibilidade').value = dia;
-      document.getElementById('hiddenInicioDisponibilidade').value = inicio + ':00';
-      document.getElementById('hiddenFimDisponibilidade').value = fim + ':00';
+      // PREENCHER OS CAMPOS HIDDEN
+      const hiddenDia = document.getElementById('hiddenDiaDisponibilidade');
+      const hiddenInicio = document.getElementById('hiddenInicioDisponibilidade');
+      const hiddenFim = document.getElementById('hiddenFimDisponibilidade');
       
-      // Confirma e envia
+      hiddenDia.value = dia;
+      hiddenInicio.value = inicio.includes(':') ? inicio : inicio + ':00';
+      if (!hiddenInicio.value.includes(':')) {
+        hiddenInicio.value = hiddenInicio.value + ':00';
+      }
+      
+      hiddenFim.value = fim.includes(':') ? fim : fim + ':00';
+      if (!hiddenFim.value.includes(':')) {
+        hiddenFim.value = hiddenFim.value + ':00';
+      }
+      
+      console.log('Valores hidden que serão enviados:');
+      console.log('Dia:', hiddenDia.value);
+      console.log('Início:', hiddenInicio.value);
+      console.log('Fim:', hiddenFim.value);
+      
       if (confirm(`Salvar disponibilidade para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
         document.getElementById('formDisponibilidade').submit();
       }
     }
 
     function salvarIntervalo() {
-      const dia = document.getElementById('diaSemanaIntervalo').value;
+      const diaSelect = document.getElementById('diaSemanaIntervalo');
+      const dia = diaSelect.value;
       const inicio = document.getElementById('horaInicioIntervalo').value;
       const fim = document.getElementById('horaFimIntervalo').value;
       
+      console.log('DEBUG - salvarIntervalo:');
+      console.log('Dia selecionado:', dia);
+      console.log('Horário início:', inicio);
+      console.log('Horário fim:', fim);
+      
       // Validações
-      if (!dia) {
+      if (!dia || dia === "") {
         alert('Por favor, selecione um dia da semana.');
+        diaSelect.focus();
         return;
       }
       
@@ -463,13 +652,31 @@
         return;
       }
       
-      if (!validarHorario('horaInicioIntervalo', 'horaFimIntervalo')) {
+      if (inicio >= fim) {
+        alert('A hora de início deve ser anterior à hora de fim.');
         return;
       }
       
-      document.getElementById('hiddenDiaIntervalo').value = dia;
-      document.getElementById('hiddenInicioIntervalo').value = inicio + ':00';
-      document.getElementById('hiddenFimIntervalo').value = fim + ':00';
+      // PREENCHER OS CAMPOS HIDDEN
+      const hiddenDia = document.getElementById('hiddenDiaIntervalo');
+      const hiddenInicio = document.getElementById('hiddenInicioIntervalo');
+      const hiddenFim = document.getElementById('hiddenFimIntervalo');
+      
+      hiddenDia.value = dia;
+      hiddenInicio.value = inicio.includes(':') ? inicio : inicio + ':00';
+      if (!hiddenInicio.value.includes(':')) {
+        hiddenInicio.value = hiddenInicio.value + ':00';
+      }
+      
+      hiddenFim.value = fim.includes(':') ? fim : fim + ':00';
+      if (!hiddenFim.value.includes(':')) {
+        hiddenFim.value = hiddenFim.value + ':00';
+      }
+      
+      console.log('Valores hidden que serão enviados:');
+      console.log('Dia:', hiddenDia.value);
+      console.log('Início:', hiddenInicio.value);
+      console.log('Fim:', hiddenFim.value);
       
       if (confirm(`Salvar intervalo para ${getNomeDia(dia)} das ${inicio} às ${fim}?`)) {
         document.getElementById('formIntervalo').submit();
@@ -550,13 +757,24 @@
       const duracao = document.getElementById('duracaoSlot').value;
       document.getElementById('hiddenDuracao').value = duracao;
       
-      if (confirm(`Gerar slots de ${duracao} minutos para os próximos 60 dias?`)) {
+      const confirmMsg = `Gerar slots de ${duracao} minutos?\n\n` +
+                        `Isso irá:\n` +
+                        `1. Remover todos os slots existentes\n` +
+                        `2. Gerar novos slots para os próximos 60 dias\n` +
+                        `3. Considerar disponibilidades, intervalos e exceções\n\n` +
+                        `Continuar?`;
+      
+      if (confirm(confirmMsg)) {
+        // Mostra loading
+        document.querySelector('.status-bar').innerHTML = 
+          '<strong>Status:</strong> ⏳ Gerando slots...';
+        
         document.getElementById('formGerarSlots').submit();
       }
     }
 
     function limparSlots() {
-      if (!confirm('Limpar todos os slots disponíveis?\nIsso não afeta agendamentos já confirmados.')) {
+      if (!confirm('⚠️ Limpar TODOS os slots disponíveis?\n\nEsta ação não pode ser desfeita.')) {
         return;
       }
       
@@ -604,7 +822,15 @@
     // Função para recarregar dados manualmente
     function recarregarDados() {
       document.querySelector('.status-bar').innerHTML = 
-        '<strong>Status:</strong> Recarregando configurações...';
+        '<strong>Status:</strong> ⏳ Recarregando configurações e slots...';
+      
+      // Limpa arrays
+      disponibilidades = [];
+      intervalos = [];
+      excecoes = [];
+      slots = [];
+      
+      // Recarrega tudo
       carregarDadosIniciais();
     }
 
@@ -631,4 +857,4 @@
     }, 1000);
   </script>
 </body>
-</html>
+</html> 

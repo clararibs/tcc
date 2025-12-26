@@ -1,8 +1,22 @@
 <?php
+// agenda_controller.php - VERSÃO COMPLETA COM SLOTS
 require_once 'conexao.php';
 
+// DEBUG
+error_log("=== AGENDA CONTROLLER INICIADO ===");
+
+// SÓ ACEITA POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    die("ERRO: Método não permitido. Use POST.");
+}
+
+// PEGA A AÇÃO
 $action = $_POST['action'] ?? '';
 
+// LOG
+error_log("Action recebida: $action");
+
+// REDIRECIONA PARA A FUNÇÃO CORRETA
 switch ($action) {
     case 'salvar_config':
         salvarConfiguracao($conn);
@@ -20,47 +34,98 @@ switch ($action) {
         limparSlots($conn);
         break;
     default:
-        echo "<script>alert('Ação não reconhecida'); window.history.back();</script>";
-        break;
+        echo "<script>alert('Ação não reconhecida: $action'); window.history.back();</script>";
+        exit;
 }
 
+// ========== FUNÇÕES ==========
+
 function salvarConfiguracao($conn) {
-    
+    // RECEBE OS DADOS
     $tipo = $_POST['tipo'] ?? '';
     $dia_semana = $_POST['dia_semana'] ?? '';
     $horario_inicio = $_POST['horario_inicio'] ?? '';
     $horario_fim = $_POST['horario_fim'] ?? '';
     
+    // VALIDAÇÃO
     if (empty($tipo) || empty($dia_semana) || empty($horario_inicio) || empty($horario_fim)) {
         echo "<script>alert('Preencha todos os campos!'); window.history.back();</script>";
         exit;
     }
     
+    // CORREÇÃO DO DIA DA SEMANA
+    $dia_corrigido = strtolower(trim($dia_semana));
+    
+    // MAPEAMENTO DIRETO
+    $mapa_dias = [
+        '0' => 'domingo',
+        '1' => 'segunda',
+        '2' => 'terca',
+        '3' => 'quarta',
+        '4' => 'quinta',
+        '5' => 'sexta',
+        '6' => 'sabado',
+        '7' => 'domingo',
+        'segunda' => 'segunda',
+        'segunda-feira' => 'segunda',
+        'terça' => 'terca',
+        'terca' => 'terca',
+        'terça-feira' => 'terca',
+        'quarta' => 'quarta',
+        'quarta-feira' => 'quarta',
+        'quinta' => 'quinta',
+        'quinta-feira' => 'quinta',
+        'sexta' => 'sexta',
+        'sexta-feira' => 'sexta',
+        'sábado' => 'sabado',
+        'sabado' => 'sabado',
+        'domingo' => 'domingo'
+    ];
+    
+    if (isset($mapa_dias[$dia_corrigido])) {
+        $dia_final = $mapa_dias[$dia_corrigido];
+    } else {
+        $dia_final = $dia_corrigido;
+    }
+    
+    // SALVAR NO BANCO
     try {
-        // DELETE
-        $stmt = $conn->prepare("DELETE FROM config_disponibilidade WHERE tipo = ? AND dia_semana = ?");
-        $stmt->bind_param("ss", $tipo, $dia_semana);
-        $stmt->execute();
-        $stmt->close();
+        // DELETE ANTIGO
+        $sql_delete = "DELETE FROM config_disponibilidade WHERE tipo = ? AND dia_semana = ?";
+        $stmt_delete = $conn->prepare($sql_delete);
+        $stmt_delete->bind_param("ss", $tipo, $dia_final);
+        $stmt_delete->execute();
+        $stmt_delete->close();
         
-        // INSERT
-        $stmt = $conn->prepare("INSERT INTO config_disponibilidade (tipo, dia_semana, horario_inicio, horario_fim) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $tipo, $dia_semana, $horario_inicio, $horario_fim);
-        $stmt->execute();
-        $stmt->close();
+        // INSERT NOVO
+        $sql_insert = "INSERT INTO config_disponibilidade (tipo, dia_semana, horario_inicio, horario_fim, ativo) 
+                       VALUES (?, ?, ?, ?, 1)";
         
-        echo "<script>
-            alert('✅ Configuração salva!');
-            window.location.href = 'configurar_disponibilidade.html';
-        </script>";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("ssss", $tipo, $dia_final, $horario_inicio, $horario_fim);
+        
+        if ($stmt_insert->execute()) {
+            $id_novo = $stmt_insert->insert_id;
+            
+            echo "<script>
+                alert('✅ Configuração salva com sucesso!\\\\n\\\\nTipo: $tipo\\\\nDia: $dia_final\\\\nHorário: $horario_inicio - $horario_fim');
+                window.location.href = 'configurar_disponibilidade.html';
+            </script>";
+        } else {
+            throw new Exception("Erro ao inserir: " . $stmt_insert->error);
+        }
+        
+        $stmt_insert->close();
         
     } catch (Exception $e) {
-        echo "<script>alert('Erro: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+        echo "<script>
+            alert('❌ ERRO AO SALVAR: " . addslashes($e->getMessage()) . "');
+            window.history.back();
+        </script>";
     }
 }
 
 function salvarExcecao($conn) {
-    
     $data_excecao = $_POST['data_excecao'] ?? '';
     $horario_inicio = $_POST['horario_inicio'] ?? '';
     $horario_fim = $_POST['horario_fim'] ?? '';
@@ -73,7 +138,6 @@ function salvarExcecao($conn) {
     
     try {
         if (empty($horario_inicio) || empty($horario_fim)) {
-            // Inserir com NULL para horários
             $stmt = $conn->prepare("INSERT INTO config_excecoes (data_excecao, horario_inicio, horario_fim, motivo) VALUES (?, NULL, NULL, ?)");
             $stmt->bind_param("ss", $data_excecao, $motivo);
         } else {
@@ -95,7 +159,6 @@ function salvarExcecao($conn) {
 }
 
 function excluirExcecao($conn) {
-    
     $id_excecao = $_POST['id_excecao'] ?? '';
     
     if (empty($id_excecao)) {
@@ -120,82 +183,106 @@ function excluirExcecao($conn) {
 }
 
 function gerarSlots($conn) {
+    error_log("=== GERAR SLOTS INICIADO ===");
     
     $duracao = $_POST['duracao'] ?? 60;
     $duracao = intval($duracao);
     
+    // Valida duração
+    if ($duracao < 15 || $duracao > 240) {
+        echo "<script>alert('Duração inválida! Use entre 15 e 240 minutos.'); window.history.back();</script>";
+        exit;
+    }
+    
     try {
-        // Limpa slots existentes
+        // 1. Limpa slots existentes
         $conn->query("DELETE FROM slots_disponiveis WHERE status = 'disponivel'");
+        error_log("Slots antigos limpos");
         
-        // Obtém as disponibilidades
+        // 2. Obtém as disponibilidades ativas
         $result = $conn->query("
             SELECT * FROM config_disponibilidade 
             WHERE tipo = 'disponibilidade' AND ativo = 1
             ORDER BY dia_semana, horario_inicio
         ");
         
-        $slotsGerados = 0;
-        $diasParaGerar = 60; // Gerar para 60 dias à frente
+        if (!$result || $result->num_rows == 0) {
+            echo "<script>
+                alert('❌ Nenhuma disponibilidade configurada!\\\\nConfigure primeiro os horários disponíveis.');
+                window.location.href = 'configurar_disponibilidade.html';
+            </script>";
+            exit;
+        }
         
-        if ($result && $result->num_rows > 0) {
-            while ($disponibilidade = $result->fetch_assoc()) {
-                // Converte dia da semana para número (segunda=1, terça=2, etc.)
-                $diaSemanaNumero = diaSemanaParaNumero($disponibilidade['dia_semana']);
+        $slotsGerados = 0;
+        $diasParaGerar = 60;
+        $dataInicio = date('Y-m-d');
+        
+        // 3. Para cada disponibilidade
+        while ($disponibilidade = $result->fetch_assoc()) {
+            $diaSemanaTexto = $disponibilidade['dia_semana'];
+            $diaSemanaNumero = diaSemanaParaNumero($diaSemanaTexto);
+            
+            // Para cada um dos próximos dias
+            for ($i = 0; $i < $diasParaGerar; $i++) {
+                $dataAtual = date('Y-m-d', strtotime("+$i days", strtotime($dataInicio)));
+                $diaSemanaAtual = date('N', strtotime($dataAtual));
                 
-                // Para cada um dos próximos dias
-                for ($i = 0; $i < $diasParaGerar; $i++) {
-                    $dataAtual = date('Y-m-d', strtotime("+$i days"));
-                    $diaSemanaAtual = date('N', strtotime($dataAtual)); // 1=segunda, 7=domingo
+                // Verifica se é o dia correto da semana
+                if ($diaSemanaAtual == $diaSemanaNumero) {
+                    // Verifica se há exceção para esta data
+                    $excecaoResult = $conn->query("
+                        SELECT * FROM config_excecoes 
+                        WHERE data_excecao = '$dataAtual'
+                        AND (horario_inicio IS NULL OR horario_inicio = '')
+                    ");
                     
-                    // Verifica se é o dia correto da semana
-                    if ($diaSemanaAtual == $diaSemanaNumero) {
-                        // Verifica se há exceção para esta data
-                        $excecaoResult = $conn->query("
-                            SELECT * FROM config_excecoes 
-                            WHERE data_excecao = '$dataAtual'
-                        ");
-                        
-                        // Se não houver exceção, gera slots
-                        if ($excecaoResult->num_rows == 0) {
-                            $slotsGerados += gerarSlotsParaDisponibilidade(
-                                $conn, 
-                                $disponibilidade, 
-                                $dataAtual, 
-                                $duracao
-                            );
-                        }
-                        $excecaoResult->free();
+                    // Se não houver exceção de dia inteiro, gera slots
+                    if ($excecaoResult->num_rows == 0) {
+                        $slotsGerados += gerarSlotsParaDia(
+                            $conn, 
+                            $disponibilidade, 
+                            $dataAtual, 
+                            $duracao
+                        );
                     }
+                    $excecaoResult->free();
                 }
             }
         }
         
-        if ($result) {
-            $result->free();
-        }
+        $result->free();
         
+        // 4. Retorna sucesso
         echo "<script>
-            alert('✅ Slots gerados com sucesso! Foram criados $slotsGerados slots.');
-            window.location.href = 'configuracao_agenda.html';
+            alert('✅ Slots gerados com sucesso!\\\\nForam criados $slotsGerados slots de $duracao minutos.');
+            window.location.href = 'configurar_disponibilidade.html?slots_gerados=$slotsGerados';
         </script>";
         
     } catch (Exception $e) {
-        echo "<script>alert('Erro: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+        error_log("ERRO em gerarSlots: " . $e->getMessage());
+        echo "<script>
+            alert('❌ ERRO ao gerar slots: " . addslashes($e->getMessage()) . "');
+            window.history.back();
+        </script>";
     }
 }
 
-function gerarSlotsParaDisponibilidade($conn, $disponibilidade, $data, $duracao) {
+function gerarSlotsParaDia($conn, $disponibilidade, $data, $duracao) {
     $slotsGerados = 0;
     
+    // Horários de início e fim da disponibilidade
     $horaInicio = strtotime($disponibilidade['horario_inicio']);
     $horaFim = strtotime($disponibilidade['horario_fim']);
     
-    // Verifica intervalos fixos neste dia
+    // Obtém intervalos fixos para este dia da semana
     $diaSemana = $disponibilidade['dia_semana'];
     $intervaloResult = $conn->query("
         SELECT * FROM config_disponibilidade 
-        WHERE tipo = 'intervalo' AND dia_semana = '$diaSemana' AND ativo = 1
+        WHERE tipo = 'intervalo' 
+        AND dia_semana = '$diaSemana' 
+        AND ativo = 1
+        ORDER BY horario_inicio
     ");
     
     $intervalos = [];
@@ -209,6 +296,26 @@ function gerarSlotsParaDisponibilidade($conn, $disponibilidade, $data, $duracao)
     }
     if ($intervaloResult) $intervaloResult->free();
     
+    // Obtém exceções com horário específico para esta data
+    $excecaoResult = $conn->query("
+        SELECT * FROM config_excecoes 
+        WHERE data_excecao = '$data'
+        AND horario_inicio IS NOT NULL 
+        AND horario_inicio != ''
+        ORDER BY horario_inicio
+    ");
+    
+    $excecoes = [];
+    if ($excecaoResult && $excecaoResult->num_rows > 0) {
+        while ($excecao = $excecaoResult->fetch_assoc()) {
+            $excecoes[] = [
+                'inicio' => strtotime($excecao['horario_inicio']),
+                'fim' => strtotime($excecao['horario_fim'])
+            ];
+        }
+    }
+    if ($excecaoResult) $excecaoResult->free();
+    
     // Gera slots dentro do horário disponível
     $slotAtual = $horaInicio;
     
@@ -216,7 +323,7 @@ function gerarSlotsParaDisponibilidade($conn, $disponibilidade, $data, $duracao)
         $slotInicio = $slotAtual;
         $slotFim = $slotAtual + ($duracao * 60);
         
-        // Verifica se o slot não está dentro de um intervalo
+        // Verifica se o slot NÃO está dentro de um intervalo
         $dentroDeIntervalo = false;
         foreach ($intervalos as $intervalo) {
             if ($slotInicio >= $intervalo['inicio'] && $slotFim <= $intervalo['fim']) {
@@ -225,23 +332,35 @@ function gerarSlotsParaDisponibilidade($conn, $disponibilidade, $data, $duracao)
             }
         }
         
-        if (!$dentroDeIntervalo) {
-            // Insere o slot no banco
+        // Verifica se o slot NÃO está dentro de uma exceção com horário
+        $dentroDeExcecao = false;
+        foreach ($excecoes as $excecao) {
+            if ($slotInicio >= $excecao['inicio'] && $slotFim <= $excecao['fim']) {
+                $dentroDeExcecao = true;
+                break;
+            }
+        }
+        
+        // Se não estiver em intervalo nem exceção, cria o slot
+        if (!$dentroDeIntervalo && !$dentroDeExcecao) {
             $inicioTime = date('H:i:s', $slotInicio);
             $fimTime = date('H:i:s', $slotFim);
             
             $stmt = $conn->prepare("
-                INSERT INTO slots_disponiveis (data_slot, horario_inicio, horario_fim, status, duracao_minutos)
-                VALUES (?, ?, ?, 'disponivel', ?)
+                INSERT INTO slots_disponiveis 
+                (data_slot, horario_inicio, horario_fim, duracao_minutos, status) 
+                VALUES (?, ?, ?, ?, 'disponivel')
             ");
             $stmt->bind_param("sssi", $data, $inicioTime, $fimTime, $duracao);
-            $stmt->execute();
-            $stmt->close();
             
-            $slotsGerados++;
+            if ($stmt->execute()) {
+                $slotsGerados++;
+            }
+            
+            $stmt->close();
         }
         
-        // Próximo slot
+        // Avança para o próximo slot
         $slotAtual += ($duracao * 60);
     }
     
@@ -263,18 +382,21 @@ function diaSemanaParaNumero($diaSemana) {
 }
 
 function limparSlots($conn) {
-    
     try {
-        // Usando query direta para DELETE
-        $conn->query("DELETE FROM slots_disponiveis WHERE status = 'disponivel'");
+        // Limpa apenas slots disponíveis
+        $result = $conn->query("DELETE FROM slots_disponiveis WHERE status = 'disponivel'");
+        $linhasAfetadas = $conn->affected_rows;
         
         echo "<script>
-            alert('✅ Slots limpos!');
+            alert('✅ $linhasAfetadas slots disponíveis foram removidos!');
             window.location.href = 'configurar_disponibilidade.html';
         </script>";
         
     } catch (Exception $e) {
-        echo "<script>alert('Erro: " . addslashes($e->getMessage()) . "'); window.history.back();</script>";
+        echo "<script>
+            alert('❌ ERRO ao limpar slots: " . addslashes($e->getMessage()) . "');
+            window.history.back();
+        </script>";
     }
 }
 ?>

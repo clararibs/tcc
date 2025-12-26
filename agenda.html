@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda Clínica Estética Avançada</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+  
+  <style>
+    /* Reset e estilos gerais */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      padding: 20px;
+    }
+
+    /* Botão de voltar */
+    .back-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #2a5a3c;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+
+    .back-button:hover {
+      background: #1a3c27;
+      transform: translateY(-2px);
+    }
+
+    /* Mensagens */
+    .message {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Layout principal */
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 30px;
+    }
+
+    /* Sidebar (Formulário) */
+    .sidebar {
+      width: 350px;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    .sidebar h2 {
+      color: #2c3e50;
+      margin-bottom: 25px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    /* Formulário */
+    #consultaForm {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    #consultaForm label {
+      font-weight: 500;
+      color: #2c3e50;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    #consultaForm input {
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s;
+      background: #f9f9f9;
+    }
+
+    #consultaForm input:focus {
+      outline: none;
+      border-color: #3498db;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    #consultaForm input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    #consultaForm input[type="number"]::-webkit-outer-spin-button,
+    #consultaForm input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Botão do formulário */
+    #addEvent {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    #addEvent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Informação */
+    .info-tip {
+      margin-top: 20px;
+      padding: 12px;
+      background: #e8f4fc;
+      border-radius: 8px;
+      color: #2c3e50;
+      font-size: 13px;
+      text-align: center;
+      border: 1px solid #d1e7f7;
+    }
+
+    /* Calendário */
+    #calendar {
+      flex: 1;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      min-height: 600px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 1024px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+      }
+      
+      #calendar {
+        min-height: 600px;
+      }
+    }
+    
+    /* Estilos para os eventos no calendário */
+    .fc-event {
+      border-radius: 4px !important;
+      border: none !important;
+      margin: 1px !important;
+      cursor: pointer !important;
+      transition: all 0.2s !important;
+    }
+
+    .fc-event:hover {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Slots disponíveis */
+    .fc-event[style*="background-color: rgb(76, 175, 80)"] {
+      opacity: 0.8 !important;
+    }
+
+    .fc-event[style*="background-color: rgb(76, 175, 80)"]:hover {
+      opacity: 1 !important;
+    }
+
+    /* Consultas agendadas */
+    .fc-event[style*="background-color: rgb(244, 67, 54)"] {
+      opacity: 0.9 !important;
+    }
+
+    .fc-event[style*="background-color: rgb(244, 67, 54)"]:hover {
+      opacity: 1 !important;
+    }
+
+    /* Melhora visualização de horários */
+    .fc-timegrid-slot-label {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .fc-timegrid-slot {
+      min-height: 40px !important;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        padding: 10px;
+      }
+      
+      .sidebar {
+        width: 100%;
+        padding: 20px;
+      }
+      
+      #calendar {
+        min-height: 500px;
+        padding: 15px;
+      }
+      
+      .fc-header-toolbar {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botão para voltar -->
+  <a href="entrar_aline.html" class="back-button">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M10.5 13.5L5 8l5.5-5.5L11 1l-7 7 7 7z"/>
+    </svg>
+    Voltar
+  </a>
+
+  <!-- Mensagens -->
+  <?php 
+  if(isset($_GET['msg'])): 
+  ?>
+    <div class="message <?php echo $_GET['tipo'] ?? 'success'; ?>">
+      <?php echo htmlspecialchars($_GET['msg']); ?>
+    </div>
+    <script>
+      setTimeout(() => {
+        const msg = document.querySelector('.message');
+        if(msg) msg.remove();
+      }, 5000);
+    </script>
+  <?php endif; ?>
+
+  <div class="container">
+    <!-- Sidebar com formulário -->
+    <div class="sidebar">
+      <h2>📅 Nova Consulta</h2>
+      
+      <form id="consultaForm" method="POST" action="agenda_crud.php">
+        <input type="hidden" name="acao" value="salvar_consulta">
+        
+        <label for="name">Nome do Paciente</label>
+        <input type="text" id="name" name="nome" placeholder="Ex: Aline Silva" required>
+
+        <label for="phone">Telefone</label>
+        <input type="text" id="phone" name="telefone" placeholder="(xx) xxxxx-xxxx" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="email@exemplo.com">
+
+        <label for="procedure">Procedimento</label>
+        <input type="text" id="procedure" name="procedimento" placeholder="Ex: Botox" required>
+
+        <label for="date">Data</label>
+        <input type="date" id="date" name="data" required>
+
+        <label for="time">Horário de Início</label>
+        <input type="time" id="time" name="hora" required value="09:00">
+
+        <label for="minutes">Duração (minutos)</label>
+        <input type="number" id="minutes" name="duracao" placeholder="Ex: 45" min="1" required value="45">
+
+        <button type="submit" id="addEvent">✅ Adicionar Consulta</button>
+      </form>
+
+      <p class="info-tip">
+        💡 Clique em um evento no calendário para ver detalhes ou excluir.
+      </p>
+    </div>
+
+    <!-- Calendário -->
+    <div id="calendar"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+  <script>
+// ============================================
+// CÓDIGO JAVASCRIPT COMPLETO
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Inicializando agenda...');
+    
+    // ========== 1. CONFIGURAÇÃO INICIAL ==========
+    const calendarEl = document.getElementById('calendar');
+    if (!calendarEl) {
+        console.error('❌ Elemento #calendar não encontrado!');
+        return;
+    }
+    
+    // Configura data mínima para hoje
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+        dateInput.min = today;
+        if (!dateInput.value) {
+            dateInput.value = today;
+        }
+    }
+    
+    // ========== 2. INICIALIZA CALENDÁRIO ==========
+    let calendar;
+    
+    try {
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            selectable: true,
+            editable: false,
+            locale: 'pt-br',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            slotDuration: '00:30:00',
+            slotMinTime: '06:00:00',
+            slotMaxTime: '22:00:00',
+            allDaySlot: false,
+            slotLabelFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
+            
+            // ========== 3. CARREGA EVENTOS (CONSULTAS + SLOTS DO BANCO) ==========
+            events: async function(fetchInfo, successCallback, failureCallback) {
+                console.log('📥 Carregando agenda...');
+                
+                try {
+                    // 1. Carrega consultas do banco
+                    const responseConsultas = await fetch(`agenda_crud.php?acao=listar_consultas&start=${encodeURIComponent(fetchInfo.startStr)}&end=${encodeURIComponent(fetchInfo.endStr)}&_=${Date.now()}`);
+                    const dataConsultas = await responseConsultas.text();
+                    
+                    // Executa o JavaScript retornado
+                    const scriptConsultas = document.createElement('script');
+                    scriptConsultas.textContent = dataConsultas;
+                    document.head.appendChild(scriptConsultas);
+                    document.head.removeChild(scriptConsultas);
+                    
+                    const consultas = window.consultasCalendario || [];
+                    console.log(`📊 Consultas encontradas: ${consultas.length}`);
+                    delete window.consultasCalendario;
+                    
+                    // 2. Carrega configurações de disponibilidade do banco
+                    const responseConfig = await fetch(`agenda_crud.php?acao=carregar_configuracoes&_=${Date.now()}`);
+                    const dataConfig = await responseConfig.text();
+                    
+                    const scriptConfig = document.createElement('script');
+                    scriptConfig.textContent = dataConfig;
+                    document.head.appendChild(scriptConfig);
+                    document.head.removeChild(scriptConfig);
+                    
+                    const disponibilidades = window.disponibilidadesCalendario || [];
+                    const intervalos = window.intervalosCalendario || [];
+                    const excecoes = window.excecoesCalendario || [];
+                    
+                    console.log(`⚙️ Configurações: ${disponibilidades.length} disponibilidades, ${intervalos.length} intervalos, ${excecoes.length} exceções`);
+                    
+                    // 3. Gera slots baseados nas disponibilidades configuradas
+                    const slots = [];
+                    const startDate = new Date(fetchInfo.startStr);
+                    const endDate = new Date(fetchInfo.endStr);
+                    
+                    // Para cada dia no período
+                    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                        const dataStr = d.toISOString().split('T')[0];
+                        const diaSemana = getDiaSemanaNumero(d.getDay());
+                        
+                        // Verifica se há exceção de dia inteiro
+                        const excecaoDiaInteiro = excecoes.find(exc => 
+                            exc.data_excecao === dataStr && 
+                            (!exc.horario_inicio || exc.horario_inicio === '')
+                        );
+                        
+                        if (excecaoDiaInteiro) {
+                            console.log(`⛔ ${dataStr}: Exceção de dia inteiro - ${excecaoDiaInteiro.motivo}`);
+                            continue;
+                        }
+                        
+                        // Busca disponibilidades para este dia da semana
+                        const disponibilidadesDia = disponibilidades.filter(d => 
+                            d.dia_semana === diaSemana
+                        );
+                        
+                        if (disponibilidadesDia.length === 0) {
+                            console.log(`⏭️ ${dataStr}: Sem disponibilidade configurada`);
+                            continue;
+                        }
+                        
+                        // Para cada disponibilidade deste dia
+                        for (const disponibilidade of disponibilidadesDia) {
+                            // Extrai horários de início e fim
+                            const horaInicio = disponibilidade.horario_inicio;
+                            const horaFim = disponibilidade.horario_fim;
+                            
+                            if (!horaInicio || !horaFim) continue;
+                            
+                            // Converte para objetos Date
+                            const inicioObj = new Date(`${dataStr}T${horaInicio}`);
+                            const fimObj = new Date(`${dataStr}T${horaFim}`);
+                            
+                            // Gera slots de 60 minutos dentro desta disponibilidade
+                            let slotAtual = inicioObj;
+                            
+                            while (slotAtual.getTime() + (60 * 60 * 1000) <= fimObj.getTime()) {
+                                const slotInicio = new Date(slotAtual);
+                                const slotFim = new Date(slotAtual.getTime() + (60 * 60 * 1000));
+                                
+                                // Verifica se há exceção com horário específico
+                                const excecaoHorario = excecoes.find(exc => {
+                                    if (!exc.horario_inicio || exc.horario_inicio === '') return false;
+                                    if (exc.data_excecao !== dataStr) return false;
+                                    
+                                    const excInicio = new Date(`${dataStr}T${exc.horario_inicio}`);
+                                    const excFim = new Date(`${dataStr}T${exc.horario_fim}`);
+                                    
+                                    return slotInicio < excFim && slotFim > excInicio;
+                                });
+                                
+                                if (excecaoHorario) {
+                                    console.log(`⛔ ${dataStr} ${horaInicio}: Exceção de horário - ${excecaoHorario.motivo}`);
+                                    slotAtual = new Date(slotFim);
+                                    continue;
+                                }
+                                
+                                // Verifica se há intervalo neste horário
+                                const intervalosDia = intervalos.filter(int => int.dia_semana === diaSemana);
+                                let dentroIntervalo = false;
+                                
+                                for (const intervalo of intervalosDia) {
+                                    if (!intervalo.horario_inicio || !intervalo.horario_fim) continue;
+                                    
+                                    const intInicio = new Date(`${dataStr}T${intervalo.horario_inicio}`);
+                                    const intFim = new Date(`${dataStr}T${intervalo.horario_fim}`);
+                                    
+                                    if (slotInicio < intFim && slotFim > intInicio) {
+                                        dentroIntervalo = true;
+                                        break;
+                                    }
+                                }
+                                
+                                if (dentroIntervalo) {
+                                    slotAtual = new Date(slotFim);
+                                    continue;
+                                }
+                                
+                                // Verifica se não há consulta neste horário
+                                const slotLivre = !consultas.some(consulta => {
+                                    const consultaInicio = new Date(consulta.start);
+                                    const consultaFim = new Date(consulta.end);
+                                    
+                                    // Verifica sobreposição
+                                    return !(slotFim <= consultaInicio || slotInicio >= consultaFim);
+                                });
+                                
+                                if (slotLivre) {
+                                    const slotId = `slot_${dataStr}_${slotInicio.getHours()}_${slotInicio.getMinutes()}`;
+                                    const horaFormatada = slotInicio.toLocaleTimeString('pt-BR', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false
+                                    });
+                                    
+                                    slots.push({
+                                        id: slotId,
+                                        title: '✅ Disponível (60min)',
+                                        start: slotInicio.toISOString().split('.')[0],
+                                        end: slotFim.toISOString().split('.')[0],
+                                        color: '#4CAF50',
+                                        textColor: '#2e7d32',
+                                        extendedProps: {
+                                            tipo: 'slot_disponivel',
+                                            duracao: 60,
+                                            data_slot: dataStr,
+                                            horario: horaFormatada
+                                        }
+                                    });
+                                    
+                                    console.log(`✅ ${dataStr} ${horaFormatada}: Slot disponível gerado`);
+                                }
+                                
+                                slotAtual = new Date(slotFim);
+                            }
+                        }
+                    }
+                    
+                    console.log(`📊 Slots gerados: ${slots.length}`);
+                    
+                    // 4. Combina consultas e slots
+                    const todosEventos = [
+                        // Slots disponíveis (verde)
+                        ...slots,
+                        
+                        // Consultas agendadas (vermelho)
+                        ...consultas.map(consulta => {
+                            const id = String(consulta.id || '').replace('consulta_', '');
+                            return {
+                                id: 'consulta_' + id,
+                                title: consulta.title || 'Consulta',
+                                start: consulta.start,
+                                end: consulta.end,
+                                color: '#f44336',
+                                textColor: 'white',
+                                extendedProps: {
+                                    ...consulta.extendedProps,
+                                    tipo: 'consulta',
+                                    id_original: id
+                                }
+                            };
+                        })
+                    ];
+                    
+                    console.log(`🎯 Total de eventos no calendário: ${todosEventos.length}`);
+                    successCallback(todosEventos);
+                    
+                } catch (error) {
+                    console.error('❌ Erro ao carregar eventos:', error);
+                    successCallback([]);
+                }
+            },
+            
+            // ========== 4. CLIQUE EM EVENTOS ==========
+            eventClick: function(info) {
+                const tipo = info.event.extendedProps.tipo;
+                
+                if (tipo === 'slot_disponivel') {
+                    // Preenche formulário com slot disponível
+                    const start = info.event.start;
+                    const dataFormatada = start.toISOString().split('T')[0];
+                    const horas = String(start.getHours()).padStart(2, '0');
+                    const minutos = String(start.getMinutes()).padStart(2, '0');
+                    
+                    document.getElementById('date').value = dataFormatada;
+                    document.getElementById('time').value = `${horas}:${minutos}`;
+                    document.getElementById('minutes').value = info.event.extendedProps.duracao || 60;
+                    
+                    // Rola para o formulário
+                    document.querySelector('.sidebar').scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Foca no primeiro campo
+                    setTimeout(() => {
+                        document.getElementById('name').focus();
+                    }, 300);
+                    
+                    return;
+                }
+                
+                if (tipo === 'consulta') {
+                    // Mostra detalhes da consulta
+                    const props = info.event.extendedProps;
+                    const start = info.event.start;
+                    
+                    const dataFormatada = start.toLocaleDateString('pt-BR');
+                    const horaFormatada = start.toLocaleTimeString('pt-BR', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const detalhes = `
+📋 Detalhes da Consulta
+────────────────
+👤 Paciente: ${props.name || 'Não informado'}
+📞 Telefone: ${props.phone || 'Não informado'}
+📧 Email: ${props.email || 'Não informado'}
+💉 Procedimento: ${props.procedure || 'Não informado'}
+⏳ Duração: ${props.durationText || 'Não informado'}
+🗓️ Data: ${dataFormatada}
+⏰ Horário: ${horaFormatada}
+                    `;
+                    
+                    if (confirm(detalhes + "\n\n❓ Deseja excluir esta consulta?")) {
+                        const eventId = props.id_original || info.event.id.replace('consulta_', '');
+                        window.location.href = `agenda_crud.php?acao=excluir_consulta&id=${eventId}`;
+                    }
+                }
+            },
+            
+            // ========== 5. SELECIONA PERÍODO ==========
+            select: function(info) {
+                const startDate = new Date(info.start);
+                const localDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+                
+                document.getElementById('date').value = localDate.toISOString().split('T')[0];
+                
+                if (calendar.view.type === 'timeGridDay' || calendar.view.type === 'timeGridWeek') {
+                    const hours = String(startDate.getHours()).padStart(2, '0');
+                    const minutes = String(startDate.getMinutes()).padStart(2, '0');
+                    document.getElementById('time').value = `${hours}:${minutes}`;
+                }
+                
+                calendar.unselect();
+            },
+            
+            // ========== 6. ESTILIZAÇÃO DOS EVENTOS ==========
+            eventContent: function(arg) {
+                const tipo = arg.event.extendedProps.tipo;
+                
+                if (tipo === 'slot_disponivel') {
+                    const hora = arg.event.start.toLocaleTimeString('pt-BR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                    
+                    return {
+                        html: `
+                            <div style="padding: 4px; text-align: center;">
+                                <div style="font-size: 10px; color: #2e7d32; font-weight: bold;">
+                                    ✅ DISPONÍVEL
+                                </div>
+                                <div style="font-size: 9px; color: #388e3c;">
+                                    ${hora} (60min)
+                                </div>
+                            </div>
+                        `
+                    };
+                }
+                
+                // Evento de consulta
+                const hora = arg.event.start.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const titulo = arg.event.title || 'Consulta';
+                const tituloCurto = titulo.length > 20 ? titulo.substring(0, 20) + '...' : titulo;
+                
+                return {
+                    html: `
+                        <div style="padding: 4px;">
+                            <div style="font-size: 10px; color: #c62828; font-weight: bold;">
+                                📅 AGENDADO
+                            </div>
+                            <div style="font-size: 9px; color: #d32f2f;">
+                                ${hora} - ${tituloCurto}
+                            </div>
+                        </div>
+                    `
+                };
+            }
+        });
+        
+        calendar.render();
+        window.calendar = calendar;
+        console.log('✅ Calendário renderizado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao inicializar calendário:', error);
+        calendarEl.innerHTML = `
+            <div style="color: red; padding: 30px; text-align: center;">
+                <h3>❌ Erro ao carregar calendário</h3>
+                <p>${error.message}</p>
+                <button onclick="location.reload()" style="margin-top: 10px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    🔄 Tentar Novamente
+                </button>
+            </div>
+        `;
+    }
+    
+    // ========== 7. FORMULÁRIO ==========
+    const consultaForm = document.getElementById('consultaForm');
+    if (consultaForm) {
+        console.log('✅ Formulário encontrado');
+        
+        consultaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            console.log('📝 Processando envio do formulário...');
+            
+            // Coleta dados
+            const nome = document.getElementById('name').value.trim();
+            const telefone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const procedimento = document.getElementById('procedure').value.trim();
+            const data = document.getElementById('date').value;
+            const hora = document.getElementById('time').value;
+            const duracao = parseInt(document.getElementById('minutes').value) || 0;
+            
+            // Validações
+            if (!nome || nome.length < 3) {
+                alert('⚠️ Digite um nome válido (mínimo 3 caracteres)!');
+                document.getElementById('name').focus();
+                return;
+            }
+            
+            if (!telefone || telefone.replace(/\D/g, '').length < 10) {
+                alert('⚠️ Digite um telefone válido (com DDD e 9º dígito)!');
+                document.getElementById('phone').focus();
+                return;
+            }
+            
+            if (!procedimento || procedimento.length < 2) {
+                alert('⚠️ Digite um procedimento válido!');
+                document.getElementById('procedure').focus();
+                return;
+            }
+            
+            if (!data) {
+                alert('⚠️ Selecione uma data!');
+                document.getElementById('date').focus();
+                return;
+            }
+            
+            if (!hora) {
+                alert('⚠️ Selecione um horário!');
+                document.getElementById('time').focus();
+                return;
+            }
+            
+            if (duracao <= 0 || duracao > 480) {
+                alert('⚠️ Duração inválida! Use entre 1 e 480 minutos.');
+                document.getElementById('minutes').focus();
+                return;
+            }
+            
+            // Verifica se data não é no passado
+            const dataSelecionada = new Date(data + 'T00:00:00');
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            
+            if (dataSelecionada < hoje) {
+                alert('⚠️ Não é possível agendar para datas passadas!');
+                return;
+            }
+            
+            // Desabilita botão para evitar múltiplos cliques
+            const addEventBtn = document.getElementById('addEvent');
+            const btnOriginalText = addEventBtn.innerHTML;
+            addEventBtn.innerHTML = '⏳ Salvando consulta...';
+            addEventBtn.disabled = true;
+            
+            // Formata hora para HH:MM:SS
+            const horaFormatada = hora.length === 5 ? hora + ':00' : hora;
+            
+            // Adiciona campo hidden com hora formatada
+            const hiddenHora = document.createElement('input');
+            hiddenHora.type = 'hidden';
+            hiddenHora.name = 'hora';
+            hiddenHora.value = horaFormatada;
+            this.appendChild(hiddenHora);
+            
+            console.log('📤 Enviando dados para o servidor...');
+            
+            // Envia formulário
+            this.submit();
+        });
+    }
+    
+    // ========== 8. ATUALIZAÇÃO AUTOMÁTICA ==========
+    setInterval(() => {
+        if (window.calendar) {
+            console.log('🔄 Atualizando calendário automaticamente...');
+            window.calendar.refetchEvents();
+        }
+    }, 30000); // Atualiza a cada 30 segundos
+    
+    console.log('🎉 Agenda inicializada com sucesso!');
+});
+
+// ========== FUNÇÕES AUXILIARES ==========
+
+function getDiaSemanaNumero(diaNum) {
+    // Converte de domingo=0 para segunda=1
+    const mapa = {
+        0: 'domingo',
+        1: 'segunda',
+        2: 'terca',
+        3: 'quarta',
+        4: 'quinta',
+        5: 'sexta',
+        6: 'sabado'
+    };
+    return mapa[diaNum] || 'segunda';
+}
+  </script>
+</body>
+</html>
