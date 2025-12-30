@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TESTE FORMULÁRIO</title>
+</head>
+<body>
+    <h1>Teste de Envio de Formulário</h1>
+    
+    <form method="POST" action="agenda_controller.php">
+        <input type="hidden" name="action" value="salvar_config">
+        <input type="hidden" name="tipo" value="disponibilidade">
+        
+        <h3>Dia da Semana:</h3>
+        <select name="dia_semana" id="testeDia">
+            <option value="segunda">Segunda-feira</option>
+            <option value="terca">Terça-feira</option>
+            <option value="quarta">Quarta-feira</option>
+            <option value="quinta">Quinta-feira</option>
+            <option value="sexta">Sexta-feira</option>
+            <option value="sabado">Sábado</option>
+        </select>
+        
+        <h3>Horário Início:</h3>
+        <input type="time" name="horario_inicio" value="09:00">
+        
+        <h3>Horário Fim:</h3>
+        <input type="time" name="horario_fim" value="17:00">
+        
+        <br><br>
+        <button type="submit">ENVIAR TESTE</button>
+    </form>
+    
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const dia = document.getElementById('testeDia').value;
+            alert(`Enviando:\nDia: ${dia}\nVerifique o console!`);
+            console.log("📤 TESTE - Valores enviados:");
+            console.log("Dia:", dia);
+            console.log("Action: salvar_config");
+            console.log("Tipo: disponibilidade");
+        });
+    </script>
+</body>
+</html>

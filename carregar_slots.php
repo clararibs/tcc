@@ -1,5 +1,7 @@
 <?php
 // carregar_slots.php
+header('Content-Type: application/javascript; charset=utf-8');
+
 require_once 'conexao.php';
 
 $data_inicio = isset($_GET['data_inicio']) ? $_GET['data_inicio'] : date('Y-m-d');
@@ -8,40 +10,34 @@ $data_fim = isset($_GET['data_fim']) ? $_GET['data_fim'] : date('Y-m-d', strtoti
 header('Content-Type: application/javascript');
 
 try {
-    $stmt = $conn->prepare("
-        SELECT 
-            id_slot,
-            data_slot,
-            horario_inicio,
-            horario_fim,
-            duracao_minutos,
-            status
-        FROM slots_disponiveis 
-        WHERE data_slot BETWEEN ? AND ?
-          AND status = 'disponivel'
+    $result = $conn->query("
+        SELECT * FROM slots_disponiveis 
+        WHERE status = 'disponivel'
         ORDER BY data_slot, horario_inicio
+        LIMIT 500
     ");
     
-    $stmt->bind_param("ss", $data_inicio, $data_fim);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $slots = $result->fetch_all(MYSQLI_ASSOC);
-    
-    echo "var slotsDisponiveis = [\n";
-    foreach($slots as $slot) {
-        echo "  {\n";
-        echo "    id_slot: " . $slot['id_slot'] . ",\n";
-        echo "    data_slot: '" . $slot['data_slot'] . "',\n";
-        echo "    horario_inicio: '" . $slot['horario_inicio'] . "',\n";
-        echo "    horario_fim: '" . $slot['horario_fim'] . "',\n";
-        echo "    duracao_minutos: " . ($slot['duracao_minutos'] ?? 60) . ",\n";
-        echo "    status: '" . $slot['status'] . "'\n";
-        echo "  },\n";
+    echo "window.slots = [\n";
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "  {\n";
+            echo "    id_slot: " . $row['id_slot'] . ",\n";
+            echo "    data_slot: '" . $row['data_slot'] . "',\n";
+            echo "    horario_inicio: '" . $row['horario_inicio'] . "',\n";
+            echo "    horario_fim: '" . $row['horario_fim'] . "',\n";
+            echo "    duracao_minutos: " . $row['duracao_minutos'] . ",\n";
+            echo "    status: '" . $row['status'] . "'\n";
+            echo "  },\n";
+        }
     }
     echo "];\n";
     
-} catch(Exception $e) {
-    echo "var slotsDisponiveis = [];\n";
-    echo "console.error('Erro ao carregar slots: " . addslashes($e->getMessage()) . "');\n";
+    if ($result) {
+        $result->free();
+    }
+    
+} catch (Exception $e) {
+    echo "window.slots = [];\n";
+    echo "// Erro: " . $e->getMessage() . "\n";
 }
 ?>
