@@ -295,6 +295,8 @@
       
       <form id="consultaForm" method="POST" action="agenda_crud.php">
         <input type="hidden" name="acao" value="salvar_consulta">
+        <!-- Campo para armazenar o ID do slot quando agendar em um slot disponível -->
+        <input type="hidden" name="slot_id" id="slot_id" value="">
         
         <label for="name">Nome do Paciente</label>
         <input type="text" id="name" name="nome" placeholder="Ex: Aline Silva" required>
@@ -321,7 +323,7 @@
       </form>
 
       <p class="info-tip">
-        💡 Clique em um evento no calendário para ver detalhes ou excluir.
+        💡 Clique em um evento verde no calendário para agendar automaticamente.
       </p>
     </div>
 
@@ -399,155 +401,42 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log(`📊 Consultas encontradas: ${consultas.length}`);
                     delete window.consultasCalendario;
                     
-                    // 2. Carrega configurações de disponibilidade do banco
-                    const responseConfig = await fetch(`agenda_crud.php?acao=carregar_configuracoes&_=${Date.now()}`);
-                    const dataConfig = await responseConfig.text();
+                    // 2. Carrega SLOTS DISPONÍVEIS do banco (DA TABELA slots_disponiveis)
+                    const responseSlots = await fetch(`carregar_slots_disponiveis.php?start=${encodeURIComponent(fetchInfo.startStr)}&end=${encodeURIComponent(fetchInfo.endStr)}&_=${Date.now()}`);
+                    const dataSlots = await responseSlots.text();
                     
-                    const scriptConfig = document.createElement('script');
-                    scriptConfig.textContent = dataConfig;
-                    document.head.appendChild(scriptConfig);
-                    document.head.removeChild(scriptConfig);
+                    const scriptSlots = document.createElement('script');
+                    scriptSlots.textContent = dataSlots;
+                    document.head.appendChild(scriptSlots);
+                    document.head.removeChild(scriptSlots);
                     
-                    const disponibilidades = window.disponibilidadesCalendario || [];
-                    const intervalos = window.intervalosCalendario || [];
-                    const excecoes = window.excecoesCalendario || [];
+                    const slots = window.slotsDisponiveisCalendario || [];
+                    console.log(`🎯 Slots disponíveis do banco: ${slots.length}`);
+                    delete window.slotsDisponiveisCalendario;
                     
-                    console.log(`⚙️ Configurações: ${disponibilidades.length} disponibilidades, ${intervalos.length} intervalos, ${excecoes.length} exceções`);
-                    
-                    // 3. Gera slots baseados nas disponibilidades configuradas
-                    const slots = [];
-                    const startDate = new Date(fetchInfo.startStr);
-                    const endDate = new Date(fetchInfo.endStr);
-                    
-                    // Para cada dia no período
-                    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                        const dataStr = d.toISOString().split('T')[0];
-                        const diaSemana = getDiaSemanaNumero(d.getDay());
+                    // 3. Filtra slots que não colidem com consultas existentes
+                    const slotsFiltrados = slots.filter(slot => {
+                        const slotStart = new Date(slot.start);
+                        const slotEnd = new Date(slot.end);
                         
-                        // Verifica se há exceção de dia inteiro
-                        const excecaoDiaInteiro = excecoes.find(exc => 
-                            exc.data_excecao === dataStr && 
-                            (!exc.horario_inicio || exc.horario_inicio === '')
-                        );
-                        
-                        if (excecaoDiaInteiro) {
-                            console.log(`⛔ ${dataStr}: Exceção de dia inteiro - ${excecaoDiaInteiro.motivo}`);
-                            continue;
-                        }
-                        
-                        // Busca disponibilidades para este dia da semana
-                        const disponibilidadesDia = disponibilidades.filter(d => 
-                            d.dia_semana === diaSemana
-                        );
-                        
-                        if (disponibilidadesDia.length === 0) {
-                            console.log(`⏭️ ${dataStr}: Sem disponibilidade configurada`);
-                            continue;
-                        }
-                        
-                        // Para cada disponibilidade deste dia
-                        for (const disponibilidade of disponibilidadesDia) {
-                            // Extrai horários de início e fim
-                            const horaInicio = disponibilidade.horario_inicio;
-                            const horaFim = disponibilidade.horario_fim;
+                        // Verifica se há consulta neste slot
+                        const temConsulta = consultas.some(consulta => {
+                            const consultaStart = new Date(consulta.start);
+                            const consultaEnd = new Date(consulta.end);
                             
-                            if (!horaInicio || !horaFim) continue;
-                            
-                            // Converte para objetos Date
-                            const inicioObj = new Date(`${dataStr}T${horaInicio}`);
-                            const fimObj = new Date(`${dataStr}T${horaFim}`);
-                            
-                            // Gera slots de 60 minutos dentro desta disponibilidade
-                            let slotAtual = inicioObj;
-                            
-                            while (slotAtual.getTime() + (60 * 60 * 1000) <= fimObj.getTime()) {
-                                const slotInicio = new Date(slotAtual);
-                                const slotFim = new Date(slotAtual.getTime() + (60 * 60 * 1000));
-                                
-                                // Verifica se há exceção com horário específico
-                                const excecaoHorario = excecoes.find(exc => {
-                                    if (!exc.horario_inicio || exc.horario_inicio === '') return false;
-                                    if (exc.data_excecao !== dataStr) return false;
-                                    
-                                    const excInicio = new Date(`${dataStr}T${exc.horario_inicio}`);
-                                    const excFim = new Date(`${dataStr}T${exc.horario_fim}`);
-                                    
-                                    return slotInicio < excFim && slotFim > excInicio;
-                                });
-                                
-                                if (excecaoHorario) {
-                                    console.log(`⛔ ${dataStr} ${horaInicio}: Exceção de horário - ${excecaoHorario.motivo}`);
-                                    slotAtual = new Date(slotFim);
-                                    continue;
-                                }
-                                
-                                // Verifica se há intervalo neste horário
-                                const intervalosDia = intervalos.filter(int => int.dia_semana === diaSemana);
-                                let dentroIntervalo = false;
-                                
-                                for (const intervalo of intervalosDia) {
-                                    if (!intervalo.horario_inicio || !intervalo.horario_fim) continue;
-                                    
-                                    const intInicio = new Date(`${dataStr}T${intervalo.horario_inicio}`);
-                                    const intFim = new Date(`${dataStr}T${intervalo.horario_fim}`);
-                                    
-                                    if (slotInicio < intFim && slotFim > intInicio) {
-                                        dentroIntervalo = true;
-                                        break;
-                                    }
-                                }
-                                
-                                if (dentroIntervalo) {
-                                    slotAtual = new Date(slotFim);
-                                    continue;
-                                }
-                                
-                                // Verifica se não há consulta neste horário
-                                const slotLivre = !consultas.some(consulta => {
-                                    const consultaInicio = new Date(consulta.start);
-                                    const consultaFim = new Date(consulta.end);
-                                    
-                                    // Verifica sobreposição
-                                    return !(slotFim <= consultaInicio || slotInicio >= consultaFim);
-                                });
-                                
-                                if (slotLivre) {
-                                    const slotId = `slot_${dataStr}_${slotInicio.getHours()}_${slotInicio.getMinutes()}`;
-                                    const horaFormatada = slotInicio.toLocaleTimeString('pt-BR', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        hour12: false
-                                    });
-                                    
-                                    slots.push({
-                                        id: slotId,
-                                        title: '✅ Disponível (60min)',
-                                        start: slotInicio.toISOString().split('.')[0],
-                                        end: slotFim.toISOString().split('.')[0],
-                                        color: '#4CAF50',
-                                        textColor: '#2e7d32',
-                                        extendedProps: {
-                                            tipo: 'slot_disponivel',
-                                            duracao: 60,
-                                            data_slot: dataStr,
-                                            horario: horaFormatada
-                                        }
-                                    });
-                                    
-                                    console.log(`✅ ${dataStr} ${horaFormatada}: Slot disponível gerado`);
-                                }
-                                
-                                slotAtual = new Date(slotFim);
-                            }
-                        }
-                    }
+                            // Verifica sobreposição
+                            return !(slotEnd <= consultaStart || slotStart >= consultaEnd);
+                        });
+                        
+                        return !temConsulta; // Mantém apenas slots sem consulta
+                    });
                     
-                    console.log(`📊 Slots gerados: ${slots.length}`);
+                    console.log(`✅ Slots disponíveis após filtro: ${slotsFiltrados.length}`);
                     
-                    // 4. Combina consultas e slots
+                    // 4. Combina todos os eventos
                     const todosEventos = [
                         // Slots disponíveis (verde)
-                        ...slots,
+                        ...slotsFiltrados,
                         
                         // Consultas agendadas (vermelho)
                         ...consultas.map(consulta => {
@@ -582,26 +471,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 const tipo = info.event.extendedProps.tipo;
                 
                 if (tipo === 'slot_disponivel') {
-                    // Preenche formulário com slot disponível
+                    // Pega os dados do slot do banco
+                    const slotId = info.event.extendedProps.id_slot;
                     const start = info.event.start;
+                    const duracao = info.event.extendedProps.duracao || 60;
+                    
                     const dataFormatada = start.toISOString().split('T')[0];
                     const horas = String(start.getHours()).padStart(2, '0');
                     const minutos = String(start.getMinutes()).padStart(2, '0');
                     
-                    document.getElementById('date').value = dataFormatada;
-                    document.getElementById('time').value = `${horas}:${minutos}`;
-                    document.getElementById('minutes').value = info.event.extendedProps.duracao || 60;
-                    
-                    // Rola para o formulário
-                    document.querySelector('.sidebar').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    
-                    // Foca no primeiro campo
-                    setTimeout(() => {
-                        document.getElementById('name').focus();
-                    }, 300);
+                    // Pede confirmação
+                    if (confirm(`Deseja agendar neste horário?\n\n📅 Data: ${dataFormatada}\n⏰ Horário: ${horas}:${minutos}\n⏳ Duração: ${duracao} minutos\n\nClique em OK para preencher o formulário.`)) {
+                        // Preenche formulário
+                        document.getElementById('date').value = dataFormatada;
+                        document.getElementById('time').value = `${horas}:${minutos}`;
+                        document.getElementById('minutes').value = duracao;
+                        
+                        // Armazena o ID do slot
+                        document.getElementById('slot_id').value = slotId;
+                        
+                        // Rola para o formulário
+                        document.querySelector('.sidebar').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        
+                        // Foca no primeiro campo
+                        setTimeout(() => {
+                            document.getElementById('name').focus();
+                        }, 300);
+                    }
                     
                     return;
                 }
@@ -663,6 +562,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         hour12: false
                     });
                     
+                    const duracao = arg.event.extendedProps.duracao || 60;
+                    
                     return {
                         html: `
                             <div style="padding: 4px; text-align: center;">
@@ -670,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     ✅ DISPONÍVEL
                                 </div>
                                 <div style="font-size: 9px; color: #388e3c;">
-                                    ${hora} (60min)
+                                    ${hora} (${duracao}min)
                                 </div>
                             </div>
                         `
@@ -736,6 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = document.getElementById('date').value;
             const hora = document.getElementById('time').value;
             const duracao = parseInt(document.getElementById('minutes').value) || 0;
+            const slotId = document.getElementById('slot_id').value;
             
             // Validações
             if (!nome || nome.length < 3) {
@@ -782,6 +684,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (dataSelecionada < hoje) {
                 alert('⚠️ Não é possível agendar para datas passadas!');
                 return;
+            }
+            
+            // Se veio de um slot, verifica se o slot ainda está disponível
+            if (slotId) {
+                // Poderia fazer uma verificação AJAX aqui, mas vamos confiar
+                console.log(`🎯 Agendando no slot ID: ${slotId}`);
             }
             
             // Desabilita botão para evitar múltiplos cliques

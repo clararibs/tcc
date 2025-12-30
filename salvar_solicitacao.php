@@ -1,31 +1,5 @@
 <?php
-// ============================================
-// CONFIGURAÇÃO DA CONEXÃO - AJUSTE PARA SUA CASA!
-// ============================================
-
-// OPÇÃO A: Para CASA (XAMPP padrão) - TENTE ESTA PRIMEIRO
-$host = 'localhost';     // ou '127.0.0.1'
-$port = 3306;           // padrão do MySQL
-$dbname = 'teste1';     // seu banco
-$username = 'root';     // usuário mais comum
-$password = '';         // senha vazia no XAMPP
-
-// OPÇÃO B: Se a de cima não funcionar, tente sem porta
-// $host = 'localhost';
-// $port = null;
-// $username = 'root';
-// $password = '';
-
-// OPÇÃO C: Para ESCOLA (com porta 3307)
-// $host = 'localhost';
-// $port = 3307;
-// $username = 'root';
-// $password = '';
-
-// ============================================
-// NÃO MUDE DAQUI PARA BAIXO
-// ============================================
-
+require_once 'conexao.php';
 try {
     // Monta a string de conexão
     $dsn = "mysql:host=$host";
@@ -44,7 +18,7 @@ try {
 } catch (PDOException $e) {
     // Se falhar, mostra erro detalhado
     die("<script>
-        alert('❌ ERRO DE CONEXÃO COM O BANCO!\\\\\\\\n\\\\\\\\nERRO: " . addslashes($e->getMessage()) . "\\\\\\\\n\\\\\\\\nVERIFIQUE:\\\\\\\\n1. XAMPP está aberto?\\\\\\\\n2. MySQL está iniciado (botão verde)?\\\\\\\\n3. Banco \\'hedone\\' existe?\\\\\\\\n\\\\\\\\nConfiguração tentada:\\\\\\\\nHost: $host\\\\\\\\nPorta: " . ($port ?: 'padrão') . "\\\\\\\\nUsuário: $username\\\\\\\\nSenha: " . ($password ?: '(vazia)') . "');
+        alert('❌ ERRO DE CONEXÃO COM O BANCO!\\\\\\\\n\\\\\\\\nERRO: " . addslashes($e->getMessage()) . "\\\\\\\\n\\\\\\\\nVERIFIQUE:\\\\\\\\n1. XAMPP está aberto?\\\\\\\\n2. MySQL está iniciado (botão verde)?\\\\\\\\n3. Banco \\'teste1\\' existe?\\\\\\\\n\\\\\\\\nConfiguração tentada:\\\\\\\\nHost: $host\\\\\\\\nPorta: " . ($port ?: 'padrão') . "\\\\\\\\nUsuário: $username\\\\\\\\nSenha: " . ($password ?: '(vazia)') . "');
         console.error('Erro DB: " . addslashes($e->getMessage()) . "');
     </script>");
 }
@@ -66,9 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email'] ?? '');
     $data = trim($_POST['data'] ?? '');
     $hora = trim($_POST['hora'] ?? '');
+    $slot_id = trim($_POST['slot_id'] ?? '');
     
     // Validação básica
-    if (empty($nome) || empty($telefone) || empty($email) || empty($data) || empty($hora)) {
+    if (empty($nome) || empty($telefone) || empty($email) || empty($data) || empty($hora) || empty($slot_id)) {
         echo "<script>
             alert('❌ Preencha todos os campos!');
             window.history.back();
@@ -125,21 +100,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
         
+        // 3. Verifica se o slot ainda está disponível
+        $stmt3 = $pdo->prepare("
+            SELECT id_slot 
+            FROM slots_disponiveis 
+            WHERE id_slot = ? 
+            AND status = 'disponivel'
+        ");
+        $stmt3->execute([$slot_id]);
+        
+        if ($stmt3->rowCount() == 0) {
+            echo "<script>
+                alert('❌ Este horário não está mais disponível!\\\\\\\\nEscolha outro horário.');
+                window.history.back();
+            </script>";
+            exit;
+        }
+        
         // ============================================
         // SALVA A SOLICITAÇÃO COMO CONFIRMADA
         // ============================================
         
         $stmt = $pdo->prepare("
             INSERT INTO solicitacoes_agendamento 
-            (nome_completo, email, telefone, data_desejada, hora_desejada, status) 
-            VALUES (?, ?, ?, ?, ?, 'confirmada')
+            (nome_completo, email, telefone, data_desejada, hora_desejada, status, id_slot) 
+            VALUES (?, ?, ?, ?, ?, 'confirmada', ?)
         ");
         
-        $stmt->execute([$nome, $email, $telefone, $data, $hora]);
+        $stmt->execute([$nome, $email, $telefone, $data, $hora, $slot_id]);
         $id_solicitacao = $pdo->lastInsertId();
         
         // DEBUG: Log do sucesso
-        error_log("✅ Solicitação salva! ID: $id_solicitacao - Data: $data - Hora: $hora");
+        error_log("✅ Solicitação salva! ID: $id_solicitacao - Data: $data - Hora: $hora - Slot: $slot_id");
+        
+        // ============================================
+        // ATUALIZA O STATUS DO SLOT PARA OCUPADO
+        // ============================================
+        
+        $stmt_slot = $pdo->prepare("
+            UPDATE slots_disponiveis 
+            SET status = 'ocupado',
+                id_solicitacao = ?
+            WHERE id_slot = ?
+        ");
+        $stmt_slot->execute([$id_solicitacao, $slot_id]);
+        
+        error_log("✅ Slot $slot_id atualizado para 'ocupado' e vinculado à solicitação $id_solicitacao");
         
         // ============================================
         // TAMBÉM SALVA NA TABELA DE CONSULTAS
@@ -149,11 +155,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
             $stmt3 = $pdo->prepare("
                 INSERT INTO consultas 
-                (nome_paciente, telefone, email, procedimento, data_consulta, hora_inicio, duracao_minutos) 
-                VALUES (?, ?, ?, 'Avaliação Inicial', ?, ?, 60)
+                (nome_paciente, telefone, email, procedimento, data_consulta, hora_inicio, duracao_minutos, id_slot, id_solicitacao) 
+                VALUES (?, ?, ?, 'Avaliação Inicial', ?, ?, 60, ?, ?)
             ");
             
-            $stmt3->execute([$nome, $telefone, $email, $data, $hora]);
+            $stmt3->execute([$nome, $telefone, $email, $data, $hora, $slot_id, $id_solicitacao]);
             $id_consulta = $pdo->lastInsertId();
             
             error_log("✅ Também salvo na tabela consultas! ID: $id_consulta");
@@ -171,8 +177,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data_formatada = date('d/m/Y', strtotime($data));
         
         echo "<script>
-            alert('✅ AVALIAÇÃO AGENDADA COM SUCESSO!\\\\\\\\n\\\\\\\\n📅 Data: $data_formatada\\\\\\\\n⏰ Horário: $hora\\\\\\\\n👤 Nome: $nome\\\\\\\\n📞 Telefone: $telefone\\\\\\\\n\\\\\\\\nChegue 10 minutos antes do horário!');
-            window.location.href = 'solicitar_avaliacao.html';
+            alert('✅ AVALIAÇÃO AGENDADA COM SUCESSO!\\\\\\\\n\\\\\\\\n📅 Data: $data_formatada\\\\\\\\n⏰ Horário: $hora\\\\\\\\n👤 Nome: $nome\\\\\\\\n📞 Telefone: $telefone\\\\\\\\n\\\\\\\\nChegue 10 minutos antes do horário!\\\\\\\\n\\\\\\\\nUma confirmação será enviada para seu e-mail.');
+            window.location.href = 'solicitar_agendamento.html';
         </script>";
         
     } catch (PDOException $e) {
@@ -189,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Se não for POST
     echo "<script>
         alert('Método inválido');
-        window.location.href = 'solicitar_avaliacao.html';
+        window.location.href = 'solicitar_agendamento.html';
     </script>";
 }
 ?>
